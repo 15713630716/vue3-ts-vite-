@@ -1,0 +1,145 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <tab name="Init" type="InitTab" active="false" scrollx="20" scrolly="20.000000000000114" scale="0.9">
+    <block xmlns="https://developers.google.com/blockly/xml" type="initSettings" id="q+`{kK(wIy-H+KrJG0cD" x="130" y="50">
+      <field name="LOAD_COMP_ASSETS">TRUE</field>
+      <field name="FULLSCREEN">FALSE</field>
+      <field name="BKG_TRANSPARENCY">TRUE</field>
+      <field name="PRESERVE_DRAW_BUF">FALSE</field>
+      <field name="FADE_ANNOTATIONS">TRUE</field>
+    </block>
+    <block xmlns="https://developers.google.com/blockly/xml" type="initPreloader" id="Xt0egINrG{2ME;?n[Yp_" x="70" y="290">
+      <statement name="DO_START">
+        <block type="setHTMLElemStyle" id="nl~#:35NvubvD/A3/;?!">
+          <field name="PROPERTY">visibility</field>
+          <field name="PARENT">TRUE</field>
+          <value name="VALUE">
+            <block type="text" id="BX6x6)^b/]xM+Y/raW/s">
+              <field name="TEXT">visible</field>
+            </block>
+          </value>
+          <value name="ID">
+            <shadow type="text" id="Jc7J4+]jMR;M5;*,=z_d">
+              <field name="TEXT"></field>
+            </shadow>
+            <block type="text" id="sMbVmtla,zz!x{CCe~Mi">
+              <field name="TEXT">preloader</field>
+            </block>
+          </value>
+        </block>
+      </statement>
+      <statement name="DO_PROGRESS">
+        <block type="setHTMLElemAttribute" id="2;I)TT#`Ab;uZ!ZRG|u3">
+          <field name="ATTRIBUTE">innerHTML</field>
+          <field name="PARENT">TRUE</field>
+          <value name="VALUE">
+            <block type="text_join" id="Qa8(UYF1}#:*T/.JRBED">
+              <mutation items="2"></mutation>
+              <value name="ADD0">
+                <block type="percentage" id="HwnFRmUV|Goc:S$2ugwh"></block>
+              </value>
+              <value name="ADD1">
+                <block type="text" id="4h!EFQ/ZRfsG9MV(A-7w">
+                  <field name="TEXT">%</field>
+                </block>
+              </value>
+            </block>
+          </value>
+          <value name="ID">
+            <shadow type="text" id="DyY}M!,u9(8n:1ra8R.p">
+              <field name="TEXT"></field>
+            </shadow>
+            <block type="text" id="C{lQsHX*dY}j_(PEt~Z.">
+              <field name="TEXT">loading_progress</field>
+            </block>
+          </value>
+          <next>
+            <block type="setHTMLElemStyle" id="0n%XH{36]lB6DXs~l0C=">
+              <field name="PROPERTY">alignContent</field>
+              <field name="PARENT">FALSE</field>
+              <value name="VALUE">
+                <block type="text_join" id="HyM?Wqze.P$fIvT6f[*.">
+                  <mutation items="2"></mutation>
+                  <value name="ADD0">
+                    <block type="percentage" id="yonH;42uChH[ZFPSJDGa"></block>
+                  </value>
+                  <value name="ADD1">
+                    <block type="text" id="]k)!#Nl4Vu@(FpR.c[h)">
+                      <field name="TEXT">%</field>
+                    </block>
+                  </value>
+                </block>
+              </value>
+              <value name="ID">
+                <shadow type="text" id="Xh|q(siv``S}40.M@@YV">
+                  <field name="TEXT"></field>
+                </shadow>
+                <block type="text" id="U^R2`F*1_b*ggS/%q_?m">
+                  <field name="TEXT">loading_bar</field>
+                </block>
+              </value>
+            </block>
+          </next>
+        </block>
+      </statement>
+      <statement name="DO_END">
+        <block type="setHTMLElemStyle" id=".ug@f`i()+9:f/FsmbE-">
+          <field name="PROPERTY">visibility</field>
+          <field name="PARENT">TRUE</field>
+          <value name="VALUE">
+            <block type="text" id="@hn%Q9G_~0eT.A(?=$YA">
+              <field name="TEXT">hidden</field>
+            </block>
+          </value>
+          <value name="ID">
+            <shadow type="text" id="KO=ekwzNPC!q=uV|`Tvd">
+              <field name="TEXT"></field>
+            </shadow>
+            <block type="text" id="A%XgLnuV-(Zq]m.(5LPJ">
+              <field name="TEXT">preloader</field>
+            </block>
+          </value>
+        </block>
+      </statement>
+    </block>
+  </tab>
+  <tab name="环境" type="CommonTab" active="true" scrollx="20" scrolly="20" scale="0.9">
+    <block xmlns="https://developers.google.com/blockly/xml" type="Vv4D_COMM_Plugin/Water2" id="i7!SUh)!k4i08aX;MS,+" x="150" y="370">
+      <value name="WATEROBJ">
+        <shadow type="objectList" id="^g;tlwG%}(B!kh3~R)kr">
+          <field name="FIELDNAME">water1</field>
+        </shadow>
+      </value>
+      <value name="COLOR">
+        <shadow type="getColorFromPicker" id="XA8h268v%jdvP{jDKZ0x">
+          <field name="COLOR">#cccccc</field>
+        </shadow>
+      </value>
+      <value name="Scale">
+        <shadow type="number_slider" id="_qW|jQpYo/md3RVO~jNd">
+          <field name="NUM" min="1" max="10" step="0.1">4</field>
+        </shadow>
+      </value>
+      <value name="Flowspeed">
+        <shadow type="number_slider" id="=E5YrBOJKfZ4!,0U,F);">
+          <field name="NUM" min="0" max="0.5" step="0.01">0.1</field>
+        </shadow>
+      </value>
+      <value name="FlowX">
+        <shadow type="number_slider" id="*4m=2C:E]`%*h}hbqq{5">
+          <field name="NUM" min="-1" max="1" step="0.1">1</field>
+        </shadow>
+      </value>
+      <value name="FlowY">
+        <shadow type="number_slider" id="fRetbyfTdbx6:0SCP)^1">
+          <field name="NUM" min="-1" max="1" step="0.1">1</field>
+        </shadow>
+      </value>
+      <value name="Reflectivity">
+        <shadow type="number_slider" id="?Lp+SSJOnH6:/(2`I9(b">
+          <field name="NUM" min="0" max="1" step="0.1">0.5</field>
+        </shadow>
+      </value>
+    </block>
+  </tab>
+  <editorsettings viewport-x="1006.1999999999998" viewport-y="37" viewport-w="682.8" viewport-h="419.5" viewport-hidden="false" toolbox-library-mode="false" toolbox-minimized-mode="false"></editorsettings>
+</xml>

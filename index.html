@@ -2,9 +2,27 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <!-- <link rel="icon" type="image/svg+xml" href="/vite.svg" /> -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>北岙水库工程建设期数字孪生应用</title>
+    <script type="text/javascript">"object" != typeof ue || "object" != typeof ue.interface ? ("object" != typeof ue && (ue = {}), ue.interface = {},
+ue.interface.broadcast = function(e, t) {
+    if ("string" == typeof e) {
+        var o = [e, ""];
+        void 0 !== t && (o[1] = t);
+        var n = encodeURIComponent(JSON.stringify(o));
+        "object" == typeof history && "function" == typeof history.pushState ? (history.pushState({},
+        "", "#" + n), history.pushState({},
+        "", "#" + encodeURIComponent("[]"))) : (document.location.hash = n, document.location.hash = encodeURIComponent("[]"))
+    }
+}) : function(e) {
+    ue.interface = {},
+    ue.interface.broadcast = function(t, o) {
+        "string" == typeof t && (void 0 !== o ? e.broadcast(t, JSON.stringify(o)) : e.broadcast(t, ""))
+    }
+} (ue.interface),
+(window.ue5 = ue.interface.broadcast);
+</script>
   </head>
   <body>
     <div id="app" style="width: 100vw;height: 100vh;overflow: hidden;"></div>

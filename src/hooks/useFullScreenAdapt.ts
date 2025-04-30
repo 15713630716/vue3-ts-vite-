@@ -20,7 +20,6 @@ export function useFullScreenAdapt(options: Options) {
     const parent = screenRef.value.parentElement || document.documentElement
     const clientWidth = parent.clientWidth
     const clientHeight = parent.clientHeight
-    console.log(clientWidth,clientHeight);
     
     // 计算宽度和高度的缩放比例
     const widthRatio = (Math.floor((clientWidth / designWidth)*1000000)/1000000)

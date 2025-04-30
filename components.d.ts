@@ -8,10 +8,18 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ElCarousel: typeof import('element-plus/es')['ElCarousel']
+    ElCarouselItem: typeof import('element-plus/es')['ElCarouselItem']
+    ElInput: typeof import('element-plus/es')['ElInput']
+    ElProgress: typeof import('element-plus/es')['ElProgress']
+    ElScrollbar: typeof import('element-plus/es')['ElScrollbar']
+    ElSwitch: typeof import('element-plus/es')['ElSwitch']
+    ElTree: typeof import('element-plus/es')['ElTree']
     FullScreenAdapter: typeof import('./src/components/FullScreenAdapter.vue')['default']
-    HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    Header: typeof import('./src/components/Header.vue')['default']
+    Nav: typeof import('./src/components/Nav.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    ScreenAdapter: typeof import('./src/components/ScreenAdapter.vue')['default']
+    Video: typeof import('./src/components/Video.vue')['default']
   }
 }
