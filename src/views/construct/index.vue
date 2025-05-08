@@ -16,8 +16,8 @@
     <div class="right-box" v-if="luanshengBoxShow">
       <div class="luansheng">
         <div class="luansheng-box">
-          <div class="add" v-if="luanshengItem.id == 2 || luanshengItem.id == 4">
-            新增
+          <div class="add pointer-events-all" v-if="luanshengItem.id == 4" @click="dialogBim = true">
+            详情
           </div>
           <div class="header-box">
             <img class="img" src="../../assets/img/jiansheqi/jindu-logo.png" alt="">
@@ -26,7 +26,7 @@
           <div class="echart-box">
             <div class="item-echart">
               <div class="top none">
-                <el-progress color="#07BEFF" :width="90" type="circle" :percentage="50">
+                <el-progress color="#07BEFF" :width="90" type="circle" :percentage="90">
                   <template #default="{ percentage }">
                     <div class="bg" style="width: 64px;
                     height: 64px;
@@ -47,7 +47,7 @@
             </div>
             <div class="item-echart">
               <div class="top ing">
-                <el-progress color="#E9CA7A" :width="90" type="circle" :percentage="50">
+                <el-progress color="#E9CA7A" :width="90" type="circle" :percentage="10">
                   <template #default="{ percentage }">
                     <div class="bg" style="width: 64px;
                     height: 64px;
@@ -68,7 +68,7 @@
             </div>
             <div class="item-echart">
               <div class="top succes">
-                <el-progress color="#1DDEA8" :width="90" type="circle" :percentage="50">
+                <el-progress color="#1DDEA8" :width="90" type="circle" :percentage="0">
                   <template #default="{ percentage }">
                     <div class="bg" style="width: 64px;
                     height: 64px;
@@ -94,7 +94,9 @@
               <div class="text">BIM模型</div>
               <div class="line"></div>
             </div>
-            <div class="link-box"></div>
+            <div class="link-box pointer-events-all" @click="getBimLink()">
+              <img style="width: 100%; height: 100%;cursor: pointer;" :src="luanshengItem.img" alt="">
+            </div>
           </div>
         </div>
       </div>
@@ -111,6 +113,11 @@
             <div class="header-box">
               <img class="img" src="../../assets/img/jiansheqi/yingli-title.png" alt="">
               <div class="text">应力有限元</div>
+            </div>
+            <div class="content-yingli" v-if="false"></div>
+            <div class="emty" v-else>
+              <img src="../../assets//img/jiansheqi/anquan/emty.png" alt="">
+              <div class="text">暂无数据</div>
             </div>
           </div>
         </div>
@@ -140,8 +147,8 @@
                   default-expand-all :filter-node-method="filterNode" @node-click="handleNodeClick">
                   <template #default="{ node, data }">
                     <div class="custom-tree-node">
-                      <i class="off" v-if="data.evaluationStatus == 'UnAssess'"></i>
-                      <i class="on" v-else></i>
+                      <i class="on" v-if="data.evaluationStatus == 'UnAssess'"></i>
+                      <i class="of" v-else></i>
                       <span class="node">{{ node.name }}</span>
                       <span class="data">{{ data.name }}</span>
                       <div>
@@ -193,38 +200,174 @@
           <img class="img" src="../../assets/img/jiansheqi/anquan/title.png" alt="">
           <div class="text">危险源列表</div>
         </div>
-        <div class="content-anquan" v-if="false"></div>
+        <div class="content-anquan" v-if="wxLists.length">
+          <div class="top">
+            <div class="left">
+              <div class="left-top">重大危险源</div>
+              <div class="left-bottom">{{ wxNumMajor }}</div>
+            </div>
+            <div class="center"></div>
+            <div class="right">
+              <div class="right-top">一般危险源</div>
+              <div class="right-bottom">{{ wxNumGeneral }}</div>
+            </div>
+          </div>
+          <div class="lists-main">
+            <div class="list-item" :class="wxActiveIndex == index ? 'wxactive' : ''" v-for="(item, index) in wxLists"
+              @click="getListItem(index, item)">
+              <div class="logo"></div>
+              <div class="text">{{ item.name }}</div>
+            </div>
+          </div>
+        </div>
         <div class="emty" v-else>
           <img src="../../assets//img/jiansheqi/anquan/emty.png" alt="">
           <div class="text">无危险源预警</div>
         </div>
       </div>
     </div>
-    <div class="tuceng pointer-events-all">
+    <div class="tuceng pointer-events-all" v-if="!anquanActive">
       <div class="title">图层控制</div>
-      <div class="item">
-        <div class="text">村庄</div>
+      <div class="item" v-for="item in tuceng" :key="item.id">
+        <div class="text">{{ item.name }}</div>
         <div class="switch">
-          <el-switch size="small" v-model="tuceng.cunzhuang" />
+          <el-switch size="small" v-model="item.value" @change="tuCengSwitch(item)" />
         </div>
       </div>
+    </div>
+    <div class="tuceng pointer-events-all" v-if="anquanActive">
+      <div class="title">图例</div>
       <div class="item">
-        <div class="text">现状工程</div>
-        <div class="switch">
-          <el-switch size="small" v-model="tuceng.xianzhuang" />
+        <div class="color" style="background-color: #e55759;"></div>
+        <div class="text">重大风险</div>
+      </div>
+      <div class="item">
+        <div class="color" style="background-color: #de7f3a;"></div>
+        <div class="text">较大风险</div>
+      </div>
+      <div class="item">
+        <div class="color" style="background-color: #e1bf27;"></div>
+        <div class="text">一般风险</div>
+      </div>
+      <div class="item">
+        <div class="color" style="background-color: #25dcf1;"></div>
+        <div class="text">低风险</div>
+      </div>
+    </div>
+    <AnquanPop v-if="wxActiveIndex != -1" :detailData="wxDetail" :id="anquanIdPop" ref="dialogRef"></AnquanPop>
+    <div class="bim-pop" v-if="dialogBimVisible">
+      <div class="line">
+        <div class="header pointer-events-all">
+          {{ luanshengItem.name }}
+          <div class="after" @click="dialogBimVisible = false"></div>
+        </div>
+        <div class="content-pop pointer-events-all">
+          <iframe style="width: 100%;height: 95%;" :src="luanshengItem.url" frameborder="0"></iframe>
         </div>
       </div>
+    </div>
+    <div class="bimDetail-box pointer-events-all" v-show="dialogBim">
+      <el-dialog v-model="dialogBim" title="发电饮水隧洞" width="1000">
+        <div class="bim-content">
+          <el-tabs class="bim-tab" v-model="activeName" @tab-click="handleClick">
+            <el-tab-pane label="安全监测" name="1">安全监测1</el-tab-pane>
+            <el-tab-pane label="施工地质" name="2">
+              <div class="tab-item">
+                <div class="top">
+                  <div class="title"><el-icon style="color: #409eff;margin-right: 5px;">
+                      <DArrowRight />
+                    </el-icon>地质超前预报(粗探)</div>
+                  <div class="switch"><el-checkbox v-model="checked1">显示山体背景</el-checkbox></div>
+                </div>
+                <div class="tab-main">
+                  <div class="tab-main1" v-if="checked1"></div>
+                  <canvas ref="myCanvas1"></canvas>
+                </div>
+              </div>
+              <div class="tab-item" style="margin: 10px 0;">
+                <div class="top">
+                  <div class="title"><el-icon style="color: #409eff;margin-right: 5px;">
+                      <DArrowRight />
+                    </el-icon>地质超前预报(精探)</div>
+                  <div class="switch"><el-checkbox v-model="checked2">显示山体背景</el-checkbox></div>
+                </div>
+                <div class="tuli" style="display: flex;align-items: center;">
+                  <div class="item">
+                    <span
+                      style="display: inline-block;width: 30px;height: 15px;background-color: #27981b;margin-right: 5px;"></span>
+                    <span>均完成</span>
+                  </div>
+                  <div class="item">
+                    <span
+                      style="display: inline-block;width: 30px;height: 15px;background-color: #ea6d63;margin-right: 5px;"></span>
+                    <span>仅完成红外探水预报</span>
+                  </div>
+                  <div class="item">
+                    <span
+                      style="display: inline-block;width: 30px;height: 15px;background-color: #782ed8;margin-right: 5px;"></span>
+                    <span>仅完成地质雷达探测</span>
+                  </div>
+                </div>
+                <div class="tab-main">
+                  <div class="tab-main1" v-if="checked2"></div>
+                  <canvas ref="myCanvas2"></canvas>
+                </div>
+              </div>
+              <div class="tab-item">
+                <div class="top">
+                  <div class="title"><el-icon style="color: #409eff;margin-right: 5px;">
+                      <DArrowRight />
+                    </el-icon>施工地质</div>
+                  <div class="switch"><el-checkbox v-model="checked3">显示山体背景</el-checkbox></div>
+                </div>
+                <div class="tuli" style="display: flex;align-items: center;">
+                  <div class="item">
+                    <span
+                      style="display: inline-block;width: 30px;height: 15px;background-color: #d5ae9f;margin-right: 5px;"></span>
+                    <span>V</span>
+                  </div>
+                  <div class="item">
+                    <span
+                      style="display: inline-block;width: 30px;height: 15px;background-color: #d8d9b7;margin-right: 5px;"></span>
+                    <span>IV类</span>
+                  </div>
+                  <div class="item">
+                    <span
+                      style="display: inline-block;width: 30px;height: 15px;background-color: #d7c39f;margin-right: 5px;"></span>
+                    <span>|||类偏坏</span>
+                  </div>
+                  <div class="item">
+                    <span
+                      style="display: inline-block;width: 30px;height: 15px;background-color: #b29c86;margin-right: 5px;"></span>
+                    <span>||类</span>
+                  </div>
+                </div>
+                <div class="tab-main">
+                  <div class="tab-main1" v-if="checked3"></div>
+                  <canvas ref="myCanvas3"></canvas>
+                </div>
+              </div>
+            </el-tab-pane>
+          </el-tabs>
+        </div>
+      </el-dialog>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch, type PropType } from 'vue'
+import { onMounted, reactive, ref, watch, type PropType, nextTick } from 'vue'
 import img1 from '@/assets/img/jiansheqi/nav1.png'
 import img2 from '@/assets/img/jiansheqi/nav2.png'
 import img3 from '@/assets/img/jiansheqi/nav3.png'
 import img4 from '@/assets/img/jiansheqi/nav4.png'
+import daoliudong from '@/assets/luansheng/daoliudong.png'
+import gongba from '@/assets/luansheng/gongba.png'
+import guanlifang from '@/assets/luansheng/guanlifang.png'
+import fadaindong from '@/assets/luansheng/fadiandong.png'
 import { Search } from '@element-plus/icons-vue'
-import { getZhiliangTree, getZhiliangTreeDetil } from '@/request/construct'
+import type { TabsPaneContext } from 'element-plus'
+import { getZhiliangTree, getZhiliangTreeDetil, getProgress, getDangerLists, getDangerDetail } from '@/request/construct'
+import AnquanPop from '@/components/AnquanPop.vue'
 
 const props = defineProps({
   //施工仿真模拟
@@ -239,10 +382,38 @@ const props = defineProps({
   },
 });
 
-const tuceng = reactive({
-  cunzhuang: '',
-  xianzhuang: ''
-})
+const tuceng = reactive([
+  {
+    name: '人员',
+    value: '',
+    id: '1'
+  },
+  {
+    name: '机械设备',
+    value: '',
+    id: '2'
+  },
+  {
+    name: '视频监控',
+    value: '',
+    id: '3'
+  },
+  {
+    name: '环境监测',
+    value: '',
+    id: '4'
+  },
+  {
+    name: '车辆定位',
+    value: '',
+    id: '5'
+  },
+])
+//图层开关
+const tuCengSwitch = (item: any) => {
+  console.log('val', item);
+  //判断图层传递消息
+}
 
 const navs = ref([
   {
@@ -271,23 +442,33 @@ const navItems = ref([
     {
       name: '整体工程',
       active: false,
-      id: '1'
+      id: '1',
+      img: '',
+      url: ''
     }, {
       name: '导流洞',
       active: false,
-      id: '2'
+      id: '2',
+      img: daoliudong,
+      url: 'https://rspt.zdwp.net:9990/#/sceneDetail?linkToken=ZjhkNDJiYjgtMjIzMC00MzNmLTk5ZjUtZDNlOWY0MzAxN2M5LDk4YzMxOGY5LWM2YTUtNGQ4Ni1iNjkwLTZlYWI4NGY0ZjY5ZSxlNGNiMmYwYy05M2E2LTRkMTItOGQ5NC1iOWJiY2JhNmU4M2Q='
     }, {
       name: '混凝土重力拱坝',
       active: false,
-      id: '3'
+      id: '3',
+      img: gongba,
+      url: 'https://rspt.zdwp.net:9990/#/sceneDetail?linkToken=ZjhkNDJiYjgtMjIzMC00MzNmLTk5ZjUtZDNlOWY0MzAxN2M5LDk4YzMxOGY5LWM2YTUtNGQ4Ni1iNjkwLTZlYWI4NGY0ZjY5ZSwzZjhiYjY3ZC04OTFiLTQ2MWEtYmQ4Mi01ZTNhMmEyN2FlODk='
     }, {
       name: '发电引水隧洞',
       active: false,
-      id: '4'
+      id: '4',
+      img: fadaindong,
+      url: 'https://rspt.zdwp.net:9990/#/sceneDetail?linkToken=ZjhkNDJiYjgtMjIzMC00MzNmLTk5ZjUtZDNlOWY0MzAxN2M5LDk4YzMxOGY5LWM2YTUtNGQ4Ni1iNjkwLTZlYWI4NGY0ZjY5ZSwxMjZlMDQ1Ny0xZGE5LTRiNzEtODAxMC0wYzM4NDEyMzE3NTM='
     }, {
       name: '管理房',
       active: false,
-      id: '5'
+      id: '5',
+      img: guanlifang,
+      url: 'https://rspt.zdwp.net:9990/#/sceneDetail?linkToken=ZjhkNDJiYjgtMjIzMC00MzNmLTk5ZjUtZDNlOWY0MzAxN2M5LDk4YzMxOGY5LWM2YTUtNGQ4Ni1iNjkwLTZlYWI4NGY0ZjY5ZSw0ZWYxMzI5My03MTU0LTRmZGQtYWU0Ny1kODEwNTc2OGE0ZjM='
     },
   ],
   [
@@ -320,7 +501,6 @@ const getNav1 = (indexs: number) => {
       }
 
       if (indexs == 2) {
-        console.log(indexs);
         zhiliangActive.value = true
       } else {
         zhiliangActive.value = false
@@ -368,6 +548,88 @@ const getNav2 = (indexs: number, index: number) => {
 const getLuansheng = (item: any) => {
   luanshengItem.value = item
   // 发请求，调接口获取数据，接口还没写
+}
+//跳转去bim链接弹窗
+const dialogBimVisible = ref(false)
+const getBimLink = () => {
+  dialogBimVisible.value = true
+}
+//获取进度列表
+const getJindu = async () => {
+  const res = await getProgress()
+  console.log('进度列表', res);
+}
+//孪生中心详情弹窗展示
+const dialogBim = ref(false)
+const activeName = ref('1')
+const handleClick = (tab: TabsPaneContext) => {
+  if (tab.props.name == 2) {
+    getCanvas()
+  }
+}
+const checked1 = ref(true)
+const checked2 = ref(true)
+const checked3 = ref(true)
+//绘制图片和折线
+const myCanvas1 = ref(null)
+const myCanvas2 = ref(null)
+const myCanvas3 = ref(null)
+const points = [  // 折线坐标点数组（示例数据）
+  { x: 363, y: 90 },
+  { x: 423, y: 110 },
+  { x: 623, y: 95 },
+  { x: 670, y: 70 },
+]
+const getCanvas = async () => {
+  const canvas1 = myCanvas1.value
+  const canvas2 = myCanvas2.value
+  const canvas3 = myCanvas3.value
+  await nextTick()
+  if (!canvas1) return;
+  if (!canvas2) return;
+  if (!canvas3) return;
+  const ctx1 = canvas1.getContext('2d')
+  const ctx2 = canvas2.getContext('2d')
+  const ctx3 = canvas3.getContext('2d')
+
+  // 设置Canvas尺寸（需与图片匹配或自定义）
+  canvas1.width = 800
+  canvas1.height = 200
+  canvas2.width = 800
+  canvas2.height = 200
+  canvas3.width = 800
+  canvas3.height = 200
+
+  // 开始绘制折线
+  ctx1.beginPath()
+  ctx1.moveTo(points[0].x, points[0].y)
+  ctx2.beginPath()
+  ctx2.moveTo(points[0].x, points[0].y)
+  ctx3.beginPath()
+  ctx3.moveTo(points[0].x, points[0].y)
+
+  // 连接各个点
+  points.forEach(point => {
+    ctx1.lineTo(point.x, point.y)
+    ctx2.lineTo(point.x, point.y)
+    ctx3.lineTo(point.x, point.y)
+  })
+
+  // 设置线条样式
+  ctx1.strokeStyle = '#59402e'
+  ctx1.lineWidth = 2
+  ctx1.lineJoin = 'round' // 折线连接处圆角
+  ctx2.strokeStyle = '#59402e'
+  ctx2.lineWidth = 2
+  ctx2.lineJoin = 'round' // 折线连接处圆角
+  ctx3.strokeStyle = '#59402e'
+  ctx3.lineWidth = 2
+  ctx3.lineJoin = 'round' // 折线连接处圆角
+
+  // 绘制路径
+  ctx1.stroke()
+  ctx2.stroke()
+  ctx3.stroke()
 }
 
 
@@ -453,7 +715,6 @@ const dataTree = ref<Tree[]>([
 ])
 const getTreeDatas = async () => {
   const res = await getZhiliangTree()
-  console.log('res', res);
   dataTree.value = res
 }
 //树节点弹窗
@@ -478,12 +739,62 @@ const treeDetil = ref({} as any)
 const getZhiliangTreeDeti = async (id: any) => {
   const res = await getZhiliangTreeDetil(id)
   treeDetil.value = res
-  console.log('res', treeDetil.value);
+  // console.log('res', treeDetil.value);
 }
+
+
+//安全中心
+// 监听anquanActive重置安全中心内容
+watch(
+  () => anquanActive.value,
+  () => {
+    if (!anquanActive.value) {
+      wxActiveIndex.value = -1//高亮危险源恢复默认
+    }
+  }
+);
+const wxLists = ref([] as any)//危险源列表
+const wxNumGeneral = ref<number>(0)//一般危险源
+const wxNumMajor = ref<number>(0)//重大危险源
+const getWeixian = async () => {
+  const res = await getDangerLists()
+  wxLists.value = res.list
+  let General = 0
+  let Major = 0
+  wxLists.value.map((item: any) => {
+    if (item.levelDesc == '重大危险源') {
+      Major = Major + 1
+    }
+    if (item.levelDesc == '一般危险源') {
+      General = General + 1
+    }
+  })
+  wxNumGeneral.value = General
+  wxNumMajor.value = Major
+}
+//点击危险源高亮，获取详情
+const wxActiveIndex = ref<number>(-1)
+const anquanIdPop = ref()
+const getListItem = (index: number, item: any) => {
+  wxActiveIndex.value = index
+  anquanIdPop.value = item.id
+  getWXDetail(item.id)
+}
+const wxDetail = ref({} as any)
+const dialogRef = ref<any>(null);
+const getWXDetail = async (id: any) => {
+  const wx = await getDangerDetail(id)
+  dialogRef.value.Dialog = true;//打开弹窗
+  wxDetail.value = wx
+  console.log('wx', wx);
+}
+
 
 onMounted(() => {
   getNav1(0)
-  getTreeDatas()
+  getTreeDatas()//获取树
+  getJindu()//获取进度
+  getWeixian()//获取危险源列表
 })
 
 
@@ -607,16 +918,16 @@ onMounted(() => {
           text-align: center;
           cursor: pointer;
 
-          &::after {
-            content: '';
-            width: 12px;
-            height: 12px;
-            background: url('../../assets/img/jiansheqi/add.png') no-repeat;
-            background-size: 100%;
-            position: absolute;
-            top: 6px;
-            left: -19px;
-          }
+          // &::after {
+          //   content: '';
+          //   width: 12px;
+          //   height: 12px;
+          //   background: url('../../assets/img/jiansheqi/add.png') no-repeat;
+          //   background-size: 100%;
+          //   position: absolute;
+          //   top: 6px;
+          //   left: -19px;
+          // }
         }
 
         .echart-box {
@@ -710,6 +1021,61 @@ onMounted(() => {
           }
         }
       }
+
+    }
+
+  }
+
+  .bim-pop {
+    width: 1069px;
+    height: 680px;
+    position: absolute;
+    top: 106px;
+    left: 426px;
+    background: linear-gradient(55deg, rgba(63, 118, 170, 0) 0%, rgba(63, 118, 170, 0.4) 100%), rgba(15, 76, 111, 0.8);
+    border-radius: 40px 0px 32px 0px;
+    border: 1px solid rgba(110, 181, 242, 0.57);
+    padding: 10px;
+
+    .line {
+      width: 1049px;
+      height: 660px;
+      background: linear-gradient(311deg, rgba(63, 118, 170, 0) 0%, rgba(63, 118, 170, 0.4) 100%), rgba(0, 54, 75, 0.81), rgba(21, 141, 207, 0.64);
+      box-shadow: inset 0px 1px 53px 0px rgba(88, 178, 255, 0.5);
+      border-radius: 32px 0px 32px 0px;
+      border: 1px solid rgba(166, 219, 249, 0.75);
+      padding: 15px;
+      overflow: hidden;
+
+    }
+
+    .header {
+      width: 100%;
+      height: 40px;
+      line-height: 40px;
+      font-family: MicrosoftYaHeiSemibold;
+      font-size: 18px;
+      color: #FFFFFF;
+      background: linear-gradient(270deg, rgba(34, 102, 135, 0) 0%, #13A4EB 100%);
+      padding-left: 16px;
+      position: relative;
+
+      .after {
+        position: absolute;
+        width: 25px;
+        height: 25px;
+        top: 7px;
+        right: 0px;
+        background: url('../../assets/img/weilai/cha.png') no-repeat;
+        background-size: 100% 100%;
+        cursor: pointer;
+      }
+    }
+
+    .content-pop {
+      width: 100%;
+      height: 100%;
+      padding: 9px;
     }
   }
 
@@ -771,6 +1137,27 @@ onMounted(() => {
           box-shadow: inset 0px 0px 19px 0px rgba(88, 207, 255, 0.72);
           border-radius: 12px;
           border: 1px solid #3CBAF7;
+
+          .content-yingli {
+            width: 100%;
+          }
+
+          .emty {
+            width: 159px;
+            height: 120px;
+            margin: 100px auto;
+
+            img {
+              width: 159px;
+              height: 116px;
+            }
+
+            .text {
+              width: 100%;
+              text-align: center;
+              color: #FFFFFF;
+            }
+          }
         }
       }
 
@@ -948,8 +1335,8 @@ onMounted(() => {
               align-items: center;
 
               .on {
-                width: 20px;
-                height: 20px;
+                width: 17px;
+                height: 17px;
                 display: inline-block;
                 background: url('../../assets/img/jiansheqi/ren-lan.png') no-repeat;
                 background-size: 100% 100%;
@@ -957,8 +1344,8 @@ onMounted(() => {
               }
 
               .off {
-                width: 20px;
-                height: 20px;
+                width: 17px;
+                height: 17px;
                 display: inline-block;
                 background: url('../../assets/img/jiansheqi/ren-lv.png') no-repeat;
                 background-size: 100% 100%;
@@ -1063,13 +1450,121 @@ onMounted(() => {
       width: 398px;
       min-height: 488px;
       margin: 5px auto;
-      background: linear-gradient(311deg, rgba(63, 118, 170, 0) 0%, rgba(63, 118, 170, 0.4) 100%), rgba(3, 60, 93, 0.48), rgba(14, 141, 208, 0.35);
+      background: linear-gradient(311deg, rgba(63, 118, 170, 0) 0%, rgba(63, 118, 170, 0.4) 100%), rgba(3, 60, 93, 0.48), rgba(14, 141, 208, 0.95);
       box-shadow: inset 0px 0px 19px 0px rgba(88, 207, 255, 0.72);
       border-radius: 12px;
       border: 1px solid #3CBAF7;
 
       .content-anquan {
         width: 100%;
+
+        .top {
+          width: 100%;
+          height: 101px;
+          padding: 0 15px;
+          margin: 9 0 16px;
+          display: flex;
+          align-items: center;
+
+          .left {
+            width: 126px;
+
+            .left-top {
+              width: 100%;
+              height: 50px;
+              background: url('../../assets/img/jiansheqi/anquan/top-bg.png') no-repeat;
+              background-size: 100% 100%;
+              line-height: 50px;
+              text-align: center;
+              font-family: MicrosoftYaHei;
+              font-size: 16px;
+              color: #FFFFFF;
+            }
+
+            .left-bottom {
+              width: 100%;
+              text-align: center;
+              font-family: PangMenZhengDao;
+              font-size: 24px;
+              color: #FF736E;
+              line-height: 24px;
+            }
+          }
+
+          .center {
+            width: 101px;
+            height: 101px;
+            background: url('../../assets/img/jiansheqi/anquan/logo.png') no-repeat;
+            background-size: 100% 100%;
+          }
+
+          .right {
+            width: 126px;
+
+            .right-top {
+              width: 100%;
+              height: 50px;
+              background: url('../../assets/img/jiansheqi/anquan/top-bg.png') no-repeat;
+              background-size: 100% 100%;
+              line-height: 50px;
+              text-align: center;
+              font-family: MicrosoftYaHei;
+              font-size: 16px;
+              color: #FFFFFF;
+            }
+
+            .right-bottom {
+              width: 100%;
+              text-align: center;
+              font-family: PangMenZhengDao;
+              font-size: 24px;
+              color: #FF736E;
+              line-height: 24px;
+            }
+          }
+        }
+
+        .lists-main {
+          width: 100%;
+          padding: 0 11px;
+
+          .list-item {
+            width: 100%;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            background: rgba(11, 45, 66, 0.25);
+            border-radius: 2px;
+            margin-top: 12px;
+            padding: 0 10px;
+            cursor: pointer;
+
+            .logo {
+              width: 24px;
+              height: 24px;
+              background: url('../../assets/img/jiansheqi/anquan/text-logo.png') no-repeat;
+              background-size: 100% 100%;
+              margin-right: 10px;
+            }
+
+            .text {
+              width: calc(100% - 34px);
+              white-space: nowrap;
+              /* 不换行 */
+              overflow: hidden;
+              /* 隐藏超出部分 */
+              text-overflow: ellipsis;
+              font-family: MicrosoftYaHei;
+              font-size: 16px;
+              color: #FFFFFF;
+            }
+          }
+
+          .wxactive {
+            box-shadow: inset 0px 0px 10px 0px #03A2F9, inset 0px 0px 22px 0px #05B4FF;
+            border: 1px solid #6CCCFF;
+          }
+        }
       }
 
       .emty {
@@ -1129,8 +1624,134 @@ onMounted(() => {
         cursor: pointer;
       }
 
+      .color {
+        width: 12px;
+        height: 12px;
+        border-radius: 2px;
+      }
+
     }
   }
 
+}
+
+.bimDetail-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  :deep(.el-dialog) {
+    background: linear-gradient(55deg, rgba(63, 118, 170, 0) 0%, rgba(63, 118, 170, 0.4) 100%), rgba(15, 76, 111, 0.8);
+    box-shadow: inset 0px 1px 53px 0px rgba(88, 178, 255, 0.5);
+    border-radius: 32px 0px 32px 0px;
+    border: 1px solid rgba(166, 219, 249, 0.75);
+    padding: 11px;
+
+  }
+
+  :deep(.el-dialog__header) {
+    display: flex;
+    align-items: center;
+  }
+
+  :deep(.el-dialog__title) {
+    padding-left: 10px;
+    color: #fff;
+    display: block;
+    width: 100%;
+    height: 35px;
+    line-height: 35px;
+    background: linear-gradient(270deg, rgba(34, 102, 135, 0) 0%, #13A4EB 100%);
+  }
+
+  .bim-content {
+    width: 100%;
+    height: 795px;
+
+    .bim-tab {
+      :deep(.el-tabs__header) {
+        width: 200px;
+
+        .el-tabs__item {
+          font-size: 16px;
+          color: #fff;
+          width: 100px;
+        }
+
+        .is-active {
+          color: #409eff;
+        }
+      }
+
+      .tab-item {
+        width: 100%;
+        height: 240px;
+        background: url('../../assets/luansheng/bg.jpg') no-repeat;
+        background-size: 100% 100%;
+
+        .top {
+          width: 100%;
+          padding: 0px 10px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          color: #fff;
+
+          .title {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+          }
+
+          .switch {
+            :deep(.el-checkbox__label) {
+              color: #fff;
+            }
+
+            :deep(.is-checked) {
+              .el-checkbox__label {
+                color: #409eff;
+              }
+            }
+          }
+        }
+
+        .tuli {
+          .item {
+            margin-left: 20px;
+            display: flex;
+            align-items: center;
+            color: #fff;
+          }
+        }
+
+        .tab-main {
+          width: 100%;
+          height: 200px;
+          margin-top: 5px;
+          position: relative;
+
+          .tab-main1 {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: url('../../assets/luansheng/dizhi.png') no-repeat;
+            background-size: 100% 100%;
+            opacity: 0.8;
+          }
+
+          canvas {
+            position: relative;
+            z-index: 9999;
+          }
+        }
+
+      }
+    }
+  }
 }
 </style>

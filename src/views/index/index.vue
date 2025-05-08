@@ -154,6 +154,8 @@
                 <div class="title">{{ item.name }}</div>
                 <div class="video">
                   <Video :src="item.url"></Video>
+                  <!-- <video style="width: 100%; object-fit: cover;" src="../../assets/4.mp4" controls autoplay muted
+                    playsinline webkit-playsinline x5-video-player-fullscreen="true" x5-playsinline></video> -->
                 </div>
               </div>
             </el-carousel-item>

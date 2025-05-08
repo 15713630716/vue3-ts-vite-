@@ -1,7 +1,6 @@
 <template>
   <div class="home-box pointer-events-none">
     <div class="home pointer-events-none">
-      <h1>{{ ueValue }}</h1>
       <Header v-model:quanping="quanping" :showRoute="showRoute" :iframeDomCZ="iframeDomCZ"
         :iframeDomdxbtk="iframeDomdxbtk" :iframeDomdxbtg="iframeDomdxbtg"></Header>
       <div class="main" v-show="quanping">
@@ -38,16 +37,24 @@
           </div>
         </div>
       </div>
+      <div class="shexiang" v-if="treePopShow">
+        <h1>摄像头{{ ueValue.id }}弹窗</h1>
+        <h1>摄像头{{ ueValue.id }}弹窗</h1>
+        <h1>摄像头{{ ueValue.id }}弹窗</h1>
+        <h1>摄像头{{ ueValue.id }}弹窗</h1>
+      </div>
     </div>
+    <VideoPop></VideoPop>
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import Header from '@/components/Header.vue'
 import Index from '../index/index.vue';
 import QianQi from '../prophase/index.vue'
 import JianShe from '../construct/index.vue'
 import WeiLai from '../future/index.vue'
+import VideoPop from '@/components/VideoPop.vue';
 
 
 const iframeRefCZ = ref<HTMLIFrameElement | any>();//重置
@@ -77,10 +84,20 @@ const sendUeMsg = (id: any) => {
   // 第一个参数为函数名，第二个参数为数据
   ue5("callbackTestCall", JSON.stringify({ name: 'tiaozhuan', id: id }))
 }
-const ueValue = ref('77');
+const ueValue = ref({ id: 1 } as any);
+const treePopShow = ref(false);
 ue.interface.getUeTestCall = (res: any) => {
-  ueValue.value = JSON.parse(res).age
+  ueValue.value = JSON.parse(res)
+
 }
+watch(
+  () => ueValue.value,
+  () => {
+    if (ueValue.value.type == 'qiehuan') {
+      treePopShow.value = true
+    }
+  }
+);
 
 const showRoute = ref<number>(1)
 const getRoute = (num: number) => {
@@ -94,7 +111,7 @@ const getRoute = (num: number) => {
     //回首页并重置
     showRoute.value = num
     // iframeRefCZ.value.click()
-    sendUeMsg('CZ')
+    sendUeMsg('shouye')
     iframeDomCZ.value = iframeRefCZ.value
 
   } else if (num == 2) {
@@ -292,6 +309,16 @@ const getRoute = (num: number) => {
         margin-left: 20px;
       }
     }
+  }
+
+  .shexiang {
+    position: absolute;
+    top: 200px;
+    left: 500px;
+    width: 200px;
+    height: 200px;
+    color: red;
+    background-color: aqua;
   }
 }
 </style>

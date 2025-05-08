@@ -45,7 +45,18 @@ const props = defineProps({
   iframeDomyxhy: {
     type: Object as PropType<HTMLIFrameElement>,
     required: true,
-  }
+  },
+  // 地形勘察
+  iframeDomdxfx: {
+    type: Object as PropType<HTMLIFrameElement>,
+    required: true,
+  },
+  // 前期重置
+  iframeDomqqkc: {
+    type: Object as PropType<HTMLIFrameElement>,
+    required: true,
+  },
+
 });
 
 const tuceng = reactive({
@@ -78,15 +89,15 @@ const navItems = ref([
     }
   ],
   [
-    {
-      name: '温控有限元',
-      active: false,
-      id: '1'
-    }, {
-      name: '应力有限元',
-      active: false,
-      id: '2'
-    }
+    // {
+    //   name: '',
+    //   active: false,
+    //   id: '1'
+    // }, {
+    //   name: '',
+    //   active: false,
+    //   id: '2'
+    // }
   ]
 ])
 const getNav1 = (indexs: number) => {
@@ -96,6 +107,12 @@ const getNav1 = (indexs: number) => {
       getNav2(0, indexs)
     } else {
       item.active = false
+    }
+    if (indexs == 0) {
+      //地面抬升
+      props.iframeDomdxfx.click()
+    } else {
+      props.iframeDomqqkc.click()
     }
   })
 }
@@ -128,7 +145,7 @@ const getNav2 = (indexs: number, index: number) => {
 
 
 onMounted(() => {
-  getNav1(0)
+  // getNav1(0)
 })
 
 // 销毁时一切重置

@@ -4,10 +4,13 @@
     <div class="center">北岙水库数字孪生应用</div>
     <div class="right-box">
       <div class="right pointer-events-all">
-        <div class="item1" v-if="showRoute != 2" :class="item1Show == true ? 'active1' : ''" @click="getClick(1)"></div>
+        <div class="item1" v-if="(showRoute != 2 && showRoute != 3)" :class="item1Show == true ? 'active1' : ''"
+          @click="getClick(1)"></div>
         <div class="item2" :class="item2Show == true ? 'active2' : ''" @click="getClick(2)"></div>
         <div class="item3" @click="getClick(3)"></div>
       </div>
+      <div class="link pointer-events-all" @click="getClick(4)"><img src="../assets/img/home/navigation-icon.png"
+          alt="">工作平台</div>
     </div>
   </div>
 </template>
@@ -66,6 +69,10 @@ const getClick = (num: number) => {
     item1Show.value = false
     item2Show.value = false
   }
+  if (num == 4) {
+    ue5("callbackTestCall", JSON.stringify({ type: 'tiaozhuan', url: 'https://zhgl.zjdyit.com/zhjg3/#/1894712966457069569/1813759284281929730/info/personalPortal' }))
+    // window.open('https://zhgl.zjdyit.com/zhjg3/#/1894712966457069569/1813759284281929730/info/personalPortal', '_blank')
+  }
 }
 
 </script>
@@ -118,13 +125,14 @@ const getClick = (num: number) => {
 
   .right-box {
     width: 300px;
-    margin-top: 25px;
+    margin-top: 15px;
     margin-right: 32px;
     display: flex;
     justify-content: end;
+    align-items: center;
 
     .right {
-      width: 170px;
+      // width: 170px;
       height: 46px;
       background: rgba(13, 78, 112, 0.63);
       border-radius: 29px;
@@ -132,11 +140,13 @@ const getClick = (num: number) => {
       display: flex;
       align-items: center;
       justify-content: space-around;
+      padding: 0 8px;
 
       div {
         width: 30px;
         height: 30px;
         cursor: pointer;
+        margin: 0 8px;
       }
 
       .item1 {
@@ -162,6 +172,28 @@ const getClick = (num: number) => {
       .active2 {
         background: url('../assets/img/home/编组\ 6备份\ 2@2x\(1\).png') no-repeat;
         background-size: 100%;
+      }
+    }
+
+    .link {
+      height: 46px;
+      background: rgba(13, 78, 112, 0.63);
+      border-radius: 29px;
+      border: 1px solid rgba(37, 147, 205, 0.49);
+      width: 115px;
+      margin-left: 15px;
+      font-size: 15px;
+      line-height: 46px;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+
+      img {
+        width: 20px;
+        height: 20px;
+        margin-right: 10px;
+        margin-left: 10px;
       }
     }
   }

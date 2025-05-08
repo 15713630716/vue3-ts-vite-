@@ -8,7 +8,8 @@
         <Index v-if="showRoute == 1"></Index>
         <JianShe v-if="showRoute == 2" :iframeDomsgfzmn="iframeDomsgfzmn" :iframeDomjianseqi="iframeDomjianseqi">
         </JianShe>
-        <QianQi v-if="showRoute == 3" :iframeDomdgx="iframeDomdgx" :iframeDomyxhy="iframeDomyxhy"></QianQi>
+        <QianQi v-if="showRoute == 3" :iframeDomdgx="iframeDomdgx" :iframeDomyxhy="iframeDomyxhy"
+          :iframeDomdxfx="iframeDomdxfx" :iframeDomqqkc="iframeDomqqkc"></QianQi>
         <WeiLai v-if="showRoute == 4"></WeiLai>
       </div>
       <div class="nav">
@@ -39,6 +40,7 @@
         </div>
       </div>
     </div>
+    <VideoPop></VideoPop>
   </div>
 </template>
 <script setup lang="ts">
@@ -48,6 +50,7 @@ import Index from '../index/index.vue';
 import QianQi from '../prophase/index.vue'
 import JianShe from '../construct/index.vue'
 import WeiLai from '../future/index.vue'
+import VideoPop from '@/components/VideoPop.vue';
 
 const iframeSrc = `${import.meta.env.BASE_URL}beiao/index.html`;
 
@@ -61,6 +64,7 @@ const iframeDomjianseqi = ref<HTMLIFrameElement | any>();//建设期
 const iframeDomqqkc = ref<HTMLIFrameElement | any>();//前期
 const iframeDomwlba = ref<HTMLIFrameElement | any>();//未来
 const iframeDomdgx = ref<HTMLIFrameElement | any>();//高程分析
+const iframeDomdxfx = ref<HTMLIFrameElement | any>();//地形勘察
 const iframeDomyxhy = ref<HTMLIFrameElement | any>();//影像还原
 const iframeDomsgfzmn = ref<HTMLIFrameElement | any>();//施工仿真模拟
 const quanping = ref<boolean>(true)//全屏
@@ -78,6 +82,7 @@ onMounted(() => {
     iframeDomdgx.value = iframeDocument.document.getElementById('dgx')
     iframeDomyxhy.value = iframeDocument.document.getElementById('yxhy')
     iframeDomsgfzmn.value = iframeDocument.document.getElementById('sgfzmn')
+    iframeDomdxfx.value = iframeDocument.document.getElementById('dxfx')
   }
 })
 
