@@ -7,52 +7,86 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue';
+import { ref, onUnmounted, nextTick, watch } from 'vue';
 import type Hls from 'hls.js';
-import { getMv } from '@/request/home'
+// import { getMv } from '@/request/home'
+import { ueStoreJson } from '@/store';
+
+const storeUe = ueStoreJson();
+const props = defineProps({
+  mvs: {
+    type: Array,
+    default: function () {
+      return [];
+    }
+  }
+});
 
 const videoPlayers = ref();
 const hlsInstance = ref<Hls | null>(null);
 const error = ref<string>('');
 
 //mv
-const mvs = ref([] as any)
-const getMvs = async () => {
-  const res1 = await getMv('adcea4b72f8f4de2a3f8c6c42d7bd67e')//施工进场道闸
-  const res2 = await getMv('85186de42f6b40fcade625be8de952d0')//下游临时贝雷桥
-  const res3 = await getMv('bb69dd176f924ac5a8129769a20e159c')//办公区停车场1
-  mvs.value = [
-    {
-      name: '施工进场道闸',
-      url: res1
-    },
-    {
-      name: '下游临时贝雷桥',
-      url: res2
-    },
-    {
-      name: '办公区停车场1',
-      url: res3
-    },
-  ]
-}
-
-onMounted(async () => {
-  await getMvs()
-});
+// const mvs = ref([] as any)
+// const getMvs = async () => {
+//   const res1 = await getMv('adcea4b72f8f4de2a3f8c6c42d7bd67e')//施工进场道闸
+//   const res2 = await getMv('85186de42f6b40fcade625be8de952d0')//下游临时贝雷桥
+//   const res3 = await getMv('bb69dd176f924ac5a8129769a20e159c')//办公区停车场1
+//   const res4 = await getMv('b5db6df92aff49bf9956a95d2a6bdf23')//左岸全球机
+//   const res5 = await getMv('157ae8e2aef94ffb9d278abe99dcf513')//右岸全球机
+//   mvs.value = [
+//     {
+//       name: '施工进场道闸',
+//       url: res1
+//     },
+//     {
+//       name: '下游临时贝雷桥',
+//       url: res2
+//     },
+//     {
+//       name: '办公区停车场1',
+//       url: res3
+//     },
+//     {
+//       name: '左岸全球机',
+//       url: res4
+//     },
+//     {
+//       name: '右岸全球机',
+//       url: res5
+//     },
+//   ]
+// }
+// onMounted(async () => {
+//   await getMvs()
+// });
 
 onUnmounted(() => {
   hlsInstance.value?.destroy();
 });
 
 const mvName = ref('')
-const data = ref({} as any)
-ue.interface.getUeTestCall = (res: any) => {
-  data.value = JSON.parse(res)
-  if (data.value.type == 'jiankong') {
-    playVideo(mvs.value[data.value.id - 1])
+// const data = ref({} as any)
+// ue.interface.getUeJs = (res: any) => {
+//   data.value = JSON.parse(res)
+//   if (data.value.type == 'jiankong') {
+//     setTimeout(() => {
+//       playVideo(props.mvs[data.value.id - 1])
+//     }, 2100);
+//   }
+// }
+watch(
+  () => storeUe.ueStore,
+  () => {
+    if (storeUe.ueStore) {
+      if (storeUe.ueStore?.type == 'jiankong') {
+        setTimeout(() => {
+          playVideo(props.mvs[storeUe.ueStore?.id - 1])
+        }, 2100);
+      }
+    }
   }
-}
+);
 
 const playVideo = async (item: any) => {
   mvName.value = item.name

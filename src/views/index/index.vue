@@ -1,5 +1,5 @@
 <template>
-  <div class="index">
+  <div class="index pointer-events-none">
     <div class="left">
       <div class="info">
         <div class="header-box">
@@ -135,7 +135,7 @@
                   status="exception">
                   <span></span>
                 </el-progress>
-              </div>
+              </div> 
             </div>
           </div>
         </div>
@@ -149,7 +149,7 @@
         </div>
         <div class="content pointer-events-all">
           <el-carousel height="240px" :interval="5000" :arrow="'always'" :indicator-position="'none'">
-            <el-carousel-item v-for="item in mvs" :key="item">
+            <el-carousel-item v-for="item in mvss" :key="item">
               <div class="mv-box">
                 <div class="title">{{ item.name }}</div>
                 <div class="video">
@@ -208,15 +208,31 @@
   </div>
 </template>
 <script setup lang="ts">
-import { reactive, onMounted, ref } from 'vue'
+import { reactive, onMounted, ref,watch } from 'vue'
 import Video from '@/components/Video.vue'
-import { getInvest, getChanzhi, getHetonge, getProgress, getMv, getZhiLiang, getAnQuan } from '@/request/home'
+import { getInvest, getChanzhi, getHetonge, getProgress, getZhiLiang, getAnQuan } from '@/request/home'
 
+const prop = defineProps({
+  mvs: {
+    type: Array,
+    default: function () {
+      return [];
+    }
+  }
+});
+const mvss = ref([] as any)
+watch(
+  () => prop.mvs,
+  () => {
+    mvss.value = prop.mvs;
+  },
+  { immediate: true }
+);
 
 onMounted(async () => {
   await getTouZi()
   await getProgressData()
-  await getMvs()
+  // await getMvs()
   await getZhiLiangs()
   await getAnQuans()
 })
@@ -275,26 +291,26 @@ const getProgressData = async () => {
 }
 
 //mv
-const mvs = ref([] as any)
-const getMvs = async () => {
-  const res1 = await getMv('adcea4b72f8f4de2a3f8c6c42d7bd67e')//施工进场道闸
-  const res2 = await getMv('85186de42f6b40fcade625be8de952d0')//下游临时贝雷桥
-  const res3 = await getMv('bb69dd176f924ac5a8129769a20e159c')//办公区停车场1
-  mvs.value = [
-    {
-      name: '施工进场道闸',
-      url: res1
-    },
-    {
-      name: '下游临时贝雷桥',
-      url: res2
-    },
-    {
-      name: '办公区停车场1',
-      url: res3
-    },
-  ]
-}
+// const mvs = ref([] as any)
+// const getMvs = async () => {
+//   const res1 = await getMv('adcea4b72f8f4de2a3f8c6c42d7bd67e')//施工进场道闸
+//   const res2 = await getMv('85186de42f6b40fcade625be8de952d0')//下游临时贝雷桥
+//   const res3 = await getMv('bb69dd176f924ac5a8129769a20e159c')//办公区停车场1
+//   mvs.value = [
+//     {
+//       name: '施工进场道闸',
+//       url: res1
+//     },
+//     {
+//       name: '下游临时贝雷桥',
+//       url: res2
+//     },
+//     {
+//       name: '办公区停车场1',
+//       url: res3
+//     },
+//   ]
+// }
 //质量
 const zhiliang = ref([] as any)
 const getZhiLiangs = async () => {
@@ -312,7 +328,7 @@ const getAnQuans = async () => {
   const res1 = await getAnQuan()
   anquan.letji = res1.commonSicknessTotalCount
   anquan.xiancun = res1.commonUntreatedSicknessCount
-  anquan.lv = Number(((res1.commonSicknessTotalCount - res1.commonUntreatedSicknessCount) / res1.commonSicknessTotalCount).toFixed(2)) * 100
+  anquan.lv = Number(((res1.commonSicknessTotalCount - res1.commonUntreatedSicknessCount) / res1.commonSicknessTotalCount).toFixed(2)) * 100 ? Number(((res1.commonSicknessTotalCount - res1.commonUntreatedSicknessCount) / res1.commonSicknessTotalCount).toFixed(2)) * 100 : '100'
 }
 
 

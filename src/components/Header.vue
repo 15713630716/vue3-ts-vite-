@@ -17,12 +17,13 @@
 <script setup lang="ts">
 import { useTime } from '@/utils/useTime';
 import { ref, type PropType } from 'vue';
+import { getUe } from '@/utils/getUe';
 
 const { date, time, week } = useTime();
 
 const props = defineProps({
   iframeDomCZ: {
-    type: Object as PropType<HTMLIFrameElement>,
+    type: Object,
     required: true,
   },
   // 透明开
@@ -65,12 +66,13 @@ const getClick = (num: number) => {
 
   }
   if (num == 3) {
-    props.iframeDomCZ.click()
+    // props.iframeDomCZ.click()
+    getUe(props.iframeDomCZ)
     item1Show.value = false
     item2Show.value = false
   }
   if (num == 4) {
-    ue5("callbackTestCall", JSON.stringify({ type: 'tiaozhuan', url: 'https://zhgl.zjdyit.com/zhjg3/#/1894712966457069569/1813759284281929730/info/personalPortal' }))
+    getUe({ type: 'tiaozhuan', url: 'https://zhgl.zjdyit.com/zhjg3/#/1894712966457069569/1813759284281929730/info/personalPortal' })
     // window.open('https://zhgl.zjdyit.com/zhjg3/#/1894712966457069569/1813759284281929730/info/personalPortal', '_blank')
   }
 }

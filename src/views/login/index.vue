@@ -1,168 +1,222 @@
 <template>
-  <div class="home">
-    <div ref="chartRef" style="width: 800px;height: 450px;"></div>
-    <button @click="getClick">点击事件</button>
-    <div class="box" v-show="show"></div>
-    <button @click="sendUeMsg">前端向ue发送消息</button>
-    <h1>{{ ueValue }}</h1>
-    <!-- <button @click="sendToUE5('Hello UE5!')">Send Message</button>
-    <p>UE5 Response: {{ response }}</p> -->
-    <!-- <button @click="sendMessage()">Send Message websocket</button>
-    <div id="output">{{ websoc }}</div> -->
-    <button @click="jsfunction()">jsfunction加1</button>
-    <h1>
-      {{ jsfunctionData }}
-    </h1>
+  <div class="login">
+    <div class="left">
+      <div class="content">
+        <div class="title-l">
+          <div class="text">数字孪生</div>
+          <div class="logo"></div>
+        </div>
+        <div class="title-c"></div>
+        <div class="title-r">
+          <div class="text">让万物互联</div>
+          <div class="text">让未来可见</div>
+        </div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="title">北岙水库数字孪生应用</div>
+      <div class="main  pointer-events-all">
+        <div class="user">用户登录</div>
+        <div class="conation">
+          <el-form ref="ruleFormRef" :model="ruleForm" :rules="rules" class="demo-ruleForm" size="large">
+            <el-form-item label="" prop="user">
+              <el-input size="large" placeholder="账号" v-model="ruleForm.user" :prefix-icon="User" />
+            </el-form-item>
+            <el-form-item label="" prop="password">
+              <el-input size="large" type="password" placeholder="密码" v-model="ruleForm.password" show-password
+                :prefix-icon="Lock" />
+            </el-form-item>
+          </el-form>
+        </div>
+        <div class="password">
+          <el-checkbox v-model="isRemenber" label="记住密码" size="large" />
+        </div>
+        <el-button type="primary" size="large" @click="login(ruleFormRef)"
+          class="button pointer-events-all">登录</el-button>
+      </div>
+      <div class="tips">版权所有：浙江省水利水电勘测设计院有限责任公司</div>
+    </div>
   </div>
 </template>
-<script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import * as echarts from 'echarts'
-import type { ECharts } from 'echarts'
+<script setup>
+import { ref, reactive, onMounted } from 'vue';
+import { User, Lock } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router';
 
 
-// const ws = new WebSocket("ws://192.168.137.1:8080");
-// const ws = new WebSocket("ws://172.21.218.13:8000/v1/fastcase/task/list");
-// const websoc = ref()
-// ws.onopen = () => {
-//   console.log("Connected to UE5 server");
-//   websoc.value = "连接已打卡";
-// };
-// ws.onmessage = (event) => {
-//   console.log("Received:", event.data);
-//   websoc.value = `UE5传过来的信息: ${event.data}`;
-// };
-
-// function sendMessage() {
-//   const message = JSON.stringify({ name: 'web', msg: '你好' })
-//   ws.send(message);
-//   websoc.value = `web传过去的信息: ${message}`;
-// }
-
-const chartRef = ref<HTMLElement>()
-const chartInstance = ref<ECharts>()
-
-// 初始化图表
-const initChart = () => {
-  if (!chartRef.value) return
-
-  // 销毁旧实例
-  if (chartInstance.value) {
-    chartInstance.value.dispose()
-  }
-
-  // 创建新实例
-  chartInstance.value = echarts.init(chartRef.value)
-  chartInstance.value.setOption({
-    title: {
-      text: 'Vue3 + ECharts 示例'
-    },
-    tooltip: {
-      trigger: 'axis',
-      formatter: function (params: any) {
-        // 确保 params 存在且 params[0] 有值
-        if (!params || params.length === 0) return ''
-        return params[0].name + '<br/>' +
-          params.map((item: any) => {
-            return `${item.seriesName}: ${item.value}`
-          }).join('<br/>')
-      }
-    },
-    xAxis: {
-      data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
-    },
-    yAxis: {},
-    series: [
-      {
-        name: '销量',
-        type: 'bar',
-        data: [5, 20, 36, 10, 10, 20]
-      }
-    ]
-  })
-
-  // 窗口变化时自动调整
-  window.addEventListener('resize', resizeChart)
-}
-
-// 调整图表大小
-const resizeChart = () => {
-  chartInstance.value?.resize()
-}
-
-onMounted(() => {
-  initChart()
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', resizeChart)
-  chartInstance.value?.dispose()
-})
-
-const show = ref(false)
-const getClick = () => {
-  show.value = !show.value
-}
-
-
-
-const ueValue = ref('77');
-// 前端发送消息到ue
-const sendUeMsg = () => {
-  // 第一个参数为函数名，第二个参数为数据
-  ue5("callbackTestCall", JSON.stringify({ name: 'web', id: 'qqkc' }))
-}
-
-ue.interface.getUeTestCall = (res: any) => {
-  console.log(res);
-  ueValue.value = JSON.parse(res).age
-}
-
-
-
-
-// const response = ref('');
-
-// 发送消息到 UE5
-// const sendToUE5 = (message: string) => {
-//   if (window.ue5?.ReceiveFromVue) {
-//     window.ue5.ReceiveFromVue(message);
-//   } else {
-//     console.error('UE5 bridge not ready');
-//   }
-// };
-
-const jsfunctionData = ref(65)
-const jsfunction = () => {
-  jsfunctionData.value++
-}
-// 接收 UE5 的消息
-onMounted(() => {
-  jsfunction()
-
-  // 在 Vue 的 mounted 钩子中检查
-  // console.log('ue5 bridge exists?', window.ue5);
-
-  // window.vueCallback = (message: string) => {
-  //   response.value = message;
-  // };
+const ruleFormRef = ref();
+const ruleForm = reactive({
+  user: '',
+  password: ''
+});
+const isRemenber = ref()//是否记住密码
+const rules = reactive({
+  user: [{ required: true, message: '账号不能为空', trigger: 'change' }],
+  password: [{ required: true, message: '密码不能为空', trigger: 'change' }],
 });
 
-// 清理
-// onUnmounted(() => {
-//   window.vueCallback = () => { };
-// });
+
+const router = useRouter();
+const login = async (formEl) => {
+  if (!formEl) return;
+  await formEl.validate(async (valid, fields) => {
+    if (valid) {
+      if (ruleForm.user == 'admin' && ruleForm.password == '123456') {
+        router.push({ path: '/index' });
+      } else {
+        ElMessage.warning({ message: '账号或密码错，请重试', duration: 1500 });
+      }
+    } else {
+      console.log('error submit!', fields);
+    }
+  });
+};
+
+onMounted(() => {
+
+})
+
+
+
 
 </script>
-<style lang="scss" scoped>
-.home {
-  font-size: 14px;
-  padding: 100px;
 
-  .box {
-    width: 100px;
-    height: 100px;
-    background-color: red;
+<style scoped lang="scss">
+.login {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  background: url('@/assets/bg.png') no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+
+  .left {
+    width: 65.5%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+    .content {
+      width: 663px;
+      height: 250px;
+      display: flex;
+
+      .title-l {
+        width: 50%;
+        height: 130px;
+        padding: 1px 30px;
+
+        .text {
+          font-family: AlibabaPuHuiTi_2_85_Bold;
+          font-size: 59px;
+          color: #FFFFFF;
+          letter-spacing: 8px;
+          text-align: center;
+        }
+
+        .logo {
+          width: 100%;
+          height: 65px;
+          background: url('@/assets/biaoyu.png') no-repeat;
+          background-position: center;
+          background-size: 230% 100%;
+          background-position-x: -10px;
+        }
+      }
+
+      .title-c {
+        height: 120px;
+        width: 1px;
+        margin-top: 10px;
+        background-color: rgba(255, 255, 255, 0.31);
+      }
+
+      .title-r {
+        width: 50%;
+        height: 130px;
+        padding: 1px 30px;
+
+        .text {
+          font-family: AlibabaPuHuiTi_2_45_Light;
+          font-size: 46px;
+          color: #D7E9F9;
+          letter-spacing: 8px;
+          text-align: center;
+          font-style: normal;
+          font-weight: 200;
+          margin-bottom: 13px;
+        }
+      }
+    }
   }
+
+  .right {
+    width: 34.5%;
+    height: 100%;
+    background: url('@/assets/bg_l.png') no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    position: relative;
+
+    .title {
+      width: 75%;
+      height: 6%;
+      max-width: 550px;
+      // background: url('@/assets/title.png') no-repeat;
+      // background-position: center;
+      // background-size: 100% 100%;
+      margin: 17% auto 13%;
+      font-size: 42px;
+      font-weight: 600;
+      color: #24324c;
+      text-align: center;
+      letter-spacing: 5px;
+
+    }
+
+    .main {
+      width: 55%;
+      max-width: 360px;
+      margin: 25% auto 0px;
+
+      .user {
+        font-family: PingFangSC, PingFang SC;
+        font-weight: 600;
+        font-size: 24px;
+        color: #17233D;
+        line-height: 63px;
+        letter-spacing: 1px;
+        text-align: left;
+        font-style: normal;
+      }
+
+      .password {
+        padding-left: 3px;
+      }
+
+      .button {
+        width: 100%;
+        margin-top: 50px;
+      }
+    }
+
+    .tips {
+      position: absolute;
+      bottom: 36px;
+      width: 100%;
+      font-family: PingFangSC, PingFang SC;
+      font-weight: 400;
+      font-size: 16px;
+      color: #17233D;
+      line-height: 22px;
+      text-align: center;
+    }
+  }
+}
+
+:deep(.el-button) {
+  background-color: #006BC9;
 }
 </style>

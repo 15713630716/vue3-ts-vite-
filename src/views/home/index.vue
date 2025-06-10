@@ -1,12 +1,24 @@
 <template>
   <div class="home-box pointer-events-none">
-    <iframe ref="iframeRef" :src="iframeSrc" frameborder="0" class="iframeRef pointer-events-all"></iframe>
+    <!-- <iframe ref="iframeRef" :src="iframeSrc" frameborder="0" class="iframeRef pointer-events-all"></iframe> -->
     <div class="home pointer-events-none">
-      <Header v-model:quanping="quanping" :showRoute="showRoute" :iframeDomCZ="iframeDomCZ"
-        :iframeDomdxbtk="iframeDomdxbtk" :iframeDomdxbtg="iframeDomdxbtg"></Header>
+      <div class="headers">
+        <div class="left">{{ date }} {{ time }} <span>{{ week }}</span></div>
+        <div class="center">北岙水库数字孪生应用</div>
+        <div class="right-box">
+          <div class="right pointer-events-all">
+            <!-- <div class="item1" v-if="(showRoute != 2 && showRoute != 3)" :class="item1Show == true ? 'active1' : ''"
+              @click="getClick(1)"></div> -->
+            <div class="item2" :class="item2Show == true ? 'active2' : ''" @click="getClick(2)"></div>
+            <div class="item3" @click="getClick(3)"></div>
+          </div>
+          <div class="link pointer-events-all" @click="getClick(4)"><img src="@/assets/img/home/navigation-icon.png"
+              alt="">工作平台</div>
+        </div>
+      </div>
       <div class="main" v-show="quanping">
-        <Index v-if="showRoute == 1"></Index>
-        <JianShe v-if="showRoute == 2" :iframeDomsgfzmn="iframeDomsgfzmn" :iframeDomjianseqi="iframeDomjianseqi">
+        <Index v-if="showRoute == 1" :mvs="mvs"></Index>
+        <JianShe ref="jianSheDom" v-if="showRoute == 2" :iframeDomsgfzmn="iframeDomsgfzmn">
         </JianShe>
         <QianQi v-if="showRoute == 3" :iframeDomdgx="iframeDomdgx" :iframeDomyxhy="iframeDomyxhy"
           :iframeDomdxfx="iframeDomdxfx" :iframeDomqqkc="iframeDomqqkc"></QianQi>
@@ -40,29 +52,104 @@
         </div>
       </div>
     </div>
-    <VideoPop></VideoPop>
+    <VideoPop :mvs="mvs"></VideoPop>
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import Header from '@/components/Header.vue'
+import { onMounted, ref, nextTick } from 'vue'
+import { useTime } from '@/utils/useTime';
 import Index from '../index/index.vue';
 import QianQi from '../prophase/index.vue'
 import JianShe from '../construct/index.vue'
 import WeiLai from '../future/index.vue'
 import VideoPop from '@/components/VideoPop.vue';
+import { getUe } from '@/utils/getUe';
+import { getMv } from '@/request/home'
 
-const iframeSrc = `${import.meta.env.BASE_URL}beiao/index.html`;
+
+//mv
+const mvs = ref([] as any)
+const getMvs = async () => {
+  const res6 = await Promise.all([getMv('8623e37a5efe42a48f1c87a79583fac9'), getMv('4204b8db903a438396364057b926bf43'), getMv('3f6c62cfa6cc4b1898baca7c29b8b491'), getMv('d0835b94b8ae4235a7287f72897cf3a8'), getMv('26ad8bf3a50c42f48c5759ec190be633')])
+  // console.log('res6', res6);
+  // const res1 = await getMv('adcea4b72f8f4de2a3f8c6c42d7bd67e')//施工进场道闸
+  // const res2 = await getMv('85186de42f6b40fcade625be8de952d0')//下游临时贝雷桥
+  // const res3 = await getMv('bb69dd176f924ac5a8129769a20e159c')//办公区停车场1
+  // const res4 = await getMv('b5db6df92aff49bf9956a95d2a6bdf23')//左岸全球机
+  // const res5 = await getMv('157ae8e2aef94ffb9d278abe99dcf513')//右岸全球机
+  mvs.value = [
+    {
+      name: '施工进场道闸',
+      url: res6[0]
+    },
+    {
+      name: '下游临时贝雷桥',
+      url: res6[1]
+    },
+    {
+      name: '办公区停车场1',
+      url: res6[2]
+    },
+    {
+      name: '左岸全球机',
+      url: res6[3]
+    },
+    {
+      name: '右岸全球机',
+      url: res6[4]
+    },
+  ]
+}
+onMounted(async () => {
+  await getMvs()
+});
 
 
-const iframeRef = ref<HTMLIFrameElement | any>();
-const iframeRefCZ = ref<HTMLIFrameElement | any>();//重置
-const iframeDomCZ = ref<HTMLIFrameElement | any>();//传递给header重置，不同情景下不同的重置
+// const iframeSrc = `${import.meta.env.BASE_URL}beiao/index.html`;
+const jianSheDom = ref()
+const { date, time, week } = useTime();
+const item1Show = ref<Boolean>(false)
+const item2Show = ref<Boolean>(false)
+const getClick = async (num: number) => {
+  if (num == 1) {
+    item1Show.value = !item1Show.value
+    if (item1Show.value) {
+      iframeDomdxbtk.value.click()
+    } else {
+      iframeDomdxbtg.value.click()
+    }
+  }
+  if (num == 2) {
+    // 全屏
+    item2Show.value = !item2Show.value
+    quanping.value = !quanping.value
+
+  }
+  if (num == 3) {
+    getUe(iframeDomCZ.value)
+    item1Show.value = false
+    item2Show.value = false
+    if (iframeDomCZ.value.type == 'jsba') {
+      await nextTick()
+      if (jianSheDom.value) {
+        jianSheDom.value.getNav1(0);
+      }
+    }
+
+  }
+  if (num == 4) {
+    getUe({ type: 'url', url: 'https://zhgl.zjdyit.com/zhjg3/#/1894712966457069569/1813759284281929730/info/personalPortal' })
+  }
+}
+
+// const iframeRef = ref<HTMLIFrameElement | any>();
+// const iframeRefCZ = ref<HTMLIFrameElement | any>();//重置
+const iframeDomCZ = ref<any>();//传递给header重置，不同情景下不同的重置
 const iframeDomdxbtk = ref<HTMLIFrameElement | any>();//透明开
 const iframeDomdxbtg = ref<HTMLIFrameElement | any>();//透明关
-const iframeDomjianseqi = ref<HTMLIFrameElement | any>();//建设期
+// const iframeDomjianseqi = ref<HTMLIFrameElement | any>();//建设期
 const iframeDomqqkc = ref<HTMLIFrameElement | any>();//前期
-const iframeDomwlba = ref<HTMLIFrameElement | any>();//未来
+// const iframeDomwlba = ref<HTMLIFrameElement | any>();//未来
 const iframeDomdgx = ref<HTMLIFrameElement | any>();//高程分析
 const iframeDomdxfx = ref<HTMLIFrameElement | any>();//地形勘察
 const iframeDomyxhy = ref<HTMLIFrameElement | any>();//影像还原
@@ -70,52 +157,63 @@ const iframeDomsgfzmn = ref<HTMLIFrameElement | any>();//施工仿真模拟
 const quanping = ref<boolean>(true)//全屏
 
 onMounted(() => {
-  iframeRef.value.onload = () => {
-    const iframeDocument = iframeRef.value.contentWindow;
-    iframeDomCZ.value = iframeDocument.document.getElementById('CZ')
-    iframeRefCZ.value = iframeDocument.document.getElementById('CZ')
-    iframeDomdxbtk.value = iframeDocument.document.getElementById('dxbtk')
-    iframeDomdxbtg.value = iframeDocument.document.getElementById('dxbtg')
-    iframeDomjianseqi.value = iframeDocument.document.getElementById('jianseqi')
-    iframeDomqqkc.value = iframeDocument.document.getElementById('qqkc')
-    iframeDomwlba.value = iframeDocument.document.getElementById('wlba')
-    iframeDomdgx.value = iframeDocument.document.getElementById('dgx')
-    iframeDomyxhy.value = iframeDocument.document.getElementById('yxhy')
-    iframeDomsgfzmn.value = iframeDocument.document.getElementById('sgfzmn')
-    iframeDomdxfx.value = iframeDocument.document.getElementById('dxfx')
-  }
+  // iframeRef.value.onload = () => {
+  //   const iframeDocument = iframeRef.value.contentWindow;
+  //   iframeDomCZ.value = iframeDocument.document.getElementById('CZ')
+  //   iframeRefCZ.value = iframeDocument.document.getElementById('CZ')
+  //   iframeDomdxbtk.value = iframeDocument.document.getElementById('dxbtk')
+  //   iframeDomdxbtg.value = iframeDocument.document.getElementById('dxbtg')
+  //   iframeDomjianseqi.value = iframeDocument.document.getElementById('jianseqi')
+  //   iframeDomqqkc.value = iframeDocument.document.getElementById('qqkc')
+  //   iframeDomwlba.value = iframeDocument.document.getElementById('wlba')
+  //   iframeDomdgx.value = iframeDocument.document.getElementById('dgx')
+  //   iframeDomyxhy.value = iframeDocument.document.getElementById('yxhy')
+  //   iframeDomsgfzmn.value = iframeDocument.document.getElementById('sgfzmn')
+  //   iframeDomdxfx.value = iframeDocument.document.getElementById('dxfx')
+  // }
 })
 
 
 const showRoute = ref<number>(1)
 const getRoute = (num: number) => {
   // 跳转进行总体重置的内容
-  iframeDomdxbtg.value.click()//透明关闭
-  iframeDomyxhy.value.click()//影像还原
-  iframeDomCZ.value.click()//重置跳转
+  // iframeDomdxbtg.value.click()//透明关闭
+  // iframeDomyxhy.value.click()//影像还原
+  // iframeDomCZ.value.click()//重置跳转
 
 
   if (num == 1) {
     //回首页并重置
     showRoute.value = num
-    iframeRefCZ.value.click()
-    iframeDomCZ.value = iframeRefCZ.value
-
+    // iframeRefCZ.value.click()
+    // iframeDomCZ.value = { type: 'qiehuan', id: 'cz' }
+    // getUe({ type: 'qiehuan', id: 'cz' })
+    iframeDomCZ.value = { type: 'qiehuan_cz' }
+    getUe({ type: 'qiehuan_cz' })
   } else if (num == 2) {
     // 去建设期
     showRoute.value = num
-    iframeDomjianseqi.value.click()
-    iframeDomCZ.value = iframeDomjianseqi.value
+    // iframeDomjianseqi.value.click()
+    iframeDomCZ.value = { type: 'qiehuan_jsba' }
+    getUe({ type: 'qiehuan_jsba' })
+    // iframeDomCZ.value = { type: 'qiehuan', id: 'jsba' }
+    // getUe({ type: 'qiehuan', id: 'jsba' })
   } else if (num == 3) {
     // 前期
     showRoute.value = num
-    iframeDomqqkc.value.click()
-    iframeDomCZ.value = iframeDomqqkc.value
+    // iframeDomqqkc.value.click()
+    iframeDomCZ.value = { type: 'qiehuan_qqkc' }
+    getUe({ type: 'qiehuan_qqkc' })
+    // iframeDomCZ.value = { type: 'qiehuan', id: 'qqkc' }
+    // getUe({ type: 'qiehuan', id: 'qqkc' })
   } else if (num == 4) {
     // 未来
     showRoute.value = num
-    iframeDomwlba.value.click()
-    iframeDomCZ.value = iframeDomwlba.value
+    // iframeDomwlba.value.click()
+    iframeDomCZ.value = { type: 'qiehuan_wlba' }
+    getUe({ type: 'qiehuan_wlba' })
+    // iframeDomCZ.value = { type: 'qiehuan', id: 'wlba' }
+    // getUe({ type: 'qiehuan', id: 'wlba' })
   }
 }
 
@@ -138,8 +236,131 @@ const getRoute = (num: number) => {
   .home {
     width: 100%;
     height: 100%;
+    background: radial-gradient(circle at center, #fff 0%, #2e637b 100%);
     background: url('@/assets/img/home/蒙版层@2x.png') no-repeat;
-    background-size: 100%;
+    background-size: 100% 100%;
+
+    .headers {
+      width: 100%;
+      height: 80px;
+      background: url('@/assets/img/home/头部@2x.png') no-repeat;
+      background-size: 100%;
+      display: flex;
+      // align-items: center;
+      justify-content: space-between;
+
+      .left {
+        width: 300px;
+        height: 30px;
+        font-family: 'DS-Digital', sans-serif;
+        font-weight: bold;
+        font-size: 24px;
+        color: #FFFFFF;
+        line-height: 30px;
+        text-align: left;
+        margin-top: 35px;
+        margin-left: 32px;
+        display: flex;
+        align-items: center;
+
+        span {
+          display: inline-block;
+          width: 63px;
+          font-family: DS-Digital, DS-Digital;
+          font-weight: bold;
+          font-size: 18px;
+          text-align: right;
+        }
+      }
+
+      .center {
+        width: 400px;
+        height: 50px;
+        margin-top: 10px;
+        font-family: AlibabaPuHuiTi_2_95_ExtraBold;
+        font-size: 36px;
+        color: #FFFFFF;
+        line-height: 50px;
+        letter-spacing: 4px;
+        text-align: center;
+        font-weight: bold;
+      }
+
+      .right-box {
+        width: 300px;
+        margin-top: 15px;
+        margin-right: 32px;
+        display: flex;
+        justify-content: end;
+        align-items: center;
+
+        .right {
+          // width: 170px;
+          height: 46px;
+          background: rgba(13, 78, 112, 0.63);
+          border-radius: 29px;
+          border: 1px solid rgba(37, 147, 205, 0.49);
+          display: flex;
+          align-items: center;
+          justify-content: space-around;
+          padding: 0 8px;
+
+          div {
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            margin: 0 8px;
+          }
+
+          .item1 {
+            background: url('@/assets/img/home/编组\ 6@2x.png') no-repeat;
+            background-size: 100%;
+          }
+
+          .item2 {
+            background: url('@/assets/img/home/编组\ 6备份\ 2@2x.png') no-repeat;
+            background-size: 100%;
+          }
+
+          .item3 {
+            background: url('@/assets/img/home/编组\ 6备份\ 3@2x.png') no-repeat;
+            background-size: 100%;
+          }
+
+          .active1 {
+            background: url('@/assets/img/home/编组\ 6@2x\(1\).png') no-repeat;
+            background-size: 100%;
+          }
+
+          .active2 {
+            background: url('@/assets/img/home/编组\ 6备份\ 2@2x\(1\).png') no-repeat;
+            background-size: 100%;
+          }
+        }
+
+        .link {
+          height: 46px;
+          background: rgba(13, 78, 112, 0.63);
+          border-radius: 29px;
+          border: 1px solid rgba(37, 147, 205, 0.49);
+          width: 115px;
+          margin-left: 15px;
+          font-size: 15px;
+          line-height: 46px;
+          color: #FFFFFF;
+          display: flex;
+          align-items: center;
+          cursor: pointer;
+
+          img {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            margin-left: 10px;
+          }
+        }
+      }
+    }
 
     .main {
       width: 100%;

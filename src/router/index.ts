@@ -1,11 +1,11 @@
-import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { axiosToken } from '../request/getToken'
 import { useStoreToken } from '@/store';
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/index',
+    redirect: '/login',
   },
   {
     //首页
@@ -14,7 +14,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     //ue测试
-    path: '/ue',
+    path: '/login',
     component: () => import('@/views/login/index.vue'),
   },
   {
@@ -40,8 +40,8 @@ const routes: Array<RouteRecordRaw> = [
 ]
 
 const router = createRouter({
-  history: createWebHashHistory(),
-  // history: createWebHistory(),
+  // history: createWebHashHistory(),
+  history: createWebHistory(),
   routes,
   scrollBehavior() {
     return { left: 0, top: 0 };

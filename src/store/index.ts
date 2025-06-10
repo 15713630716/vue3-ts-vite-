@@ -15,3 +15,17 @@ export const useStoreToken = defineStore('token', () => {
 
   return { token, setToken,clearToken };
 });
+export const ueStoreJson = defineStore('ueStore', () => {
+  const ueStore = useStorage('ueStore', {}, sessionStorage);
+
+  // 设置ueStore值
+  const setUeStore = (tokenParam: any) => {
+    ueStore.value = tokenParam;
+  };
+  // 清空ueStore
+  const clearUeStore = () => {
+    ueStore.value = {};
+  };
+
+  return { ueStore, setUeStore, clearUeStore };
+});

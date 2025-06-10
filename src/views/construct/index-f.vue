@@ -181,9 +181,8 @@
             <el-input v-model="inputTree" :suffix-icon="Search" class="input-tree" placeholder="请输入工程名称" />
             <div class="tree-box">
               <el-scrollbar height="743px">
-                <el-tree ref="treeRef" :highlight-current="true" :expand-on-click-node="false" :data="dataTree"
-                  :current-node-key="currentNodeKey" node-key="id" default-expand-all :filter-node-method="filterNode"
-                  @node-click="handleNodeClick">
+                <el-tree ref="treeRef" :expand-on-click-node="false" class="filter-tree" :data="dataTree" node-key="id"
+                  default-expand-all :filter-node-method="filterNode" @node-click="handleNodeClick">
                   <template #default="{ node, data }">
                     <div class="custom-tree-node">
                       <i class="on" v-if="data.evaluationStatus == 'UnAssess'"></i>
@@ -430,9 +429,6 @@ import { getZhiliangTree, getZhiliangTreeDetil, getProgress, getDangerLists, get
 import AnquanPop from '@/components/AnquanPop.vue'
 import { getUe } from '@/utils/getUe';
 import * as echarts from 'echarts';
-import { ueStoreJson } from '@/store';
-
-const storeUe = ueStoreJson();
 
 
 const tuceng = ref([
@@ -924,14 +920,11 @@ const dataTree = ref<Tree[]>([
 const getTreeDatas = async () => {
   const res = await getZhiliangTree()
   dataTree.value = res
-  console.log('dataTree', dataTree.value);
 }
 //树节点弹窗
 const treePopShow = ref(false)
 const treePopName = ref('')
-const currentNodeKey = ref('')
 const handleNodeClick = (data: Tree) => {
-  currentNodeKey.value = data.id
   getUe({ type: 'zhiliang', id: data.id })
   if (data.evaluationStatus == "UnAssess") {
     ElMessage.warning({ message: `${data.name} 未验评`, duration: 1500 });
@@ -942,41 +935,21 @@ const handleNodeClick = (data: Tree) => {
   }
 }
 // 接收信息触发点击树放弹窗
-// ue.interface.getUeJs = (res: any) => {
-//   let datas = JSON.parse(res)
-//   if (datas.type == 'zhiliang') {
-//     dataTree.value.map((item: any) => {
-//       if (item.id == datas.id) {
-//         if (item.evaluationStatus == "UnAssess") {
-//           ElMessage.warning({ message: `${datas.name} 未验评`, duration: 1500 });
-//         } else {
-//           treePopName.value = item.name
-//           getZhiliangTreeDeti(item.id)
-//         }
-//       }
-//     })
-//   }
-// }
-watch(
-  () => storeUe.ueStore,
-  () => {
-    if (storeUe.ueStore) {
-      if (storeUe.ueStore.type == 'zhiliang') {
-        dataTree.value.map((item: any) => {
-          if (item.id == storeUe.ueStore.id) {
-            currentNodeKey.value = item.id
-            if (item.evaluationStatus == "UnAssess") {
-              ElMessage.warning({ message: `${item.name} 未验评`, duration: 1500 });
-            } else {
-              treePopName.value = item.name
-              getZhiliangTreeDeti(item.id)
-            }
-          }
-        })
+ue.interface.getUeJs = (res: any) => {
+  let datas = JSON.parse(res)
+  if (datas.type == 'zhiliang') {
+    dataTree.value.map((item: any) => {
+      if (item.id == datas.id) {
+        if (item.evaluationStatus == "UnAssess") {
+          ElMessage.warning({ message: `${datas.name} 未验评`, duration: 1500 });
+        } else {
+          treePopName.value = item.name
+          getZhiliangTreeDeti(item.id)
+        }
       }
-    }
+    })
   }
-);
+}
 // 监听树弹窗关闭时把详细信息弹窗也关闭
 watch(
   () => zhiliangActive.value,
@@ -1626,7 +1599,7 @@ defineExpose({
               }
             }
 
-            :deep(.el-tree) {
+            :deep(.el-tree-node) {
               .el-tree-node__content {
                 background-color: rgba(88, 207, 255, 0) !important;
 
@@ -1640,6 +1613,7 @@ defineExpose({
               .is-current {
                 .el-tree-node__content {
                   color: #3CBAF7;
+
                 }
 
                 .el-tree-node__children {
@@ -1649,7 +1623,6 @@ defineExpose({
                 }
               }
             }
-
 
             .custom-tree-node {
               width: 100%;

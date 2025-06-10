@@ -165,20 +165,20 @@
                 }}</div>
               </div>
 
-              <!-- <div class="text_num">
-                <span>本月巡查次数</span>
-                <span class="num">{{ sicknessDataMonth.totalCount }}</span>
+              <div class="text_num">
+                <div>本月巡查次数</div>
+                <div class="num">{{ sicknessDataMonth.totalCount }}</div>
               </div>
 
               <div class="text_num">
-                <span>本月发现隐患</span>
-                <span class="num" style="color: #e34d59">{{ sicknessDataMonth.sicknessCount }}</span>
-              </div> -->
+                <div>本月发现隐患</div>
+                <div class="num" style="color: #e34d59">{{ sicknessDataMonth.sicknessCount }}</div>
+              </div>
             </div>
-
-            <!-- <div style="margin-top: 10px">
-              <Table :data="tableData" :height="350">
-                <el-table-column prop="time" label="巡查日期" width="100"></el-table-column>
+            <div class="table-box">
+              <el-table :data="tableData" style="min-height: 200px;">
+                <el-table-column type="index" align="center" label="序号" width="55" />
+                <el-table-column prop="time" label="巡查日期" width="110"></el-table-column>
                 <el-table-column prop="orgName" label="组织单位" show-overflow-tooltip></el-table-column>
                 <el-table-column prop="orgHandleDesc" label="组织人员" width="120" show-overflow-tooltip></el-table-column>
                 <el-table-column prop="personName" label="参与人员" show-overflow-tooltip></el-table-column>
@@ -188,17 +188,17 @@
                     <div v-if="scope.row.status === 2" class="statu">巡查中</div>
                     <div v-if="scope.row.status === 3" class="statu1">已结束</div>
                   </template>
-</el-table-column>
-<el-table-column prop="sicknessCount" label="隐患总数" width="100"></el-table-column>
-<el-table-column prop="untreatedSicknessCount" label="未治理" width="100">
-  <template #default="scope">
-                    <div class="section" style="color: #e34d59">
+                </el-table-column>
+                <el-table-column prop="sicknessCount" label="隐患总数" width="100"></el-table-column>
+                <el-table-column prop="untreatedSicknessCount" label="未治理" width="100">
+                  <template #default="scope">
+                    <div class="section" style="color:#e34d59">
                       {{ scope.row.untreatedSicknessCount }}
                     </div>
                   </template>
-</el-table-column>
-</Table>
-</div> -->
+                </el-table-column>
+              </el-table>
+            </div>
           </div>
           <div class="tab-main-yujing" v-if="ActiveIndex == 3">
             <div class="yujing-box" v-if="detailData?.riskPatrolWarn">
@@ -288,7 +288,8 @@
 </template>
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import { getDangerZeren, getDangerYanpan, getDangerYujing } from '@/request/construct'
+import { getDangerZeren, getDangerYanpan, getDangerYujing, getDangertable } from '@/request/construct'
+import dayjs from 'dayjs';
 
 const props = defineProps({
   detailData: {
@@ -336,6 +337,32 @@ const getTab = (index: number) => {
 const unitData = ref([] as any);
 const timeLineData = ref([] as any);
 const processData = ref([] as any);
+//管控信息巡查记录
+const sicknessDataMonth = ref({
+  totalCount: '0',
+  sicknessCount: '0'
+})
+//管控信息表格
+const tableData = ref([
+  {
+    startTime: '2023-09-09',
+    orgName: '杭州市余杭林业水利...',
+    orgHandleDesc: '张莉丝',
+    patrolUserList: ['张莉丝', '张莉丝'],
+    status: '2',
+    sicknessCount: '3',
+    untreatedSicknessCount: '2'
+  },
+  {
+    startTime: '2023-09-09',
+    orgName: '杭州市余杭林业水利...',
+    orgHandleDesc: '张莉丝',
+    patrolUserList: ['张莉丝', '张莉丝'],
+    status: '2',
+    sicknessCount: '3',
+    untreatedSicknessCount: '2'
+  }
+] as any)
 //通过id获取信息
 const getWXDetail = async (id: any) => {
   const zeren = await getDangerZeren(id)
@@ -370,14 +397,14 @@ const getWXDetail = async (id: any) => {
         })
       }
     }
-    // if (zeren.patrolInfoSummaryVO) {
-    //   zeren.patrolInfoSummaryVO.list.forEach((item:any) => {
-    //     if (item.startMonth === Number(dayjs(new Date()).format('MM'))) {
-    //       sicknessDataMonth.value.totalCount = item.count
-    //       sicknessDataMonth.value.sicknessCount = item.sicknessCount
-    //     }
-    //   })
-    // }
+    if (zeren.patrolInfoSummaryVO) {
+      zeren.patrolInfoSummaryVO.list.forEach((item: any) => {
+        if (item.startMonth === Number(dayjs(new Date()).format('MM'))) {
+          sicknessDataMonth.value.totalCount = item.count
+          sicknessDataMonth.value.sicknessCount = item.sicknessCount
+        }
+      })
+    }
   }
   //研判
   timeLineData.value = []
@@ -417,6 +444,21 @@ const getWXDetail = async (id: any) => {
   // console.log('yanpan', yanpan);
   // console.log('timeLineData', timeLineData.value);
   // console.log('processData', processData.value);
+  //管控信息表格
+  const resTable = await getDangertable({
+    beginTime: dayjs(new Date()).format('YYYY-01-01'),
+    endTime: dayjs(new Date()).format('YYYY-12-31'),
+    riskId: id
+  })
+  tableData.value = resTable.list
+  tableData.value.forEach((item: any) => {
+    item.time = dayjs(item.startTime).format('YYYY-MM-DD')
+    item.personName = ''
+    item.patrolUserList.forEach((childItem: any) => {
+      item.personName = item.personName + childItem + ' '
+    })
+  })
+  console.log('table', tableData.value);
   //预警
   console.log('detailData', props.detailData);
   if (props.detailData?.riskPatrolWarn) {
@@ -852,6 +894,60 @@ defineExpose({
           color: #01CDFF;
           line-height: 27px;
           margin-top: 8px;
+        }
+      }
+
+      .table-box {
+        margin-top: 20px;
+        width: 100%;
+
+        :deep(.el-table) {
+          background-color: transparent !important;
+          color: #FFFFFF;
+          border-collapse: separate !important;
+          border-spacing: 0 2px !important;
+        }
+
+        :deep(.el-table__body-wrapper) {
+          background-color: transparent !important;
+        }
+
+        :deep(.el-table__header-wrapper) {
+          background-color: transparent !important;
+        }
+
+        :deep(.el-table thead) {
+          color: #87D5FF;
+        }
+
+        :deep(.el-table th) {
+          background-color: transparent !important;
+        }
+
+        :deep(.el-table td) {
+          background-color: transparent !important;
+        }
+
+        :deep(.el-table tr) {
+          background-color: transparent !important;
+        }
+
+        :deep(.el-table .el-table__row) {
+          position: relative;
+          border: 1px solid rgba(227, 231, 235, 0.35) !important;
+          margin: 2px 0 !important;
+        }
+
+        :deep(.el-table th.el-table__cell.is-leaf) {
+          border-bottom: none !important;
+        }
+
+        :deep(.el-table td.el-table__cell) {
+          border-bottom: none !important;
+        }
+
+        :deep(.el-table__inner-wrapper:before) {
+          background-color: transparent !important;
         }
       }
     }

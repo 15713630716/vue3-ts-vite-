@@ -1,9 +1,9 @@
 <template>
-  <div class="index">
+  <div class="index pointer-events-none">
     <div class="pop" v-if="popIndex == 1">
-      <div class="header pointer-events-all">
+      <div class="header">
         坝址区
-        <div class="after" @click="getPop(0)"></div>
+        <div class="after pointer-events-all" @click="getPop(0)"></div>
       </div>
       <div class="img">
         <img src="../../assets/img/weilai/img.png" alt="">

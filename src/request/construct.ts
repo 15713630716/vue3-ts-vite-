@@ -26,6 +26,10 @@ export function getDangerZeren(id: any) {
 export function getDangerYanpan(id: any) {
   return get(`/zdwp-api/v3/safe/safe-risk-source/changeList/${id}?projectId=1813759284281929730&_t=1745890199939`);
 }
+//获取危险源详情管控信息的表格
+export function getDangertable(par: any) {
+  return get(`/zdwp-api/v3/safe/safe-risk-patrol-info/page?projectId=1813759284281929730&currentPage=1&pageSize=9999&fromType=1&_t=1745890199939`, par);
+}
 //获取危险源详情预警信息流程
 export function getDangerYujing(id: any) {
   return get(`/zdwp-api/v3/workflow/processInstance/detail/${id}`);

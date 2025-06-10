@@ -8,7 +8,7 @@ import { axiosToken } from '../request/getToken'
 const ERR_OK = 200;
 const storeToken = useStoreToken();
 axiosRetry(axios, { retry: 5 } as any);
-axios.defaults.timeout = 8000;
+axios.defaults.timeout = 10000;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 //配置接口地址
 axios.defaults.baseURL = import.meta.env.VITE_APP_API;
@@ -19,7 +19,7 @@ axios.interceptors.request.use(
     config.headers['Tenant-Id'] = '1894712966457069569'
     config.headers['Project-Id'] = '1813759284281929730'
     config.headers['token'] = `Bearer ${storeToken.token}`
-    // config.headers['token']=`Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJyb2wiOiJ1c2VyIiwidXNlcmluZm8iOnsidXNlcklkIjoxOTAyNTMxNTk4Njc4NTUyNTc4LCJ1c2VybmFtZSI6IjE4MzY3NjI1OTg3Iiwibmlja05hbWUiOiLljY7pmYbpn6wiLCJwaG9uZSI6bnVsbCwiZGVwdElkIjoxNDA5NDQyMjk1NDQ2NTc3MTUzLCJlbWFpbCI6bnVsbCwic3RhdHVzIjpudWxsLCJwYXNzd29yZCI6bnVsbCwiZW5hYmxlZCI6dHJ1ZSwiYWNjb3VudFR5cGUiOiJQUk9KRUNUX01BTkFHRVIiLCJwcm9qZWN0SWQiOjE4MTM3NTkyODQyODE5Mjk3MzAsInRlbmFudElkIjoiMTg5NDcxMjk2NjQ1NzA2OTU2OSIsImF2YXRhciI6bnVsbCwiYXV0aG9yaXRpZXMiOm51bGwsImFjY291bnROb25FeHBpcmVkIjp0cnVlLCJhY2NvdW50Tm9uTG9ja2VkIjp0cnVlLCJjcmVkZW50aWFsc05vbkV4cGlyZWQiOnRydWV9LCJqdGkiOiIxOTAyNTMxNTk4Njc4NTUyNTc4IiwiaWF0IjoxNzQ1MzIwNjE1LCJzdWIiOiIxOTAyNTMxNTk4Njc4NTUyNTc4IiwiZXhwIjoxNzQ1OTI1NDE1fQ.H2s9nNowgHfXTvvSaGqFLzMd3-tsEWGu5IAf8qUyVJU`
+    //config.headers['token'] = `Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJyb2wiOiJ1c2VyIiwidXNlcmluZm8iOnsidXNlcklkIjoxODAzNzEyNTEwMTYyOTU2Mjg5LCJ1c2VybmFtZSI6IjE4MzgwMTY4MjI5Iiwibmlja05hbWUiOiLmrKfpmLPkv4rkv4oiLCJwaG9uZSI6IjE4MzgwMTY4MjI5IiwiZGVwdElkIjoxNDA5NDQyMjk1NDQ2NTc3MTUzLCJkZXB0TmFtZSI6Iua1meaxn-ecgeawtOWIqeawtOeUteWLmOa1i-iuvuiuoemZouaciemZkOi0o-S7u-WFrOWPuCIsImVtYWlsIjoiIiwic3RhdHVzIjpudWxsLCJwYXNzd29yZCI6bnVsbCwiZW5hYmxlZCI6dHJ1ZSwiYWNjb3VudFR5cGUiOiJQUk9KRUNUX01BTkFHRVIiLCJwcm9qZWN0SWQiOjE4MTM3NTkyODQyODE5Mjk3MzAsInRlbmFudElkIjoiMTg5NDcxMjk2NjQ1NzA2OTU2OSIsImF2YXRhciI6IiIsImF1dGhvcml0aWVzIjpudWxsLCJhY2NvdW50Tm9uRXhwaXJlZCI6dHJ1ZSwiYWNjb3VudE5vbkxvY2tlZCI6dHJ1ZSwiY3JlZGVudGlhbHNOb25FeHBpcmVkIjp0cnVlfSwianRpIjoiMTgwMzcxMjUxMDE2Mjk1NjI4OSIsInRlbXBFbmNyeXB0S2V5IjoiZ3ZzNnhtZGpwSEdvRVlQbGhib1BJUT09IiwiaWF0IjoxNzQ5MTc3OTc5LCJzdWIiOiIxODAzNzEyNTEwMTYyOTU2Mjg5IiwiZXhwIjoxNzQ5NDM3MTc5fQ.dR6VCzP6hTzwfWjNU2JD5f01Z3zcx8l3UEj-XalQwp4`
 
     // if (config.method === 'post') {
     //   console.log(config.data);
