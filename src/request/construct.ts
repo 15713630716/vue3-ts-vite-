@@ -45,3 +45,11 @@ export function getProgress() {
     sectionId: "1813759430390509569",
   });
 }
+//获取环境监测信息
+export function getHuanJing(par: any) {
+  return get(`/zdwp-api/v3/shangsi/construction/construction-em-push-info/page?projectId=1813759284281929730&sectionId=1813759430390509569&currentPage=1&pageSize=99999999&deviceCode=25042921&_t=1750144765031`, par);
+}
+//获取环境监测预警信息
+export function getHuanJingWarn() {
+  return get(`/zdwp-api/v3/construction/construction-em-device/page?projectId=1813759284281929730&sectionId=1813759430390509569&currentPage=1&pageSize=20&hasLastPushData=true&_t=1750211373726`);
+}

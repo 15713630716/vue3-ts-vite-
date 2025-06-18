@@ -3,7 +3,10 @@
     <!-- <iframe ref="iframeRef" :src="iframeSrc" frameborder="0" class="iframeRef pointer-events-all"></iframe> -->
     <div class="home pointer-events-none">
       <div class="headers">
-        <div class="left">{{ date }} {{ time }} <span>{{ week }}</span></div>
+        <div class="left">{{ date }} {{ time }} <span>{{ week }}</span>
+          <img @click="getUe({ type: 'tianqi', id: 0 })" class="pointer-events-all" src="../../assets/weather/qing.png"
+            alt="">
+        </div>
         <div class="center">北岙水库数字孪生应用</div>
         <div class="right-box">
           <div class="right pointer-events-all">
@@ -53,6 +56,7 @@
       </div>
     </div>
     <VideoPop :mvs="mvs"></VideoPop>
+    <EnvironmentPop :mvs="mvs"></EnvironmentPop>
   </div>
 </template>
 <script setup lang="ts">
@@ -63,6 +67,7 @@ import QianQi from '../prophase/index.vue'
 import JianShe from '../construct/index.vue'
 import WeiLai from '../future/index.vue'
 import VideoPop from '@/components/VideoPop.vue';
+import EnvironmentPop from '@/components/EnvironmentPop.vue';
 import { getUe } from '@/utils/getUe';
 import { getMv } from '@/request/home'
 
@@ -127,6 +132,7 @@ const getClick = async (num: number) => {
   }
   if (num == 3) {
     getUe(iframeDomCZ.value)
+    getUe({ type: 'tianqi', id: 0 })
     item1Show.value = false
     item2Show.value = false
     if (iframeDomCZ.value.type == 'jsba') {
@@ -270,6 +276,14 @@ const getRoute = (num: number) => {
           font-weight: bold;
           font-size: 18px;
           text-align: right;
+          padding-top: 2px;
+        }
+
+        img {
+          width: 26px;
+          height: 26px;
+          cursor: pointer;
+          margin-left: 15px;
         }
       }
 

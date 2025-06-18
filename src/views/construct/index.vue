@@ -107,6 +107,16 @@
         <div class="item" :class="wenkongShow == true ? 'wenkong-active' : ''" @click="getWenKong(1)">典型坝段1</div>
         <div class="item" :class="wenkongShow == false ? 'wenkong-active' : ''" @click="getWenKong(2)">典型坝段2</div>
       </div>
+      <div class="tian-qi pointer-events-all" v-if="tianqiBox">
+        <div class="item" :class="tianqiShow == 1 ? 'wenkong-active' : ''" @click="getTianQi(1)"><img
+            src="../../assets/weather/qing.png" alt="">晴天</div>
+        <div class="item" :class="tianqiShow == 2 ? 'wenkong-active' : ''" @click="getTianQi(2)"><img
+            src="../../assets/weather/yin.png" alt="">多云</div>
+        <div class="item" :class="tianqiShow == 3 ? 'wenkong-active' : ''" @click="getTianQi(3)"><img
+            src="../../assets/weather/yu.png" alt="">雨天</div>
+        <div class="item" :class="tianqiShow == 4 ? 'wenkong-active' : ''" @click="getTianQi(4)"><img
+            src="../../assets/weather/xue.png" alt="">雪天</div>
+      </div>
       <div class="yingli" v-if="yingliBox">
         <div class="yingli-top"></div>
         <div class="yingli-right">
@@ -180,7 +190,7 @@
           <div class="content pointer-events-all">
             <el-input v-model="inputTree" :suffix-icon="Search" class="input-tree" placeholder="请输入工程名称" />
             <div class="tree-box">
-              <el-scrollbar height="743px">
+              <el-scrollbar height="720px">
                 <el-tree ref="treeRef" :highlight-current="true" :expand-on-click-node="false" :data="dataTree"
                   :current-node-key="currentNodeKey" node-key="id" default-expand-all :filter-node-method="filterNode"
                   @node-click="handleNodeClick">
@@ -319,38 +329,60 @@
       </div>
     </div> -->
     <div class="bimDetail-box pointer-events-all" v-show="dialogBim">
-      <el-dialog v-model="dialogBim" title="发电饮水隧洞" width="1000" top="7vh">
+      <el-dialog v-model="dialogBim" title="发电饮水隧洞" width="1600" top="7vh">
         <div class="bim-content">
-          <el-tabs class="bim-tab" v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane label="安全监测" name="1">
-              <img style="width: 100%;height: 100%;" src="../../assets/luansheng/tu1.png" alt="">
-            </el-tab-pane>
-            <el-tab-pane label="施工地质" name="2">
-              <div class="tab-item">
-                <div class="top">
-                  <div class="title"><el-icon style="color: #409eff;margin-right: 5px;">
-                      <DArrowRight />
-                    </el-icon>地质超前预报(粗探)</div>
-                  <div class="switch"><el-checkbox v-model="checked1">显示山体背景</el-checkbox></div>
-                </div>
+          <div class="bim-tab">
+            <template v-for="tab in [{ name: '安全监测', id: '1' }, { name: '施工地质', id: '2' }]">
+              <div :class="tab.id == activeName ? 'tab-active' : ''" @click="handleClick(tab.id)">{{ tab.name }}</div>
+            </template>
+          </div>
+          <div class="tab-content" v-show="activeName == '1'">
+            <div class="tab-item">
+              <div class="top">
+                <div class="title"><img style="width: 16px;height: 16px;margin-right: 10px;"
+                    src="../../assets/luansheng/tab-title.png" alt="">仪器安装进度</div>
                 <div class="tuli" style="display: flex;align-items: center;">
                   <div class="item">
-                    <span style="display: inline-block;width: 30px;height: 15px;margin-right: 5px;"></span>
-                    <span></span>
+                    <span
+                      style="display: inline-block;width: 30px;height: 15px;background-color:  #35EEE7;margin-right: 5px;"></span>
+                    <span>已布设备</span>
+                  </div>
+                  <div class="item">
+                    <span
+                      style="display: inline-block;width: 30px;height: 15px;background-color:  #EEA959;margin-right: 5px;"></span>
+                    <span>已开挖未布置设备</span>
+                  </div>
+                  <div class="item">
+                    <span
+                      style="display: inline-block;width: 30px;height: 15px;background-color: #3B9DFF;margin-right: 5px;"></span>
+                    <span>未开挖</span>
                   </div>
                 </div>
-                <div class="tab-main">
-                  <div class="tab-main1" v-if="checked1"></div>
-                  <canvas ref="myCanvas1"></canvas>
-                </div>
               </div>
-              <div class="tab-item" style="margin: 10px 0;">
-                <div class="top">
-                  <div class="title"><el-icon style="color: #409eff;margin-right: 5px;">
-                      <DArrowRight />
-                    </el-icon>地质超前预报(精探)</div>
-                  <div class="switch"><el-checkbox v-model="checked2">显示山体背景</el-checkbox></div>
-                </div>
+              <div class="tab-main">
+                <div class="switch"><el-checkbox v-model="checked4">显示山体背景</el-checkbox></div>
+                <div class="tab-main1" v-if="checked4"></div>
+                <canvas ref="myCanvas4"></canvas>
+              </div>
+            </div>
+            <img style="width: 100%;margin-top: 5px;" src="../../assets//luansheng/111.png" alt="">
+          </div>
+          <div class="tab-content" v-show="activeName == '2'">
+            <div class="tab-item">
+              <div class="top">
+                <div class="title"><img style="width: 16px;height: 16px;margin-right: 10px;"
+                    src="../../assets/luansheng/tab-title.png" alt="">地质超前预报(粗探)</div>
+              </div>
+              <div class="tab-main">
+                <div class="switch"><el-checkbox v-model="checked1">显示山体背景</el-checkbox></div>
+                <div class="tab-main1" v-if="checked1"></div>
+                <canvas ref="myCanvas1"></canvas>
+              </div>
+            </div>
+            <div class="tab-item" style="margin: 10px 0;">
+              <div class="top">
+                <div class="title"><img style="width: 16px;height: 16px;margin-right: 10px;"
+                    src="../../assets/luansheng/tab-title.png" alt="">地质超前预报(精探)</div>
                 <div class="tuli" style="display: flex;align-items: center;">
                   <div class="item">
                     <span
@@ -368,18 +400,17 @@
                     <span>仅完成地质雷达探测</span>
                   </div>
                 </div>
-                <div class="tab-main">
-                  <div class="tab-main1" v-if="checked2"></div>
-                  <canvas ref="myCanvas2"></canvas>
-                </div>
               </div>
-              <div class="tab-item">
-                <div class="top">
-                  <div class="title"><el-icon style="color: #409eff;margin-right: 5px;">
-                      <DArrowRight />
-                    </el-icon>施工地质</div>
-                  <div class="switch"><el-checkbox v-model="checked3">显示山体背景</el-checkbox></div>
-                </div>
+              <div class="tab-main">
+                <div class="switch"><el-checkbox v-model="checked2">显示山体背景</el-checkbox></div>
+                <div class="tab-main1" v-if="checked2"></div>
+                <canvas ref="myCanvas2"></canvas>
+              </div>
+            </div>
+            <div class="tab-item">
+              <div class="top">
+                <div class="title"><img style="width: 16px;height: 16px;margin-right: 10px;"
+                    src="../../assets/luansheng/tab-title.png" alt="">施工地质</div>
                 <div class="tuli" style="display: flex;align-items: center;">
                   <div class="item">
                     <span
@@ -402,13 +433,14 @@
                     <span>||类</span>
                   </div>
                 </div>
-                <div class="tab-main">
-                  <div class="tab-main1" v-if="checked3"></div>
-                  <canvas ref="myCanvas3"></canvas>
-                </div>
               </div>
-            </el-tab-pane>
-          </el-tabs>
+              <div class="tab-main">
+                <div class="switch"><el-checkbox v-model="checked3">显示山体背景</el-checkbox></div>
+                <div class="tab-main1" v-if="checked3"></div>
+                <canvas ref="myCanvas3"></canvas>
+              </div>
+            </div>
+          </div>
         </div>
       </el-dialog>
     </div>
@@ -543,6 +575,10 @@ const navItems = ref([
       name: '施工仿真模拟',
       active: false,
       id: '3'
+    }, {
+      name: '气象仿真',
+      active: false,
+      id: '4'
     },
   ]
 ])
@@ -640,29 +676,38 @@ const dialogBim = ref(false)//发电引水弹窗
 const getDialogDetails = (id: any) => {
   if (id == '4') {
     dialogBim.value = true
+    handleClick(1)
   }
   if (id == '3') {
     getUe({ type: 'url', url: 'https://seawall.zdwp.net/bim/#/progressSimulation?Azimuth=0&Ploar=-20&zoomStep=1&vaultID=98c318f9-c6a5-4d86-b690-6eab84f4f69e&featureID=8514a92a-7a27-4e3e-8bcc-41df29beef26' })
   }
 }
-const activeName = ref('1')
-const handleClick = (tab: TabsPaneContext) => {
-  if (tab.props.name == 2) {
+const activeName = ref('0')
+const handleClick = (tab: any) => {
+  activeName.value = tab
+  if (tab == '2') {
     getCanvas()
+  }
+  if (tab == '1') {
+    setTimeout(() => {
+      getCanvas1()
+    }, 100);
   }
 }
 const checked1 = ref(true)
 const checked2 = ref(true)
 const checked3 = ref(true)
+const checked4 = ref(true)
 //绘制图片和折线
 const myCanvas1 = ref(null) as any
 const myCanvas2 = ref(null) as any
 const myCanvas3 = ref(null) as any
+const myCanvas4 = ref(null) as any
 const points = [  // 折线坐标点数组（示例数据）
-  { x: 342, y: 115 },
-  { x: 408, y: 140 },
-  { x: 670, y: 120 },
-  { x: 725, y: 85 },
+  { x: 312, y: 120 },
+  { x: 355, y: 148 },
+  { x: 510, y: 130 },
+  { x: 540, y: 85 },
 ]
 
 const getCanvas = async () => {
@@ -719,8 +764,8 @@ const getCanvas = async () => {
 
   //开端线段
   const points1 = [  // 开端
-    { x: 342, y: 115 },
-    { x: 353, y: 119 }
+    { x: 312, y: 120 },
+    { x: 320, y: 124 }
   ]
   // 开始绘制折线
   ctx1.beginPath()
@@ -753,11 +798,62 @@ const getCanvas = async () => {
   ctx2.stroke()
   ctx3.stroke()
 }
+const getCanvas1 = async () => {
+  const canvas4 = myCanvas4.value
+  await nextTick()
+  if (!canvas4) return;
+  const ctx4 = canvas4.getContext('2d')
+
+  // 设置Canvas尺寸（需与图片匹配或自定义）
+  canvas4.width = 800
+  canvas4.height = 200
+
+  // 开始绘制折线
+  ctx4.beginPath()
+  ctx4.moveTo(points[0].x, points[0].y)
+
+  // 连接各个点
+  points.forEach(point => {
+    ctx4.lineTo(point.x, point.y)
+  })
+
+  // 设置线条样式
+  ctx4.strokeStyle = '#3b9dff'
+  ctx4.lineWidth = 4
+  ctx4.lineJoin = 'round' // 折线连接处圆角
+
+  // 绘制路径
+  ctx4.stroke()
+
+
+  //开端线段
+  const points1 = [  // 开端
+    { x: 312, y: 120 },
+    { x: 320, y: 124 }
+  ]
+  // 开始绘制折线
+  ctx4.beginPath()
+  ctx4.moveTo(points1[0].x, points1[0].y)
+
+  // 连接各个点
+  points1.forEach(point => {
+    ctx4.lineTo(point.x, point.y)
+  })
+
+  // 设置线条样式
+  ctx4.strokeStyle = '#eea959'
+  ctx4.lineWidth = 4
+  ctx4.lineJoin = 'round' // 折线连接处圆角
+
+  // 绘制路径
+  ctx4.stroke()
+}
 
 
 // 获取仿真中心的信息
 const wenkongBox = ref<boolean>(false)
 const yingliBox = ref<boolean>(false)
+const tianqiBox = ref<boolean>(false)
 const getFangzhen = (item: any) => {
   fangzhenItem.value = item
   // 发请求，调接口获取数据，接口还没写
@@ -781,6 +877,13 @@ const getFangzhen = (item: any) => {
   } else {
 
   }
+  if (item.id == 4) {
+    //天气
+    tianqiBox.value = true
+    getTianQi(1)
+  } else {
+    tianqiBox.value = false
+  }
 
 }
 //温控
@@ -788,9 +891,16 @@ const wenkongShow = ref<boolean>()
 const getWenKong = (num: number) => {
   if (num == 1) {
     wenkongShow.value = true
+    getUe({ type: 'shigongmoni' })
   } else {
     wenkongShow.value = false
   }
+}
+//天气
+const tianqiShow = ref<number>(0)
+const getTianQi = (num: number) => {
+  tianqiShow.value = num
+  getUe({ type: 'tianqi', id: num - 1 })
 }
 //应力
 const yingliShow = ref<string>()
@@ -1038,7 +1148,7 @@ const getWXDetail = async (id: any) => {
   const wx = await getDangerDetail(id)
   dialogRef.value.Dialog = true;//打开弹窗
   wxDetail.value = wx
-  console.log('wx', wx);
+  // console.log('wx', wx);
 }
 
 
@@ -1359,6 +1469,42 @@ defineExpose({
         font-size: 16px;
         color: #FFFFFF;
         cursor: pointer;
+      }
+
+      .wenkong-active {
+        background: url('../../assets/img/jiansheqi/wenkong-active.png') no-repeat;
+        background-size: 100% 100%;
+      }
+    }
+
+    .tian-qi {
+      width: 500px;
+      height: 35px;
+      left: 715px;
+      position: absolute;
+      bottom: 60px;
+      background: url('../../assets/img/jiansheqi/wenkong-bg.png') no-repeat;
+      background-size: 100% 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+
+      .item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 120px;
+        height: 35px;
+        text-align: center;
+        font-size: 16px;
+        color: #FFFFFF;
+        cursor: pointer;
+
+        img {
+          width: 30px;
+          margin-right: 8px;
+          height: 30px;
+        }
       }
 
       .wenkong-active {
@@ -1967,7 +2113,7 @@ defineExpose({
   :deep(.el-dialog) {
     background: linear-gradient(55deg, rgba(63, 118, 170, 0) 0%, rgba(63, 118, 170, 0.4) 100%), rgba(15, 76, 111, 0.8);
     box-shadow: inset 0px 1px 53px 0px rgba(88, 178, 255, 0.5);
-    border-radius: 32px 0px 32px 0px;
+    border-radius: 0px 32px 0px 32px;
     border: 1px solid rgba(166, 219, 249, 0.75);
     padding: 11px;
 
@@ -1990,28 +2136,40 @@ defineExpose({
 
   .bim-content {
     width: 100%;
-    //height: 795px;
+    height: 845px;
 
     .bim-tab {
-      :deep(.el-tabs__header) {
-        width: 200px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      height: 34px;
+      color: #fff;
+      margin-bottom: 15px;
 
-        .el-tabs__item {
-          font-size: 16px;
-          color: #fff;
-          width: 100px;
-        }
-
-        .is-active {
-          color: #409eff;
-        }
+      div {
+        width: 148px;
+        height: 34px;
+        text-align: center;
+        line-height: 34px;
+        background: url('../../assets/luansheng/tab.png') no-repeat;
+        background-size: 100% 100%;
+        cursor: pointer;
+        margin-right: 10px;
       }
+
+      .tab-active {
+        background: url('../../assets/luansheng/tab-active.png') no-repeat;
+        background-size: 100% 100%;
+      }
+    }
+
+    .tab-content {
+      width: 100%;
+      height: 100%;
 
       .tab-item {
         width: 100%;
-        height: 240px;
-        background: url('../../assets/luansheng/bg.jpg') no-repeat;
-        background-size: 100% 100%;
+        height: 260px;
 
         .top {
           width: 100%;
@@ -2026,18 +2184,6 @@ defineExpose({
             align-items: center;
             font-size: 16px;
           }
-
-          .switch {
-            :deep(.el-checkbox__label) {
-              color: #fff;
-            }
-
-            :deep(.is-checked) {
-              .el-checkbox__label {
-                color: #409eff;
-              }
-            }
-          }
         }
 
         .tuli {
@@ -2051,9 +2197,28 @@ defineExpose({
 
         .tab-main {
           width: 100%;
-          height: 190px;
-          margin-top: 5px;
+          height: 224px;
+          margin-top: 10px;
           position: relative;
+          background: rgba(11, 45, 66, 0.24);
+          border: 1px solid rgba(60, 186, 247, 0.44);
+          border-radius: 8px;
+
+          .switch {
+            margin-left: 10px;
+            position: relative;
+            z-index: 999999;
+
+            :deep(.el-checkbox__label) {
+              color: #fff;
+            }
+
+            :deep(.is-checked) {
+              .el-checkbox__label {
+                color: #409eff;
+              }
+            }
+          }
 
           .tab-main1 {
             width: 100%;
@@ -2068,8 +2233,12 @@ defineExpose({
           }
 
           canvas {
-            position: relative;
+            position: absolute;
+            top: 0;
+            left: 0;
             z-index: 9999;
+            width: 100%;
+            height: 100%;
           }
         }
 

@@ -82,7 +82,7 @@ watch(
       if (storeUe.ueStore?.type == 'jiankong') {
         setTimeout(() => {
           playVideo(props.mvs[storeUe.ueStore?.id - 1])
-        }, 2100);
+        }, 2500);
       }
     }
   }
