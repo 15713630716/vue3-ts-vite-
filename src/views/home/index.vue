@@ -1,6 +1,5 @@
 <template>
   <div class="home-box pointer-events-none">
-    <!-- <iframe ref="iframeRef" :src="iframeSrc" frameborder="0" class="iframeRef pointer-events-all"></iframe> -->
     <div class="home pointer-events-none">
       <div class="headers">
         <div class="left">{{ date }} {{ time }} <span>{{ week }}</span>
@@ -75,7 +74,7 @@ import { getMv } from '@/request/home'
 //mv
 const mvs = ref([] as any)
 const getMvs = async () => {
-  const res6 = await Promise.all([getMv('8623e37a5efe42a48f1c87a79583fac9'), getMv('4204b8db903a438396364057b926bf43'), getMv('3f6c62cfa6cc4b1898baca7c29b8b491'), getMv('d0835b94b8ae4235a7287f72897cf3a8'), getMv('26ad8bf3a50c42f48c5759ec190be633')])
+  const res6 = await Promise.all([getMv('8623e37a5efe42a48f1c87a79583fac9'), getMv('4204b8db903a438396364057b926bf43'), getMv('3f6c62cfa6cc4b1898baca7c29b8b491'), getMv('627dc630369a4876858f35d0f11f9e59'), getMv('26ad8bf3a50c42f48c5759ec190be633')])
   // console.log('res6', res6);
   // const res1 = await getMv('adcea4b72f8f4de2a3f8c6c42d7bd67e')//施工进场道闸
   // const res2 = await getMv('85186de42f6b40fcade625be8de952d0')//下游临时贝雷桥
@@ -135,91 +134,61 @@ const getClick = async (num: number) => {
     getUe({ type: 'tianqi', id: 0 })
     item1Show.value = false
     item2Show.value = false
-    if (iframeDomCZ.value.type == 'jsba') {
+    if (iframeDomCZ.value.type == 'qiehuan_jsba') {
       await nextTick()
       if (jianSheDom.value) {
         jianSheDom.value.getNav1(0);
       }
     }
-
   }
   if (num == 4) {
     getUe({ type: 'url', url: 'https://zhgl.zjdyit.com/zhjg3/#/1894712966457069569/1813759284281929730/info/personalPortal' })
   }
 }
 
-// const iframeRef = ref<HTMLIFrameElement | any>();
-// const iframeRefCZ = ref<HTMLIFrameElement | any>();//重置
 const iframeDomCZ = ref<any>();//传递给header重置，不同情景下不同的重置
 const iframeDomdxbtk = ref<HTMLIFrameElement | any>();//透明开
 const iframeDomdxbtg = ref<HTMLIFrameElement | any>();//透明关
-// const iframeDomjianseqi = ref<HTMLIFrameElement | any>();//建设期
 const iframeDomqqkc = ref<HTMLIFrameElement | any>();//前期
-// const iframeDomwlba = ref<HTMLIFrameElement | any>();//未来
 const iframeDomdgx = ref<HTMLIFrameElement | any>();//高程分析
 const iframeDomdxfx = ref<HTMLIFrameElement | any>();//地形勘察
 const iframeDomyxhy = ref<HTMLIFrameElement | any>();//影像还原
 const iframeDomsgfzmn = ref<HTMLIFrameElement | any>();//施工仿真模拟
 const quanping = ref<boolean>(true)//全屏
 
-onMounted(() => {
-  // iframeRef.value.onload = () => {
-  //   const iframeDocument = iframeRef.value.contentWindow;
-  //   iframeDomCZ.value = iframeDocument.document.getElementById('CZ')
-  //   iframeRefCZ.value = iframeDocument.document.getElementById('CZ')
-  //   iframeDomdxbtk.value = iframeDocument.document.getElementById('dxbtk')
-  //   iframeDomdxbtg.value = iframeDocument.document.getElementById('dxbtg')
-  //   iframeDomjianseqi.value = iframeDocument.document.getElementById('jianseqi')
-  //   iframeDomqqkc.value = iframeDocument.document.getElementById('qqkc')
-  //   iframeDomwlba.value = iframeDocument.document.getElementById('wlba')
-  //   iframeDomdgx.value = iframeDocument.document.getElementById('dgx')
-  //   iframeDomyxhy.value = iframeDocument.document.getElementById('yxhy')
-  //   iframeDomsgfzmn.value = iframeDocument.document.getElementById('sgfzmn')
-  //   iframeDomdxfx.value = iframeDocument.document.getElementById('dxfx')
-  // }
-})
-
 
 const showRoute = ref<number>(1)
 const getRoute = (num: number) => {
   // 跳转进行总体重置的内容
-  // iframeDomdxbtg.value.click()//透明关闭
-  // iframeDomyxhy.value.click()//影像还原
-  // iframeDomCZ.value.click()//重置跳转
+  getUe({ type: 'zhilianggo' })
+  getUe({ type: 'anquanzhongxingo' })
+  getUe({ type: 'guankonggo' })
+  getUe({ type: 'luanshenggo' })
+  getUe({ type: 'fangzhengo' })
+
 
 
   if (num == 1) {
     //回首页并重置
     showRoute.value = num
-    // iframeRefCZ.value.click()
-    // iframeDomCZ.value = { type: 'qiehuan', id: 'cz' }
-    // getUe({ type: 'qiehuan', id: 'cz' })
     iframeDomCZ.value = { type: 'qiehuan_cz' }
     getUe({ type: 'qiehuan_cz' })
   } else if (num == 2) {
     // 去建设期
     showRoute.value = num
-    // iframeDomjianseqi.value.click()
     iframeDomCZ.value = { type: 'qiehuan_jsba' }
     getUe({ type: 'qiehuan_jsba' })
-    // iframeDomCZ.value = { type: 'qiehuan', id: 'jsba' }
-    // getUe({ type: 'qiehuan', id: 'jsba' })
+    // jianSheDom.value?.getNav1(0);
   } else if (num == 3) {
     // 前期
     showRoute.value = num
-    // iframeDomqqkc.value.click()
     iframeDomCZ.value = { type: 'qiehuan_qqkc' }
     getUe({ type: 'qiehuan_qqkc' })
-    // iframeDomCZ.value = { type: 'qiehuan', id: 'qqkc' }
-    // getUe({ type: 'qiehuan', id: 'qqkc' })
   } else if (num == 4) {
     // 未来
     showRoute.value = num
-    // iframeDomwlba.value.click()
     iframeDomCZ.value = { type: 'qiehuan_wlba' }
     getUe({ type: 'qiehuan_wlba' })
-    // iframeDomCZ.value = { type: 'qiehuan', id: 'wlba' }
-    // getUe({ type: 'qiehuan', id: 'wlba' })
   }
 }
 
@@ -242,9 +211,9 @@ const getRoute = (num: number) => {
   .home {
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle at center, #fff 0%, #2e637b 100%);
-    background: url('@/assets/img/home/蒙版层@2x.png') no-repeat;
-    background-size: 100% 100%;
+    // background: radial-gradient(circle at center, #fff 0%, #2e637b 100%);
+    // background: url('@/assets/img/home/蒙版层@2x.png') no-repeat;
+    // background-size: 100% 100%;
 
     .headers {
       width: 100%;

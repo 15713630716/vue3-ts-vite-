@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router'
 import { axiosToken } from '../request/getToken'
 import { useStoreToken } from '@/store';
 
@@ -40,8 +40,8 @@ const routes: Array<RouteRecordRaw> = [
 ]
 
 const router = createRouter({
-  // history: createWebHashHistory(),
-  history: createWebHistory(),
+  history: createWebHashHistory(),
+  // history: createWebHistory(),
   routes,
   scrollBehavior() {
     return { left: 0, top: 0 };

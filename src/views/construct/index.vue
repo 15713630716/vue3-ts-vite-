@@ -5,9 +5,10 @@
         :class="item.active == true ? 'active' : ''" @click="getNav1(index)">
         <img :src="item.img" alt="">
         <div class="title">{{ item.name }}</div>
-        <div class="active-nav" v-if="item.active && navItems[index]">
+        <div class="active-nav" v-if="item.active && navItems[index - 1]">
           <div class="nav-item pointer-events-all" :class="navItem.active == true ? 'nav-item-active' : ''"
-            v-for="(navItem, itemIndex) in navItems[index]" :key="navItem.id" @click.stop="getNav2(itemIndex, index)">
+            v-for="(navItem, itemIndex) in navItems[index - 1]" :key="navItem.id"
+            @click.stop="getNav2(itemIndex, index)">
             {{ navItem.name }}
           </div>
         </div>
@@ -196,12 +197,11 @@
                   @node-click="handleNodeClick">
                   <template #default="{ node, data }">
                     <div class="custom-tree-node">
-                      <i class="on" v-if="data.evaluationStatus == 'UnAssess'"></i>
-                      <i class="of" v-else></i>
+                      <!-- <i>Assessed判断不等于这个，等于这个的全是已验评的</i> -->
+                      <i class="on" v-if="data.evaluationStatus != 'Assessed'"></i>
+                      <i class="off" v-else></i>
                       <span class="node">{{ node.name }}</span>
                       <span class="data">{{ data.name }}</span>
-                      <div>
-                      </div>
                     </div>
                   </template>
                 </el-tree>
@@ -218,27 +218,37 @@
         <div class="content-pop">
           <div class="item">
             <div class="label">评定时间</div>
-            <div class="value">{{ treeDetil.createTime }}</div>
+            <div class="value">{{ treeDetil.evaluationDate }}</div>
           </div>
           <div class="item">
             <div class="label">评定等级</div>
-            <div class="value dengji dengji1">
+            <div class="value dengji dengji1" v-if="treeDetil.evaluationResult == '合格'">
               合格
             </div>
-            <!-- <div class="value dengji dengji2">
+            <div class="value dengji dengji2" v-if="treeDetil.evaluationResult == '不合格'">
               不合格
             </div>
-            <div class="value dengji dengji3">
+            <div class="value dengji dengji3" v-if="treeDetil.evaluationResult == '优良'">
               优良
-            </div> -->
+            </div>
           </div>
-          <div class="item">
+          <div class="item files">
             <div class="label">附件</div>
-            <div class="value">暂无</div>
+            <div class="value" v-if="treeDetil.attachment && treeDetil?.file?.length != 0">
+              <div class="item-file pointer-events-all" v-for="item in treeDetil.file">
+                <div @click="getDowlond(item.ossPath)" class="file-name">{{ item.fileName }}</div>
+              </div>
+            </div>
+            <div class="value" v-else>暂无</div>
           </div>
-          <div class="item">
+          <div class="item imgs">
             <div class="label">现场照片</div>
-            <div class="value">暂无</div>
+            <div class="value pointer-events-all" v-if="treeDetil.video && treeDetil?.img?.length != 0">
+              <el-image class="img" v-for="itemImg in treeDetil.img" style="width: 88px; height: 88px"
+                :src="itemImg.ossPath" :zoom-rate="1.2" :max-scale="7" :min-scale="0.2"
+                :preview-src-list="[itemImg.ossPath]" :initial-index="0" fit="cover" />
+            </div>
+            <div class="value" v-else>暂无</div>
           </div>
         </div>
       </div>
@@ -275,7 +285,28 @@
         </div>
       </div>
     </div>
-    <div class="tuceng pointer-events-all" v-if="luanshengBoxShow">
+    <div class="guankong-box" v-if="guankongActive">
+      <div class="guankong-line">
+        <!-- <div class="header-box">
+          <img class="img" src="../../assets/img/jiansheqi/anquan/title.png" alt="">
+          <div class="text">现场管控</div>
+        </div> -->
+        <div class="content-guankong">
+          <div class="top">
+            <div class="tab pointer-events-all" v-for="(item, index) in guankongTabs"
+              :class="index == indexTab ? 'tabActive' : ''" @click="getGuankongTab(index)">{{ item.name }}</div>
+          </div>
+          <div class="lists-main">
+            <Overview v-if="indexTab == '0'"></Overview>
+            <MvPop v-if="indexTab == '1'"></MvPop>
+            <Environment v-if="indexTab == '2'"></Environment>
+            <People v-if="indexTab == 3"></People>
+            <Machinery v-if="indexTab == 4"></Machinery>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tuceng pointer-events-all" v-if="guankongActive">
       <div class="title">图层控制</div>
       <div class="item" v-for="item in tuceng" :key="item.id">
         <div class="text">{{ item.name }}</div>
@@ -329,7 +360,7 @@
       </div>
     </div> -->
     <div class="bimDetail-box pointer-events-all" v-show="dialogBim">
-      <el-dialog v-model="dialogBim" title="发电饮水隧洞" width="1600" top="7vh">
+      <el-dialog v-model="dialogBim" title="发电引水隧洞" width="1600" top="7vh">
         <div class="bim-content">
           <div class="bim-tab">
             <template v-for="tab in [{ name: '安全监测', id: '1' }, { name: '施工地质', id: '2' }]">
@@ -452,17 +483,24 @@ import img1 from '@/assets/img/jiansheqi/nav1.png'
 import img2 from '@/assets/img/jiansheqi/nav2.png'
 import img3 from '@/assets/img/jiansheqi/nav3.png'
 import img4 from '@/assets/img/jiansheqi/nav4.png'
+import img5 from '@/assets/guankong/guankongzhongxin.png'
 import daoliudong from '@/assets/luansheng/daoliudong.png'
 import gongba from '@/assets/luansheng/gongba.png'
 import guanlifang from '@/assets/luansheng/guanlifang.png'
 import fadaindong from '@/assets/luansheng/fadiandong.png'
 import zhengti from '@/assets/luansheng/zhengti.png'
 import { Search } from '@element-plus/icons-vue'
-import { getZhiliangTree, getZhiliangTreeDetil, getProgress, getDangerLists, getDangerDetail } from '@/request/construct'
+import { getZhiliangTree, getZhiliangTreeDetil, getZhiliangTreeDetilFile, getProgress, getDangerLists, getDangerDetail } from '@/request/construct'
 import AnquanPop from '@/components/AnquanPop.vue'
 import { getUe } from '@/utils/getUe';
 import * as echarts from 'echarts';
 import { ueStoreJson } from '@/store';
+import Overview from '@/components/guankong/Overview.vue'
+import MvPop from '@/components/guankong/MvPop.vue'
+import Environment from '@/components/guankong/Environment.vue'
+import Machinery from '@/components/guankong/Machinery.vue'
+import People from '@/components/guankong/People.vue'
+import { ElMessage, type TreeInstance } from 'element-plus'
 
 const storeUe = ueStoreJson();
 
@@ -507,6 +545,11 @@ const tuCengSwitch = (item: any) => {
 }
 
 const navs = ref([
+  {
+    name: '管控中心',
+    img: img5,
+    active: false,
+  },
   {
     name: '孪生中心',
     img: img1,
@@ -584,29 +627,44 @@ const navItems = ref([
 ])
 const zhiliangActive = ref<boolean>(false)
 const anquanActive = ref<boolean>(false)
+const guankongActive = ref<boolean>(false)
 const getNav1 = (indexs: number) => {
   navs.value.map((item: any, index: number) => {
     if (indexs == index) {
       item.active = true
-      if (indexs < 2) {
+      if (indexs < 3 && indexs > 0) {
         getNav2(0, indexs)
       } else {
         luanshengBoxShow.value = false
         fangzhenBoxShow.value = false
+        getUe({ type: 'luanshenggo' })
+        getUe({ type: 'fangzhengo' })
       }
 
-      if (indexs == 2) {
+      if (indexs == 3) {
         dataTree.value?.map((item: any) => {
-          getUe({ type: 'zhiliangdata', id: item.id, status: item.evaluationStatus == 'UnAssess' ? 'false' : 'true' })
+          // getUe({ type: 'zhiliangdata', id: item.id, status: 'false' })
+          getUe({ type: 'zhiliangdata', id: item.id, status: item.evaluationStatus == 'Assessed' ? 'true' : 'false' })
         })
+        getUe({ type: 'zhiliang' })
         zhiliangActive.value = true
       } else {
+        getUe({ type: 'zhilianggo' })
         zhiliangActive.value = false
       }
-      if (indexs == 3) {
+      if (indexs == 4) {
         anquanActive.value = true
+        getUe({ type: 'anquanzhongxin' })
       } else {
         anquanActive.value = false
+        getUe({ type: 'anquanzhongxingo' })
+      }
+      if (indexs == 0) {
+        guankongActive.value = true
+        getUe({ type: 'guankong' })
+      } else {
+        guankongActive.value = false
+        getUe({ type: 'guankonggo' })
       }
     } else {
       item.active = false
@@ -618,48 +676,41 @@ const fangzhenBoxShow = ref<boolean>(false)
 const luanshengItem = ref({} as any)
 const fangzhenItem = ref({} as any)
 const getNav2 = (indexs: number, index: number) => {
-  navItems.value[index].map((item: any, itemIndex: number) => {
+  navItems.value[index - 1].map((item: any, itemIndex: number) => {
     if (indexs == itemIndex) {
       item.active = true
     } else {
       item.active = false
     }
   })
-  if (index == 0) {
+  if (index == 1) {
     //孪生中心
     luanshengBoxShow.value = true
-    getLuansheng(navItems.value[index][indexs])
+    getLuansheng(navItems.value[index - 1][indexs])
     // console.log('item', `luansheng${navItems.value[index][indexs].id}`);
-    getUe({ type: `luansheng${navItems.value[index][indexs].id}` })
-
+    getUe({ type: `luansheng${navItems.value[index - 1][indexs].id}` })
+    getUe({ type: 'luansheng' })
   } else {
     luanshengBoxShow.value = false
+    getUe({ type: 'luanshenggo' })
   }
-  if (index == 1) {
+  if (index == 2) {
     //仿真中心
     fangzhenBoxShow.value = true
-    getFangzhen(navItems.value[index][indexs])
+    getFangzhen(navItems.value[index - 1][indexs])
+    getUe({ type: 'fangzhen' })
 
   } else {
     fangzhenBoxShow.value = false
+    getUe({ type: 'fangzhengo' })
   }
 }
 // 获取孪生中心的信息
 const getLuansheng = (item: any) => {
   luanshengItem.value = item
   // 发请求，调接口获取数据，接口还没写
+
 }
-//孪生中心图层展示视频
-watch(
-  () => luanshengBoxShow.value,
-  () => {
-    if (luanshengBoxShow.value) {
-      getUe({ type: 'tuceng', name: 'Alltags', id: 'true' })
-    } else {
-      getUe({ type: 'tuceng', name: 'Alltags', id: 'false' })
-    }
-  }
-);
 //跳转去bim链接弹窗
 const dialogBimVisible = ref(false)
 const getBimLink = () => {
@@ -682,6 +733,7 @@ const getDialogDetails = (id: any) => {
     getUe({ type: 'url', url: 'https://seawall.zdwp.net/bim/#/progressSimulation?Azimuth=0&Ploar=-20&zoomStep=1&vaultID=98c318f9-c6a5-4d86-b690-6eab84f4f69e&featureID=8514a92a-7a27-4e3e-8bcc-41df29beef26' })
   }
 }
+// 发电引水隧洞弹窗
 const activeName = ref('0')
 const handleClick = (tab: any) => {
   activeName.value = tab
@@ -850,6 +902,8 @@ const getCanvas1 = async () => {
 }
 
 
+
+
 // 获取仿真中心的信息
 const wenkongBox = ref<boolean>(false)
 const yingliBox = ref<boolean>(false)
@@ -994,20 +1048,20 @@ const getYingLi = async (num: string) => {
   myChart3.setOption(option);
 }
 
+
+
 //质量中心
 const inputTree = ref()
-import type { TabsPaneContext, TreeInstance } from 'element-plus'
 
 interface Tree {
   [key: string]: any
 }
 
 const treeRef = ref<TreeInstance>()
-
+//质量树搜索
 watch(inputTree, (val) => {
   treeRef.value!.filter(val)
 })
-
 const filterNode = (value: string, data: Tree) => {
   if (!value) return true
   return data.label.includes(value)
@@ -1034,7 +1088,7 @@ const dataTree = ref<Tree[]>([
 const getTreeDatas = async () => {
   const res = await getZhiliangTree()
   dataTree.value = res
-  console.log('dataTree', dataTree.value);
+  // console.log('dataTree', dataTree.value);
 }
 //树节点弹窗
 const treePopShow = ref(false)
@@ -1043,7 +1097,7 @@ const currentNodeKey = ref('')
 const handleNodeClick = (data: Tree) => {
   currentNodeKey.value = data.id
   getUe({ type: 'zhiliang', id: data.id })
-  if (data.evaluationStatus == "UnAssess") {
+  if (data.evaluationStatus != "Assessed") {
     ElMessage.warning({ message: `${data.name} 未验评`, duration: 1500 });
   } else {
     treePopShow.value = true
@@ -1052,21 +1106,6 @@ const handleNodeClick = (data: Tree) => {
   }
 }
 // 接收信息触发点击树放弹窗
-// ue.interface.getUeJs = (res: any) => {
-//   let datas = JSON.parse(res)
-//   if (datas.type == 'zhiliang') {
-//     dataTree.value.map((item: any) => {
-//       if (item.id == datas.id) {
-//         if (item.evaluationStatus == "UnAssess") {
-//           ElMessage.warning({ message: `${datas.name} 未验评`, duration: 1500 });
-//         } else {
-//           treePopName.value = item.name
-//           getZhiliangTreeDeti(item.id)
-//         }
-//       }
-//     })
-//   }
-// }
 watch(
   () => storeUe.ueStore,
   () => {
@@ -1075,7 +1114,7 @@ watch(
         dataTree.value.map((item: any) => {
           if (item.id == storeUe.ueStore.id) {
             currentNodeKey.value = item.id
-            if (item.evaluationStatus == "UnAssess") {
+            if (item.evaluationStatus != "Assessed") {
               ElMessage.warning({ message: `${item.name} 未验评`, duration: 1500 });
             } else {
               treePopName.value = item.name
@@ -1101,8 +1140,22 @@ const treeDetil = ref({} as any)
 const getZhiliangTreeDeti = async (id: any) => {
   const res = await getZhiliangTreeDetil(id)
   treeDetil.value = res
+  //attachment
+  if (res.attachment) {
+    const file = await getZhiliangTreeDetilFile(res.attachment)
+    treeDetil.value['file'] = file
+  }
+  if (res.video) {
+    const img = await getZhiliangTreeDetilFile(res.video)
+    treeDetil.value['img'] = img
+  }
   // console.log('res', treeDetil.value);
 }
+//下载附件
+const getDowlond = (urls: any) => {
+  getUe({ type: 'url', url: urls })
+}
+
 
 
 //安全中心
@@ -1137,6 +1190,19 @@ const getWeixian = async () => {
 //点击危险源高亮，获取详情
 const wxActiveIndex = ref<number>(-1)
 const anquanIdPop = ref()
+//接收ue传递展示弹窗
+watch(
+  () => storeUe.ueStore,
+  () => {
+    if (storeUe.ueStore) {
+      if (storeUe.ueStore?.type == 'weixianyuan') {
+        setTimeout(() => {
+          getListItem(storeUe.ueStore.index, { item: storeUe.ueStore.id })
+        }, 2500);
+      }
+    }
+  }
+);
 const getListItem = (index: number, item: any) => {
   wxActiveIndex.value = index
   anquanIdPop.value = item.id
@@ -1151,6 +1217,50 @@ const getWXDetail = async (id: any) => {
   // console.log('wx', wx);
 }
 
+
+// 管控中心
+const guankongTabs = ref([
+  {
+    name: '工地总览',
+    id: '1'
+  },
+  {
+    name: '视频监控',
+    id: '2'
+  },
+  {
+    name: '环境监测',
+    id: '3'
+  },
+  {
+    name: '人员信息',
+    id: '4'
+  },
+  {
+    name: '机械设备',
+    id: '5'
+  },
+])
+const indexTab = ref('') as any
+// 监听guankongActive重置安全中心内容
+watch(
+  () => guankongActive.value,
+  () => {
+    if (guankongActive.value) {
+      //管控中心弹窗
+      getGuankongTab(0)
+    }
+    // 管控中心图层标签展示
+    if (guankongActive.value) {
+      getUe({ type: 'tuceng', name: 'Alltags', id: 'true' })
+    } else {
+      getUe({ type: 'tuceng', name: 'Alltags', id: 'false' })
+    }
+  }
+);
+const getGuankongTab = (index: any) => {
+  indexTab.value = index
+}
 
 onMounted(() => {
   getNav1(0)
@@ -1690,7 +1800,7 @@ defineExpose({
             display: flex;
             align-items: center;
             position: absolute;
-            right: 19px;
+            right: 0px;
             font-size: 14px;
             color: #FFFFFF;
 
@@ -1712,6 +1822,7 @@ defineExpose({
 
             .off {
               position: relative;
+              margin-right: 40px;
 
               &::after {
                 position: absolute;
@@ -1827,7 +1938,7 @@ defineExpose({
 
     .tree-pop {
       width: 410px;
-      height: 346px;
+      min-height: 346px;
       position: absolute;
       top: 309px;
       left: 929px;
@@ -1860,7 +1971,7 @@ defineExpose({
 
       .content-pop {
         width: 100%;
-        height: 270px;
+        min-height: 270px;
         padding: 9px;
 
         .item {
@@ -1897,6 +2008,52 @@ defineExpose({
           .dengji3 {
             background: url('../../assets/img/jiansheqi/lan-ju.png') no-repeat;
             background-size: 100% 100%;
+          }
+        }
+
+        .files {
+          align-items: start;
+
+          .value {
+            padding-top: 11px;
+
+            .item-file {
+              margin-bottom: 5px;
+              cursor: pointer;
+              width: 200px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              position: relative;
+
+              &::after {
+                content: ' ';
+                position: absolute;
+                right: 0px;
+                top: 4px;
+                width: 16px;
+                height: 16px;
+                background: url('@/assets/img/jiansheqi/dowlond.svg') no-repeat;
+                background-size: 100% 100%;
+              }
+
+              &:hover {
+                color: #6cc3f1;
+              }
+            }
+          }
+        }
+
+        .imgs {
+          align-items: start;
+
+          .value {
+            padding-top: 11px;
+            width: 200px;
+
+            .img {
+              margin: 0 5px 5px 0;
+            }
           }
         }
       }
@@ -2054,6 +2211,67 @@ defineExpose({
     }
   }
 
+  .guankong-box {
+    position: absolute;
+    top: 19px;
+    right: 19px;
+    width: 410px;
+    height: 871px;
+    background: linear-gradient(55deg, rgba(63, 118, 170, 0) 0%, rgba(63, 118, 170, 0.4) 100%), rgba(15, 88, 111, 0.39);
+    border-radius: 14px;
+    border: 1px solid rgba(110, 181, 242, 0.57);
+
+    .guankong-line {
+      width: 400px;
+      height: 860px;
+      margin: 5px auto;
+      background: linear-gradient(311deg, rgba(63, 118, 170, 0) 0%, rgba(63, 118, 170, 0.4) 100%), rgba(3, 60, 93, 0.48), rgba(14, 141, 208, 0.95);
+      box-shadow: inset 0px 0px 19px 0px rgba(88, 207, 255, 0.72);
+      border-radius: 12px;
+      border: 1px solid #3CBAF7;
+
+      .content-guankong {
+        width: 100%;
+        height: 790px;
+
+        .top {
+          width: 100%;
+          height: 32px;
+          padding: 0 10px;
+          margin: 15px 0 16px;
+          display: flex;
+          align-items: center;
+          // justify-content: space-around;
+          justify-content: space-between;
+
+
+          .tab {
+            width: 86px;
+            height: 40px;
+            line-height: 40px;
+            color: #fff;
+            text-align: center;
+            cursor: pointer;
+            background: url('../../assets/guankong/construction_bg.png') no-repeat;
+            background-size: 100% 100%;
+            font-size: 16px;
+          }
+
+          .tabActive {
+            background: url('../../assets/guankong/construction_bg_active.png') no-repeat;
+            background-size: 100% 100%;
+          }
+
+        }
+
+        .lists-main {
+          width: 100%;
+          height: 100%;
+          padding: 0 11px;
+        }
+      }
+    }
+  }
 
   .tuceng {
     width: 116px;

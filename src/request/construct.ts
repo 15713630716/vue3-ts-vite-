@@ -8,6 +8,10 @@ export function getZhiliangTree() {
 export function getZhiliangTreeDetil(par: any) {
   return get(`/zdwp-api/v3/quality/evaluation/filling/query?projectId=1805438631199453186&sectionId=1813759430390509569&wbsId=${par}&_t=1745891345199`);
 }
+//获取树节点详细信息附件
+export function getZhiliangTreeDetilFile(par: any) {
+  return get(`/zdwp-api/v3/sys-oss/list?projectId=1805438631199453186&sectionId=1805514088733290497&groupToken=${par}&isPreSigned=true&_t=1745891345377`);
+}
 
 
 //获取危险源详情

@@ -16,7 +16,7 @@ export const useStoreToken = defineStore('token', () => {
   return { token, setToken,clearToken };
 });
 export const ueStoreJson = defineStore('ueStore', () => {
-  const ueStore = useStorage('ueStore', {}, sessionStorage);
+  const ueStore = useStorage('ueStore', {} as any, sessionStorage);
 
   // 设置ueStore值
   const setUeStore = (tokenParam: any) => {

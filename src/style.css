@@ -95,3 +95,41 @@ li {
 .font-color-yellow {
   color: rgba(255, 202, 135, 1) !important;
 }
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.guankong-header {
+  width: 100%;
+  font-family: MicrosoftYaHeiSemibold;
+  font-size: 16px;
+  color: #FFFFFF;
+  letter-spacing: 0;
+  line-height: 24px;
+  font-weight: 600;
+  position: relative;
+  padding-left: 25px;
+  margin: 25px 0 20px;
+}
+
+.guankong-header::after {
+  content: ' ';
+  position: absolute;
+  left: 0px;
+  top: 4px;
+  width: 16px;
+  height: 16px;
+  background: url('@/assets/guankong/title-icon.png') no-repeat;
+  background-size: 100% 100%;
+}
+
+.guankong-header::before {
+  content: ' ';
+  position: absolute;
+  right: 0px;
+  top: 9px;
+  width: 276px;
+  height: 8px;
+  background: url('@/assets/guankong/line.png') no-repeat;
+  background-size: 100% 100%;
+}

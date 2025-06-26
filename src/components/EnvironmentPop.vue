@@ -287,7 +287,7 @@ watch(
         position: absolute;
         right: 0;
         top: 20px;
-        color: rgb(177, 11, 11);
+        color: #ffb00e;
       }
 
       .chart-content {
