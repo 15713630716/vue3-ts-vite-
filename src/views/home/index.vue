@@ -3,8 +3,11 @@
     <div class="home pointer-events-none">
       <div class="headers">
         <div class="left">{{ date }} {{ time }} <span>{{ week }}</span>
-          <img @click="getUe({ type: 'tianqi', id: 0 })" class="pointer-events-all" src="../../assets/weather/qing.png"
-            alt="">
+          <img v-if="tianqiRes == 1" src="../../assets/weather/qing.png" alt="" style="margin-right: 10px;">
+          <img v-if="tianqiRes == 2" src="../../assets/weather/yin.png" alt="" style="margin-right: 10px;">
+          <img v-if="tianqiRes == 3" src="../../assets/weather/yu.png" alt="" style="margin-right: 10px;">
+          <img v-if="tianqiRes == 4" src="../../assets/weather/xue.png" alt="" style="margin-right: 10px;">
+          <el-switch size="small" v-model="tianqiValue" @change="getWeatherSwitch()" class="pointer-events-all" />
         </div>
         <div class="center">北岙水库数字孪生应用</div>
         <div class="right-box">
@@ -59,7 +62,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, nextTick } from 'vue'
+import { onMounted, ref, nextTick, watch } from 'vue'
 import { useTime } from '@/utils/useTime';
 import Index from '../index/index.vue';
 import QianQi from '../prophase/index.vue'
@@ -69,7 +72,55 @@ import VideoPop from '@/components/VideoPop.vue';
 import EnvironmentPop from '@/components/EnvironmentPop.vue';
 import { getUe } from '@/utils/getUe';
 import { getMv } from '@/request/home'
+import axios from 'axios';
+import { useStoreWeather } from '@/store';
 
+const storeWeather = useStoreWeather()
+
+// 接收信息触发点击树放弹窗
+watch(
+  () => storeWeather.weather,
+  () => {
+    tianqiValue.value = storeWeather.weather
+  }
+);
+
+const tianqiValue = ref(false)
+const tianqiRes = ref(1)
+const getWeather = async () => {
+  await axios({
+    url: 'https://devapi.qweather.com/v7/weather/now?location=120.661029,28.882479&key=88cfe0ee021344dab0ac4b200b918483',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    method: 'get',
+  }).then(function (res) {
+    if (res.data.code == '200') {
+      // console.log('res', res.data);
+      if (res.data.now.icon < 154) {
+        tianqiRes.value = 2
+      }
+      if (res.data.now.icon == 100 || res.data.now.icon == 150) {
+        tianqiRes.value = 1
+      }
+      if (res.data.now.icon >= 300 && res.data.now.icon < 400) {
+        tianqiRes.value = 3
+      }
+      if (res.data.now.icon >= 400 && res.data.now.icon < 500) {
+        tianqiRes.value = 4
+      }
+      if (res.data.now.icon >= 500 && res.data.now.icon < 516) {
+        tianqiRes.value = 2
+      }
+    }
+  }).catch(function (err) {
+    console.log('err', err)
+  });
+}
+const getWeatherSwitch = () => {
+  getUe({ type: 'tianqi', id: tianqiValue.value == true ? tianqiRes.value - 1 : '0' })
+  storeWeather.setWeatherStore(tianqiValue.value)
+}
 
 //mv
 const mvs = ref([] as any)
@@ -106,6 +157,7 @@ const getMvs = async () => {
 }
 onMounted(async () => {
   await getMvs()
+  await getWeather()
 });
 
 
@@ -130,8 +182,18 @@ const getClick = async (num: number) => {
 
   }
   if (num == 3) {
+    if (iframeDomCZ.value.type == 'qiehuan_cz') {
+      // 直接刷新当前页面（可能会从浏览器缓存加载）
+      window.location.href = '#/index';
+      window.location.reload();
+    }
+    //恢复当前场景初始视角
     getUe(iframeDomCZ.value)
+    //天气恢复默认晴天
     getUe({ type: 'tianqi', id: 0 })
+    getUe({ type: 'shigongmoniEnd' })
+    // tianqiValue.value = false
+    storeWeather.setWeatherStore(false)
     item1Show.value = false
     item2Show.value = false
     if (iframeDomCZ.value.type == 'qiehuan_jsba') {
@@ -146,7 +208,7 @@ const getClick = async (num: number) => {
   }
 }
 
-const iframeDomCZ = ref<any>();//传递给header重置，不同情景下不同的重置
+const iframeDomCZ = ref<any>({ type: 'qiehuan_cz' });//传递给header重置，不同情景下不同的重置
 const iframeDomdxbtk = ref<HTMLIFrameElement | any>();//透明开
 const iframeDomdxbtg = ref<HTMLIFrameElement | any>();//透明关
 const iframeDomqqkc = ref<HTMLIFrameElement | any>();//前期
@@ -165,28 +227,26 @@ const getRoute = (num: number) => {
   getUe({ type: 'guankonggo' })
   getUe({ type: 'luanshenggo' })
   getUe({ type: 'fangzhengo' })
+  getUe({ type: 'shigongmoniEnd' })
 
 
 
+  showRoute.value = num
   if (num == 1) {
     //回首页并重置
-    showRoute.value = num
     iframeDomCZ.value = { type: 'qiehuan_cz' }
     getUe({ type: 'qiehuan_cz' })
   } else if (num == 2) {
     // 去建设期
-    showRoute.value = num
     iframeDomCZ.value = { type: 'qiehuan_jsba' }
     getUe({ type: 'qiehuan_jsba' })
     // jianSheDom.value?.getNav1(0);
   } else if (num == 3) {
     // 前期
-    showRoute.value = num
     iframeDomCZ.value = { type: 'qiehuan_qqkc' }
     getUe({ type: 'qiehuan_qqkc' })
   } else if (num == 4) {
     // 未来
-    showRoute.value = num
     iframeDomCZ.value = { type: 'qiehuan_wlba' }
     getUe({ type: 'qiehuan_wlba' })
   }
@@ -211,9 +271,9 @@ const getRoute = (num: number) => {
   .home {
     width: 100%;
     height: 100%;
-    // background: radial-gradient(circle at center, #fff 0%, #2e637b 100%);
-    // background: url('@/assets/img/home/蒙版层@2x.png') no-repeat;
-    // background-size: 100% 100%;
+    // background: radial-gradient(circle at center, #fff 0%, #595d5f 100%);
+    // background: url('@/assets/img/home/mengban.png') no-repeat;
+    background-size: 100% 100%;
 
     .headers {
       width: 100%;
@@ -225,7 +285,7 @@ const getRoute = (num: number) => {
       justify-content: space-between;
 
       .left {
-        width: 300px;
+        width: 350px;
         height: 30px;
         font-family: 'DS-Digital', sans-serif;
         font-weight: bold;

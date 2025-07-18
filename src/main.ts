@@ -7,6 +7,7 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 import ElementPlus from 'element-plus';
 import zhCn from 'element-plus/es/locale/lang/zh-cn';
 import * as echarts from 'echarts'
+import 'element-plus/dist/index.css'; // 核心样式
 
 const app = createApp(App)
 

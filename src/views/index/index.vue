@@ -250,8 +250,8 @@ const touziData = reactive({
 })
 const getTouZi = async () => {
   const invest = await getInvest()
-  touziData.planInvest = invest.planInvestTotal?.toFixed(2)
-  touziData.completeInvest = invest.actualInvestTotal?.toFixed(2)
+  touziData.planInvest = invest?.planInvestTotal?.toFixed(2)
+  touziData.completeInvest = invest?.actualInvestTotal?.toFixed(2)
   touziData.rateInvest = (touziData.completeInvest * 100 / touziData.planInvest * 1)?.toFixed(0)
   const chanzhi = await getChanzhi()
   touziData.planChanzhi = chanzhi.outputTotal?.toFixed(2)

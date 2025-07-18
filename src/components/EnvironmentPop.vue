@@ -270,11 +270,33 @@ watch(
       margin-top: 15px;
 
       :deep(.el-date-editor--daterange) {
-        opacity: 0.85;
-      }
-
-      :deep(.el-radio-group) {
-        opacity: 0.85;
+        background: rgba(0, 179, 255, 0.13);
+          border: 1px solid rgba(61, 194, 255, 0.35);
+          border-radius: 4px;
+        }
+        
+        :deep(.el-range-input) {
+          color: #E6F7FF;
+        }
+        
+        :deep(.el-range-separator) {
+          color: #918f8f;
+        }
+        
+        :deep(.el-input__wrapper) {
+          box-shadow: none;
+        }
+        
+        :deep(.el-radio-button__inner) {
+          background: rgba(0, 179, 255, 0.13);
+          border-color: rgba(61, 194, 255, 0.35);
+          color: #E6F7FF;
+        }
+        
+        :deep(.is-active) {
+          .el-radio-button__inner {
+            background: rgba(93, 201, 247, 0.63);
+          }
       }
     }
 

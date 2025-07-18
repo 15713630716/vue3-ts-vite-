@@ -32,3 +32,7 @@ export function getOrdinaryDevice() {
 export function getInvestmentDevice() {
   return get(`/zdwp-api/v3/Construction/mechanicalData?projectId=1813759284281929730&sectionId=1813759430390509569&_t=1750234619284`);
 }
+//获取设备详情
+export function getInvestmentDetail(par: any) {
+  return get(`/zdwp-api/v3/Construction/mechanicalDetail?projectId=1813759284281929730&_t=1750992608660`, par);
+}

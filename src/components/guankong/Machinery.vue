@@ -26,8 +26,8 @@
       </div>
       <vue3ScrollSeamless :key="active" :data-list="tableData" style="height: 520px; overflow: hidden"
         :class-option="scrollDefaultOption">
-        <div class="pointer-events-all" v-for="(item, index) in tableData" :key="index"
-          :class="['change-cell', index % 2 !== 0 ? 'change-cell-odd' : '']">
+        <div class="pointer-events-all cursor-pointer" v-for="(item, index) in tableData" :key="index"
+          :class="['change-cell', index % 2 !== 0 ? 'change-cell-odd' : '']" @click="getDetail(item)">
           <div class="index">
             <div class="index-box">{{ index + 1 }}</div>
           </div>
@@ -55,15 +55,49 @@
       </vue3ScrollSeamless>
       <!-- <machineryDetailDialog ref="machineryDetail"></machineryDetailDialog> -->
     </div>
+    <div class="pop" v-if="detailPopShow">
+      <div class="header-pop pointer-events-all">
+        {{ detailData.deviceName }}
+        <div class="after" @click="detailPopShow = false"></div>
+      </div>
+      <div class="content-pop">
+        <div class="item">
+          <div class="label">设备类型</div>
+          <div class="value">{{ detailData.deviceTypeName }}</div>
+        </div>
+        <div class="item">
+          <div class="label">标段工区</div>
+          <div class="value">{{ detailData.sectionName }}{{ detailData.workAreaName }}</div>
+        </div>
+        <div class="item">
+          <div class="label">操作人员</div>
+          <div class="value">{{ detailData.operation }}</div>
+        </div>
+        <div class="item">
+          <div class="label">所属单位</div>
+          <div class="value">{{ detailData.orgName }}</div>
+        </div>
+        <div class="item">
+          <div class="label">进场时间</div>
+          <div class="value">{{ detailData.entryTime }}</div>
+        </div>
+        <div class="item">
+          <div class="label">照片</div>
+          <div class="value pointer-events-all">
+            <el-image class="img" style="width: 88px; height: 88px" :src="img1" :zoom-rate="1.2" :max-scale="7"
+              :hide-on-click-modal="true" :min-scale="0.2" :preview-src-list="[img1]" :initial-index="0" fit="cover" />
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import img1 from '../../assets/machinery-img.png'
 import { vue3ScrollSeamless } from 'vue3-scroll-seamless'
-// import { useSectionStore } from '@/stores'
-// import machineryDetailDialog from '../../Dialog/MachineryDetailDialog.vue'
-import { getOrdinaryDevice, getDeviceLists, getInvestmentDevice } from '@/request/guankong'
+import { getOrdinaryDevice, getDeviceLists, getInvestmentDevice, getInvestmentDetail } from '@/request/guankong'
 
 
 const total = ref(0)
@@ -71,11 +105,6 @@ const dayTotal = ref(0)
 const monthTotal = ref(0)
 const active = ref(1)
 const perData = ref([] as any)
-// const customColors = [
-//   { color: '#DFE0E1', percentage: 50 },
-//   { color: '#1DE1E1', percentage: 80 },
-//   { color: '#1886F4', percentage: 100 }
-// ]
 
 const scrollDefaultOption = {
   step: 0.5, // 数值越大速度滚动越快
@@ -138,6 +167,20 @@ const getMechanicalPage = async () => {
   tableData.value = res
 }
 
+//点击详情
+const detailPopShow = ref(false)
+const detailData = ref({} as any)
+const getDetail = async (item: any) => {
+  const par = {
+    deviceId: item.deviceId,
+    peopleId: item.peopleId
+  }
+  const res = await getInvestmentDetail(par)
+  detailPopShow.value = true
+  console.log(res);
+  detailData.value = res
+}
+
 </script>
 <style lang="scss" scoped>
 .flex-box {
@@ -146,6 +189,64 @@ const getMechanicalPage = async () => {
 
 .machinery-content {
   width: 100%;
+  position: relative;
+}
+
+.pop {
+  width: 410px;
+  min-height: 346px;
+  position: absolute;
+  top: 250px;
+  left: -470px;
+  background: url('../../assets/img/weilai/pop-bg.png') no-repeat;
+  background-size: 100% 100%;
+  padding: 21px 24px;
+
+  .header-pop {
+    width: 100%;
+    height: 35px;
+    line-height: 35px;
+    font-family: MicrosoftYaHeiSemibold;
+    font-size: 18px;
+    color: #FFFFFF;
+    background: linear-gradient(270deg, rgba(34, 102, 135, 0) 0%, #13A4EB 100%);
+    padding-left: 16px;
+    position: relative;
+
+    .after {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 7px;
+      right: 0px;
+      background: url('../../assets/img/weilai/cha.png') no-repeat;
+      background-size: 100% 100%;
+      cursor: pointer;
+    }
+  }
+
+  .content-pop {
+    width: 100%;
+    min-height: 270px;
+    padding: 9px;
+    margin-top: 10px;
+
+    .item {
+      width: 100%;
+      display: flex;
+      align-items: top;
+      font-size: 16px;
+      color: #FFFFFF;
+      margin-bottom: 10px;
+
+      .label {
+        width: 64px;
+        margin-right: 24px;
+        color: rgba(135, 213, 255, 1);
+        white-space: nowrap;
+      }
+    }
+  }
 }
 
 .header {
@@ -187,66 +288,6 @@ const getMechanicalPage = async () => {
 
 .change-list {
   width: 100%;
-
-  // .change-cell {
-  //   display: flex;
-  //   align-items: center;
-  //   font-size: 14px;
-  //   justify-content: space-between;
-  //   font-family: 'Microsoft Yahei';
-  //   font-weight: normal;
-  //   line-height: 40px;
-  //   padding-left: 10px;
-  //   color: #fff;
-
-  //   &-odd {
-  //     background-color: rgba(0, 59, 163, 0.3);
-  //   }
-
-  //   >div {
-  //     flex: 1;
-  //     text-align: center;
-  //   }
-
-  //   .name {
-  //     white-space: nowrap;
-  //     overflow: hidden;
-  //     text-overflow: ellipsis;
-  //   }
-
-  //   .index {
-  //     width: 20px;
-  //     height: 20px;
-  //     border-radius: 50%;
-  //     display: flex;
-  //     justify-content: center;
-  //     //   background: rgba(0, 113, 154, 0.2);
-  //     flex-shrink: 0;
-  //     align-items: center;
-  //     color: #fff;
-  //     font-family: 优设标题黑;
-  //     //   box-shadow: inset 0px 3px 21px rgba(50, 197, 255, 0.7);
-  //     margin: 0 auto;
-
-  //     .index-box {
-  //       text-align: center;
-  //       width: 20px;
-  //       position: relative;
-
-  //       &::after {
-  //         content: '';
-  //         position: absolute;
-  //         right: -5px;
-  //         top: -5px;
-  //         width: 40px;
-  //         height: 40px;
-  //         background-repeat: no-repeat;
-  //         background: url('@/assets/guankong/xuhao.png');
-  //         background-size: 100% 100%;
-  //       }
-  //     }
-  //   }
-  // }
 
   .thead {
     display: flex;

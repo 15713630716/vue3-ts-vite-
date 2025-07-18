@@ -38,15 +38,35 @@ export function getDangertable(par: any) {
 export function getDangerYujing(id: any) {
   return get(`/zdwp-api/v3/workflow/processInstance/detail/${id}`);
 }
+//获取危险源管控率
+export function getDangerPer() {
+  return post(`/zdwp-api/v3/safe/safe-risk-source/digitOfRisk`, {
+    isCurrent: 1,
+    projectId: "1813759284281929730",
+    sectionId: "1813759430390509569",
+  });
+}
 //获取进度
 export function getProgress() {
   return post(`/zdwp-api/v3/schedule/plan/job/page`, {
     currentPage: 1,
     pageSize: 9999,
-    planId: "1831145611508363265",
+    planId: "1925112781736554498",
     planName: "进度计划",
     projectId: "1813759284281929730",
     sectionId: "1813759430390509569",
+  });
+}
+//获取拱坝进度
+export function getDamProgress() {
+  return post(`/zdwp-api/v3/schedule/plan/job/page`, {
+    currentPage: 1,
+    pageSize: 9999,
+    planId: "1942408257492533250",
+    planName: "拱坝浇筑进度测试",
+    projectId: "1813759284281929730",
+    sectionId: "1813759430390509569",
+    cancelPermission: true
   });
 }
 //获取环境监测信息

@@ -101,7 +101,7 @@
 import * as echarts from 'echarts';
 import { nextTick, onMounted, ref } from 'vue';
 import type { EChartsType } from 'echarts';
-import { getHuanJingWarn, getDeviceLists, getRenWork, getMvLists } from '@/request/guankong'
+import { getHuanJingWarn, getDeviceLists, getRenLine, getRenWork, getMvLists } from '@/request/guankong'
 
 const chartRef = ref()
 
@@ -203,6 +203,8 @@ const getLists = async () => {
   })
   //人员定位
   const attendance = await getRenWork()
+  const onLineCount = await getRenLine()
+  peopleData.value.ontotal = onLineCount.onLineCount
   peopleData.value.offtotal = attendance.countOfToday
   //视频监控
   const mvs = await getMvLists()

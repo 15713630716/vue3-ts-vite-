@@ -3,6 +3,7 @@ import axiosRetry from 'axios-retry';
 // import QS from 'qs';
 import { useStoreToken } from '@/store';
 import { axiosToken } from '../request/getToken'
+import { getUe } from '@/utils/getUe';
 
 
 const ERR_OK = 200;
@@ -57,6 +58,16 @@ axios.interceptors.response.use(
       // console.log('用户token过期,请重新');
       storeToken.setToken('');
       axiosToken()
+      // 直接刷新当前页面（可能会从浏览器缓存加载）
+      window.location.href = '#/index';
+      window.location.reload();
+      getUe({ type: 'qiehuan_cz' })
+      getUe({ type: 'zhilianggo' })
+      getUe({ type: 'anquanzhongxingo' })
+      getUe({ type: 'guankonggo' })
+      getUe({ type: 'luanshenggo' })
+      getUe({ type: 'fangzhengo' })
+
     }
     return Promise.reject(error);
   }

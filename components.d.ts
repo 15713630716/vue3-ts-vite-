@@ -10,7 +10,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     '副本': typeof import('./src/components/Record - 副本.vue')['default']
     AnquanPop: typeof import('./src/components/AnquanPop.vue')['default']
-    ElButton: typeof import('element-plus/es')['ElButton']
+    DamTree: typeof import('./src/components/DamTree.vue')['default']
     ElCarousel: typeof import('element-plus/es')['ElCarousel']
     ElCarouselItem: typeof import('element-plus/es')['ElCarouselItem']
     ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
@@ -47,8 +47,11 @@ declare module 'vue' {
     Right: typeof import('./src/components/Right/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    TimeAxle: typeof import('./src/components/guankong/TimeAxle.vue')['default']
+    TimeSlider: typeof import('./src/components/guankong/TimeSlider.vue')['default']
     Video: typeof import('./src/components/Video.vue')['default']
     VideoContent: typeof import('./src/components/Right/Components/VideoContent.vue')['default']
     VideoPop: typeof import('./src/components/VideoPop.vue')['default']
+    VideoTime: typeof import('./src/components/guankong/VideoTime.vue')['default']
   }
 }

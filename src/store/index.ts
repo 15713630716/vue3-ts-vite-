@@ -29,3 +29,13 @@ export const ueStoreJson = defineStore('ueStore', () => {
 
   return { ueStore, setUeStore, clearUeStore };
 });
+export const useStoreWeather = defineStore('weather', () => {
+  const weather = useStorage('weather', false as any, sessionStorage);
+
+  // 设置ueStore值
+  const setWeatherStore = (tokenParam: any) => {
+    weather.value = tokenParam;
+  };
+
+  return { weather, setWeatherStore };
+});

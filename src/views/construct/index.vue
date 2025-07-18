@@ -15,7 +15,7 @@
       </div>
     </div>
     <div class="right-box" v-if="luanshengBoxShow">
-      <div class="luansheng">
+      <div class="luansheng" v-if="!(damTreeShow && luanshengItem.id == 3)">
         <div class="luansheng-box">
           <div class="add pointer-events-all" v-if="luanshengItem.id == 4 || luanshengItem.id == 3"
             @click="getDialogDetails(luanshengItem.id)">
@@ -28,7 +28,7 @@
           <div class="echart-box">
             <div class="item-echart">
               <div class="top none">
-                <el-progress color="#07BEFF" :width="90" type="circle" :percentage="90">
+                <el-progress color="#07BEFF" :width="90" type="circle" :percentage="83">
                   <template #default="{ percentage }">
                     <div class="bg" style="width: 64px;
                     height: 64px;
@@ -49,7 +49,7 @@
             </div>
             <div class="item-echart">
               <div class="top ing">
-                <el-progress color="#E9CA7A" :width="90" type="circle" :percentage="10">
+                <el-progress color="#E9CA7A" :width="90" type="circle" :percentage="2">
                   <template #default="{ percentage }">
                     <div class="bg" style="width: 64px;
                     height: 64px;
@@ -70,7 +70,7 @@
             </div>
             <div class="item-echart">
               <div class="top succes">
-                <el-progress color="#1DDEA8" :width="90" type="circle" :percentage="0">
+                <el-progress color="#1DDEA8" :width="90" type="circle" :percentage="15">
                   <template #default="{ percentage }">
                     <div class="bg" style="width: 64px;
                     height: 64px;
@@ -102,6 +102,7 @@
           </div>
         </div>
       </div>
+      <DamTree v-if="luanshengItem.id == 3 && damTreeShow" :dataDamTree="dataDamTree"></DamTree>
     </div>
     <div class="fangzhen-box" v-if="fangzhenBoxShow">
       <div class="wenkong pointer-events-all" v-if="wenkongBox">
@@ -265,7 +266,10 @@
               <div class="left-top">重大危险源</div>
               <div class="left-bottom">{{ wxNumMajor }}</div>
             </div>
-            <div class="center"></div>
+            <div class="center">
+              <div class="lv">{{ wxlv }} %</div>
+              <div class="text">管控率</div>
+            </div>
             <div class="right">
               <div class="right-top">一般危险源</div>
               <div class="right-bottom">{{ wxNumGeneral }}</div>
@@ -293,8 +297,10 @@
         </div> -->
         <div class="content-guankong">
           <div class="top">
-            <div class="tab pointer-events-all" v-for="(item, index) in guankongTabs"
-              :class="index == indexTab ? 'tabActive' : ''" @click="getGuankongTab(index)">{{ item.name }}</div>
+            <div class="tab-guankong" ref="guankongRef">
+              <div class="tab pointer-events-all" v-for="(item, index) in guankongTabs"
+                :class="index == indexTab ? 'tabActive' : ''" @click="getGuankongTab(index)">{{ item.name }}</div>
+            </div>
           </div>
           <div class="lists-main">
             <Overview v-if="indexTab == '0'"></Overview>
@@ -332,6 +338,35 @@
       <div class="item">
         <div class="color" style="background-color: #25dcf1;"></div>
         <div class="text">低风险</div>
+      </div>
+    </div>
+    <div class="tuceng" v-if="damActive">
+      <div class="title">场景图例</div>
+      <div class="item">
+        <div class="color" style="background-color: #a5d0e2;"></div>
+        <div class="text">未施工</div>
+      </div>
+      <div class="item">
+        <div class="color" style="background-color: #e3d25f;"></div>
+        <div class="text">施工中</div>
+      </div>
+      <div class="item">
+        <div class="color tupian">
+        </div>
+        <div class="text">已完成</div>
+      </div>
+      <div class="title">面板图例</div>
+      <div class="item">
+        <div class="color" style="background-color: #b1b1af;"></div>
+        <div class="text">未施工</div>
+      </div>
+      <div class="item">
+        <div class="color" style="background-color: #e3d25f;"></div>
+        <div class="text">施工中</div>
+      </div>
+      <div class="item">
+        <div class="color" style="background-color: #3efaac;"></div>
+        <div class="text">已完成</div>
       </div>
     </div>
     <AnquanPop v-if="wxActiveIndex != -1" :detailData="wxDetail" :id="anquanIdPop" ref="dialogRef"></AnquanPop>
@@ -490,18 +525,21 @@ import guanlifang from '@/assets/luansheng/guanlifang.png'
 import fadaindong from '@/assets/luansheng/fadiandong.png'
 import zhengti from '@/assets/luansheng/zhengti.png'
 import { Search } from '@element-plus/icons-vue'
-import { getZhiliangTree, getZhiliangTreeDetil, getZhiliangTreeDetilFile, getProgress, getDangerLists, getDangerDetail } from '@/request/construct'
+import { getZhiliangTree, getZhiliangTreeDetil, getZhiliangTreeDetilFile, getProgress, getDangerLists, getDangerDetail, getDangerPer, getDamProgress } from '@/request/construct'
 import AnquanPop from '@/components/AnquanPop.vue'
 import { getUe } from '@/utils/getUe';
 import * as echarts from 'echarts';
-import { ueStoreJson } from '@/store';
+import { ueStoreJson, useStoreWeather } from '@/store';
 import Overview from '@/components/guankong/Overview.vue'
+import DamTree from '@/components/DamTree.vue'
 import MvPop from '@/components/guankong/MvPop.vue'
 import Environment from '@/components/guankong/Environment.vue'
 import Machinery from '@/components/guankong/Machinery.vue'
 import People from '@/components/guankong/People.vue'
 import { ElMessage, type TreeInstance } from 'element-plus'
+import { arrayToTree, sortByNumberFieldAdvanced } from '@/utils/arrayToTree'
 
+const storeWeather = useStoreWeather()
 const storeUe = ueStoreJson();
 
 
@@ -551,7 +589,7 @@ const navs = ref([
     active: false,
   },
   {
-    name: '孪生中心',
+    name: '进度中心',
     img: img1,
     active: false,
   },
@@ -611,7 +649,7 @@ const navItems = ref([
       active: false,
       id: '1'
     }, {
-      name: '应力有限元',
+      name: '无人机巡检',
       active: false,
       id: '2'
     }, {
@@ -638,7 +676,9 @@ const getNav1 = (indexs: number) => {
         luanshengBoxShow.value = false
         fangzhenBoxShow.value = false
         getUe({ type: 'luanshenggo' })
+        damActive.value = false
         getUe({ type: 'fangzhengo' })
+        getUe({ type: 'shigongmoniEnd' })
       }
 
       if (indexs == 3) {
@@ -671,6 +711,7 @@ const getNav1 = (indexs: number) => {
     }
   })
 }
+const damActive = ref<boolean>(false)
 const luanshengBoxShow = ref<boolean>(false)
 const fangzhenBoxShow = ref<boolean>(false)
 const luanshengItem = ref({} as any)
@@ -690,7 +731,16 @@ const getNav2 = (indexs: number, index: number) => {
     // console.log('item', `luansheng${navItems.value[index][indexs].id}`);
     getUe({ type: `luansheng${navItems.value[index - 1][indexs].id}` })
     getUe({ type: 'luansheng' })
+    //点击混凝土重力拱坝时传递状态
+    if (indexs == 2) {
+      // console.log(dataDamList.value);
+      damActive.value = true
+      getUe({ type: 'damStats', lists: dataDamList.value })
+    } else {
+      damActive.value = false
+    }
   } else {
+    damActive.value = false
     luanshengBoxShow.value = false
     getUe({ type: 'luanshenggo' })
   }
@@ -703,11 +753,15 @@ const getNav2 = (indexs: number, index: number) => {
   } else {
     fangzhenBoxShow.value = false
     getUe({ type: 'fangzhengo' })
+    getUe({ type: 'shigongmoniEnd' })
   }
 }
 // 获取孪生中心的信息
 const getLuansheng = (item: any) => {
   luanshengItem.value = item
+  if (luanshengItem.value.id != 3) {
+    damTreeShow.value = false
+  }
   // 发请求，调接口获取数据，接口还没写
 
 }
@@ -723,14 +777,15 @@ const getJindu = async () => {
 }
 //孪生中心详情弹窗展示
 const dialogBim = ref(false)//发电引水弹窗
-// const dialogBa = ref(false)//大坝弹窗
+const damTreeShow = ref(false)//大坝弹窗
 const getDialogDetails = (id: any) => {
   if (id == '4') {
     dialogBim.value = true
     handleClick(1)
   }
   if (id == '3') {
-    getUe({ type: 'url', url: 'https://seawall.zdwp.net/bim/#/progressSimulation?Azimuth=0&Ploar=-20&zoomStep=1&vaultID=98c318f9-c6a5-4d86-b690-6eab84f4f69e&featureID=8514a92a-7a27-4e3e-8bcc-41df29beef26' })
+    damTreeShow.value = true
+    // getUe({ type: 'url', url: 'https://seawall.zdwp.net/bim/#/progressSimulation?Azimuth=0&Ploar=-20&zoomStep=1&vaultID=98c318f9-c6a5-4d86-b690-6eab84f4f69e&featureID=8514a92a-7a27-4e3e-8bcc-41df29beef26' })
   }
 }
 // 发电引水隧洞弹窗
@@ -919,9 +974,11 @@ const getFangzhen = (item: any) => {
     wenkongBox.value = false
   }
   if (item.id == 2) {
+    //无人机巡检
+    getUe({ type: 'xunjian' })
     //应力有限元
-    yingliBox.value = true
-    getYingLi('x')
+    // yingliBox.value = true
+    // getYingLi('x')
   } else {
     yingliBox.value = false
   }
@@ -929,7 +986,7 @@ const getFangzhen = (item: any) => {
     //施工仿真模拟
     getUe({ type: 'shigongmoni' })
   } else {
-
+    getUe({ type: 'shigongmoniEnd' })
   }
   if (item.id == 4) {
     //天气
@@ -945,7 +1002,6 @@ const wenkongShow = ref<boolean>()
 const getWenKong = (num: number) => {
   if (num == 1) {
     wenkongShow.value = true
-    getUe({ type: 'shigongmoni' })
   } else {
     wenkongShow.value = false
   }
@@ -955,8 +1011,9 @@ const tianqiShow = ref<number>(0)
 const getTianQi = (num: number) => {
   tianqiShow.value = num
   getUe({ type: 'tianqi', id: num - 1 })
+  storeWeather.setWeatherStore(false)
 }
-//应力
+//应力20.81
 const yingliShow = ref<string>()
 const getYingLi = async (num: string) => {
   yingliShow.value = num
@@ -1064,7 +1121,7 @@ watch(inputTree, (val) => {
 })
 const filterNode = (value: string, data: Tree) => {
   if (!value) return true
-  return data.label.includes(value)
+  return data.name.includes(value)
 }
 //质量树总体
 const dataTree = ref<Tree[]>([
@@ -1097,6 +1154,7 @@ const currentNodeKey = ref('')
 const handleNodeClick = (data: Tree) => {
   currentNodeKey.value = data.id
   getUe({ type: 'zhiliang', id: data.id })
+  treePopShow.value = false
   if (data.evaluationStatus != "Assessed") {
     ElMessage.warning({ message: `${data.name} 未验评`, duration: 1500 });
   } else {
@@ -1171,7 +1229,10 @@ watch(
 const wxLists = ref([] as any)//危险源列表
 const wxNumGeneral = ref<number>(0)//一般危险源
 const wxNumMajor = ref<number>(0)//重大危险源
+const wxlv = ref(0 as any)
 const getWeixian = async () => {
+  const lv = await getDangerPer()
+  wxlv.value = (lv.riskExamSummary.per * 100).toFixed(1)
   const res = await getDangerLists()
   wxLists.value = res.list
   let General = 0
@@ -1258,8 +1319,21 @@ watch(
     }
   }
 );
-const getGuankongTab = (index: any) => {
+const guankongRef = ref()
+const getGuankongTab = async (index: any) => {
   indexTab.value = index
+  await nextTick()
+  if (index == 2 || index == 1) {
+    guankongRef.value.style.transform = `translate(0px,0px)`
+  }
+  if (index == 3) {
+    guankongRef.value.style.transform = `translate(-130px,0px)`
+    getUe({ type: 'tuceng', name: 'Alltags', id: 'false' })
+    getUe({ people: 'true' })
+  } else {
+    getUe({ type: 'tuceng', name: 'Alltags', id: 'true' })
+    getUe({ people: 'false' })
+  }
 }
 
 onMounted(() => {
@@ -1267,7 +1341,28 @@ onMounted(() => {
   getTreeDatas()//获取树
   getJindu()//获取进度
   getWeixian()//获取危险源列表
+  getDamTreeDatas()//获取拱坝树
 })
+//获取拱坝树
+const dataDamList = ref([] as any)
+const dataDamTree = ref<Tree[]>([
+  {
+    id: 1,
+    label: 'Level one 1',
+    children: [],
+  }
+])
+const getDamTreeDatas = async () => {
+  const res1 = await getDamProgress()
+  const res2 = sortByNumberFieldAdvanced(res1.list, 'no')//把数组按照序号排序
+  const res3 = arrayToTree(res2, 'parentId')//把排好序的数组按照字段分成树结构
+  dataDamTree.value = res3
+  res2.map((item: any) => {
+    if (item.parentId) {
+      dataDamList.value.push({ name: item.jobName, stats: item?.actualPer || 0 })
+    }
+  })
+}
 
 // 暴露方法给父组件
 defineExpose({
@@ -1560,7 +1655,7 @@ defineExpose({
     left: 0;
 
     .wenkong {
-      width: 250px;
+      width: 240px;
       height: 35px;
       left: 840px;
       position: absolute;
@@ -1588,13 +1683,15 @@ defineExpose({
     }
 
     .tian-qi {
-      width: 500px;
+      width: 480px;
       height: 35px;
       left: 715px;
       position: absolute;
       bottom: 60px;
-      background: url('../../assets/img/jiansheqi/wenkong-bg.png') no-repeat;
-      background-size: 100% 100%;
+      // background: url('../../assets/img/jiansheqi/wenkong-bg.png') no-repeat;
+      // background-size: 100% 100%;
+      background-color: rgb(92, 115, 124);
+      border-radius: 18px;
       display: flex;
       align-items: center;
       justify-content: space-around;
@@ -2117,10 +2214,32 @@ defineExpose({
           }
 
           .center {
-            width: 101px;
-            height: 101px;
-            background: url('../../assets/img/jiansheqi/anquan/logo.png') no-repeat;
+            width: 150px;
+            height: 98px;
+            background: url('../../assets/img/jiansheqi/anquan/lv.png') no-repeat;
             background-size: 100% 100%;
+
+            .lv {
+              font-family: PangMenZhengDao;
+              font-size: 24px;
+              color: #53EE8A;
+              letter-spacing: 0;
+              font-weight: 400;
+              width: 100%;
+              text-align: center;
+              line-height: 36px;
+            }
+
+            .text {
+              font-family: MicrosoftYaHei;
+              font-size: 16px;
+              color: #FFFFFF;
+              letter-spacing: 0;
+              line-height: 24px;
+              font-weight: 400;
+              width: 100%;
+              text-align: center;
+            }
           }
 
           .right {
@@ -2236,25 +2355,31 @@ defineExpose({
 
         .top {
           width: 100%;
-          height: 32px;
+          height: 46px;
           padding: 0 10px;
-          margin: 15px 0 16px;
-          display: flex;
-          align-items: center;
-          // justify-content: space-around;
-          justify-content: space-between;
+          margin: 10px 0 10px;
+          overflow: hidden;
+
+          .tab-guankong {
+            width: 510px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.3s ease;
+          }
 
 
           .tab {
-            width: 86px;
-            height: 40px;
-            line-height: 40px;
+            width: 96px;
+            height: 46px;
+            line-height: 46px;
             color: #fff;
             text-align: center;
             cursor: pointer;
             background: url('../../assets/guankong/construction_bg.png') no-repeat;
             background-size: 100% 100%;
             font-size: 16px;
+            font-weight: 500;
           }
 
           .tabActive {
@@ -2281,13 +2406,13 @@ defineExpose({
     position: absolute;
     bottom: 0px;
     left: 16px;
-    padding: 14px 10px;
+    padding: 10px 10px;
 
     .title {
       font-family: MicrosoftYaHei;
       font-size: 14px;
       color: #FFFFFF;
-      line-height: 35px;
+      line-height: 30px;
       text-align: left;
     }
 
@@ -2301,7 +2426,7 @@ defineExpose({
         font-family: MicrosoftYaHei;
         font-size: 14px;
         color: #FFFFFF;
-        line-height: 28px;
+        line-height: 25px;
         text-align: left;
       }
 
@@ -2316,6 +2441,13 @@ defineExpose({
         border-radius: 2px;
       }
 
+      .tupian {
+        width: 12px;
+        height: 12px;
+        border-radius: 2px;
+        background: url('../../assets/img/jiansheqi/dam.png') no-repeat;
+        background-size: 100% 100%;
+      }
     }
   }
 

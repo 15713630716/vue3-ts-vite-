@@ -54,6 +54,9 @@
         <div class="value">{{ statisticsData.countOfMonth }} <i>人</i></div>
       </div>
     </div>
+    <div class="slider-box">
+      <TimeSlider></TimeSlider>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -61,6 +64,9 @@ import { getRenLine, getRenWork } from '@/request/guankong'
 import * as echarts from 'echarts';
 import { nextTick, onMounted, onUnmounted, ref } from 'vue';
 import type { EChartsType } from 'echarts';
+import TimeSlider from './TimeSlider.vue';
+
+
 
 
 onMounted(() => {
@@ -150,6 +156,15 @@ const initEchart = () => {
 <style lang="scss" scoped>
 .box {
   width: 100%;
+  position: relative;
+
+  .slider-box {
+    position: absolute;
+    bottom: -120px;
+    left: -1049px;
+    width: 1000px;
+    height: 130px;
+  }
 
   .jixie-box {
     width: 100%;

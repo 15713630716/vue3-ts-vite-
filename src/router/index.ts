@@ -8,44 +8,44 @@ const routes: Array<RouteRecordRaw> = [
     redirect: '/login',
   },
   {
-    //首页
-    path: '/index',
-    component: () => import('@/views/home/index.vue'),
-  },
-  {
-    //ue测试
+    //登录
     path: '/login',
+    name: 'login',
     component: () => import('@/views/login/index.vue'),
   },
   {
-    //前期
-    path: '/prophase',
-    component: () => import('@/views/prophase/index.vue'),
+    //首页
+    path: '/index',
+    name: 'index',
+    component: () => import('@/views/home/index.vue'),
   },
-  {
-    //建设
-    path: '/construct',
-    component: () => import('@/views/construct/index.vue'),
-  },
-  {
-    //未来
-    path: '/future',
-    component: () => import('@/views/future/index.vue'),
-  },
-  {
-    //ue
-    path: '/ues',
-    component: () => import('@/views/ue/ue.vue'),
-  },
+  // {
+  //   //前期
+  //   path: '/prophase',
+  //   component: () => import('@/views/prophase/index.vue'),
+  // },
+  // {
+  //   //建设
+  //   path: '/construct',
+  //   component: () => import('@/views/construct/index.vue'),
+  // },
+  // {
+  //   //未来
+  //   path: '/future',
+  //   component: () => import('@/views/future/index.vue'),
+  // },
+  // {
+  //   //ue
+  //   path: '/ues',
+  //   component: () => import('@/views/ue/ue.vue'),
+  // },
 ]
 
 const router = createRouter({
   history: createWebHashHistory(),
   // history: createWebHistory(),
   routes,
-  scrollBehavior() {
-    return { left: 0, top: 0 };
-  },
+  scrollBehavior: () => ({ top: 0 }), // 禁用滚动行为
 })
 
 router.beforeEach(async (to: any, from, next) => {
