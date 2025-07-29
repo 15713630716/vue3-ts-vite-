@@ -22,6 +22,11 @@
         </div>
         <div class="button" @click="login(ruleFormRef)">登录</div>
       </div>
+      <div class="main emty" v-if="!emtyShow">
+        <el-icon :size="30" class="is-loading">
+          <Loading />
+        </el-icon>
+      </div>
       <div class="tips">版权所有：浙江省水利水电勘测设计院有限责任公司</div>
     </div>
   </div>
@@ -36,6 +41,7 @@ import { axiosToken } from '@/request/getToken'
 
 
 
+const emtyShow = ref(true);
 const ruleFormRef = ref();
 const ruleForm = reactive({
   user: '',
@@ -64,8 +70,9 @@ const login = async (formEl: any) => {
           // 删除凭证
           Cookies.remove('userName')
         }
-        router.push({ path: '/index' });
+        // router.push({ path: '/index' });
         getUe({ type: 'loginSuccessful' })
+        emtyShow.value = false
       } else {
         ElMessage.warning({ message: '账号或密码错，请重试', duration: 1500 });
       }
@@ -96,6 +103,14 @@ onMounted(() => {
   display: flex;
   align-items: center;
 
+  .emty {
+    background-color: #17233D;
+    opacity: 0.8;
+    z-index: 999999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   .left {
     width: 37.5%;
     height: 100%;

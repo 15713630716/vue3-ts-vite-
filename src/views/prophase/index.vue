@@ -13,7 +13,7 @@
         </div>
       </div>
     </div>
-    <div class="tuceng pointer-events-all">
+    <!-- <div class="tuceng pointer-events-all">
       <div class="title">图层控制</div>
       <div class="item">
         <div class="text">村庄</div>
@@ -27,37 +27,15 @@
           <el-switch size="small" v-model="tuceng.xianzhuang" />
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, reactive, ref, type PropType, onUnmounted } from 'vue'
+import { reactive, ref } from 'vue'
 import img1 from '@/assets/img/qianqi/dixing.png'
 import img2 from '@/assets/img/qianqi/dizhi.png'
+import { getUe } from '@/utils/getUe';
 
-const props = defineProps({
-  //高程分析
-  iframeDomdgx: {
-    type: Object as PropType<HTMLIFrameElement>,
-    required: true,
-  },
-  // 影像还原
-  iframeDomyxhy: {
-    type: Object as PropType<HTMLIFrameElement>,
-    required: true,
-  },
-  // 地形勘察
-  iframeDomdxfx: {
-    type: Object as PropType<HTMLIFrameElement>,
-    required: true,
-  },
-  // 前期重置
-  iframeDomqqkc: {
-    type: Object as PropType<HTMLIFrameElement>,
-    required: true,
-  },
-
-});
 
 const tuceng = reactive({
   cunzhuang: '',
@@ -79,11 +57,11 @@ const navs = ref([
 const navItems = ref([
   [
     {
-      name: '高程分析',
+      name: '库区红线',
       active: false,
       id: '1'
     }, {
-      name: '卫星还原',
+      name: '高程分析',
       active: false,
       id: '2'
     }
@@ -104,22 +82,21 @@ const getNav1 = (indexs: number) => {
   navs.value.map((item: any, index: number) => {
     if (indexs == index) {
       item.active = true
-      getNav2(0, indexs)
     } else {
       item.active = false
     }
-    if (indexs == 0) {
-      //地面抬升
-      props.iframeDomdxfx.click()
-    } else {
-      props.iframeDomqqkc.click()
-    }
   })
+  navItems.value.map((item: any) => {
+    item.map((item: any) => {
+      item.active = false
+    })
+  })
+  getUe({ type: 'hongXian', value: false })
 }
 const getNav2 = (indexs: number, index: number) => {
   navItems.value[index].map((item: any, itemIndex: number) => {
     if (indexs == itemIndex) {
-      item.active = true
+      item.active = !item.active
     } else {
       item.active = false
     }
@@ -127,31 +104,29 @@ const getNav2 = (indexs: number, index: number) => {
   if (index == 0) {
     //地形勘察
     if (indexs == 0) {
-      //高程分析
-      console.log('高程分析');
-      props.iframeDomdgx.click()
+      //库区红线
+      getUe({ type: 'hongXian', value: navItems.value[index][indexs].active })
+    } else {
+      getUe({ type: 'hongXian', value: false })
     }
     if (indexs == 1) {
-      //卫星还原
-      console.log('卫星还原');
-      props.iframeDomyxhy.click()
+      //高程分析
+      // console.log('高程分析');
     }
+  } else {
+    getUe({ type: 'hongXian', value: false })
+    navItems.value[0].map((item: any) => {
+      item.active = false
+    })
   }
   if (index == 1) {
     //地质勘查
+  } else {
+    navItems.value[1].map((item: any) => {
+      item.active = false
+    })
   }
 }
-
-
-
-onMounted(() => {
-  // getNav1(0)
-})
-
-// 销毁时一切重置
-onUnmounted(() => {
-  console.log('重置');
-})
 
 
 </script>

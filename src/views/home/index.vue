@@ -58,7 +58,7 @@
       </div>
     </div>
     <VideoPop :mvs="mvs"></VideoPop>
-    <EnvironmentPop :mvs="mvs"></EnvironmentPop>
+    <EnvironmentPop></EnvironmentPop>
   </div>
 </template>
 <script setup lang="ts">
@@ -192,6 +192,9 @@ const getClick = async (num: number) => {
     //天气恢复默认晴天
     getUe({ type: 'tianqi', id: 0 })
     getUe({ type: 'shigongmoniEnd' })
+    getUe({ type: 'xunjianEnd' })
+    //未来北岙闸门关闭
+    getUe({ type: 'zhamen', value: false })
     // tianqiValue.value = false
     storeWeather.setWeatherStore(false)
     item1Show.value = false
@@ -228,6 +231,8 @@ const getRoute = (num: number) => {
   getUe({ type: 'luanshenggo' })
   getUe({ type: 'fangzhengo' })
   getUe({ type: 'shigongmoniEnd' })
+  getUe({ type: 'xunjianEnd' })
+  getUe({ type: 'zhamen', value: false })
 
 
 

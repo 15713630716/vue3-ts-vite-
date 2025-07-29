@@ -5,10 +5,15 @@
         :class="item.active == true ? 'active' : ''" @click="getNav1(index)">
         <img :src="item.img" alt="">
         <div class="title">{{ item.name }}</div>
-        <div class="active-nav" v-if="item.active && navItems[index - 1]">
+        <div class="active-nav" v-if="item.active && index == 1">
           <div class="nav-item pointer-events-all" :class="navItem.active == true ? 'nav-item-active' : ''"
-            v-for="(navItem, itemIndex) in navItems[index - 1]" :key="navItem.id"
-            @click.stop="getNav2(itemIndex, index)">
+            v-for="(navItem, itemIndex) in navItems[0]" :key="navItem.id" @click.stop="getNav2(itemIndex, index)">
+            {{ navItem.name }}
+          </div>
+        </div>
+        <div class="active-nav" v-if="item.active && index == 4">
+          <div class="nav-item pointer-events-all" :class="navItem.active == true ? 'nav-item-active' : ''"
+            v-for="(navItem, itemIndex) in navItems[1]" :key="navItem.id" @click.stop="getNav2(itemIndex, index)">
             {{ navItem.name }}
           </div>
         </div>
@@ -394,122 +399,7 @@
         </div>
       </div>
     </div> -->
-    <div class="bimDetail-box pointer-events-all" v-show="dialogBim">
-      <el-dialog v-model="dialogBim" title="发电引水隧洞" width="1600" top="7vh">
-        <div class="bim-content">
-          <div class="bim-tab">
-            <template v-for="tab in [{ name: '安全监测', id: '1' }, { name: '施工地质', id: '2' }]">
-              <div :class="tab.id == activeName ? 'tab-active' : ''" @click="handleClick(tab.id)">{{ tab.name }}</div>
-            </template>
-          </div>
-          <div class="tab-content" v-show="activeName == '1'">
-            <div class="tab-item">
-              <div class="top">
-                <div class="title"><img style="width: 16px;height: 16px;margin-right: 10px;"
-                    src="../../assets/luansheng/tab-title.png" alt="">仪器安装进度</div>
-                <div class="tuli" style="display: flex;align-items: center;">
-                  <div class="item">
-                    <span
-                      style="display: inline-block;width: 30px;height: 15px;background-color:  #35EEE7;margin-right: 5px;"></span>
-                    <span>已布设备</span>
-                  </div>
-                  <div class="item">
-                    <span
-                      style="display: inline-block;width: 30px;height: 15px;background-color:  #EEA959;margin-right: 5px;"></span>
-                    <span>已开挖未布置设备</span>
-                  </div>
-                  <div class="item">
-                    <span
-                      style="display: inline-block;width: 30px;height: 15px;background-color: #3B9DFF;margin-right: 5px;"></span>
-                    <span>未开挖</span>
-                  </div>
-                </div>
-              </div>
-              <div class="tab-main">
-                <div class="switch"><el-checkbox v-model="checked4">显示山体背景</el-checkbox></div>
-                <div class="tab-main1" v-if="checked4"></div>
-                <canvas ref="myCanvas4"></canvas>
-              </div>
-            </div>
-            <img style="width: 100%;margin-top: 5px;" src="../../assets//luansheng/111.png" alt="">
-          </div>
-          <div class="tab-content" v-show="activeName == '2'">
-            <div class="tab-item">
-              <div class="top">
-                <div class="title"><img style="width: 16px;height: 16px;margin-right: 10px;"
-                    src="../../assets/luansheng/tab-title.png" alt="">地质超前预报(粗探)</div>
-              </div>
-              <div class="tab-main">
-                <div class="switch"><el-checkbox v-model="checked1">显示山体背景</el-checkbox></div>
-                <div class="tab-main1" v-if="checked1"></div>
-                <canvas ref="myCanvas1"></canvas>
-              </div>
-            </div>
-            <div class="tab-item" style="margin: 10px 0;">
-              <div class="top">
-                <div class="title"><img style="width: 16px;height: 16px;margin-right: 10px;"
-                    src="../../assets/luansheng/tab-title.png" alt="">地质超前预报(精探)</div>
-                <div class="tuli" style="display: flex;align-items: center;">
-                  <div class="item">
-                    <span
-                      style="display: inline-block;width: 30px;height: 15px;background-color: #27981b;margin-right: 5px;"></span>
-                    <span>均完成</span>
-                  </div>
-                  <div class="item">
-                    <span
-                      style="display: inline-block;width: 30px;height: 15px;background-color: #ea6d63;margin-right: 5px;"></span>
-                    <span>仅完成红外探水预报</span>
-                  </div>
-                  <div class="item">
-                    <span
-                      style="display: inline-block;width: 30px;height: 15px;background-color: #782ed8;margin-right: 5px;"></span>
-                    <span>仅完成地质雷达探测</span>
-                  </div>
-                </div>
-              </div>
-              <div class="tab-main">
-                <div class="switch"><el-checkbox v-model="checked2">显示山体背景</el-checkbox></div>
-                <div class="tab-main1" v-if="checked2"></div>
-                <canvas ref="myCanvas2"></canvas>
-              </div>
-            </div>
-            <div class="tab-item">
-              <div class="top">
-                <div class="title"><img style="width: 16px;height: 16px;margin-right: 10px;"
-                    src="../../assets/luansheng/tab-title.png" alt="">施工地质</div>
-                <div class="tuli" style="display: flex;align-items: center;">
-                  <div class="item">
-                    <span
-                      style="display: inline-block;width: 30px;height: 15px;background-color: #d5ae9f;margin-right: 5px;"></span>
-                    <span>V</span>
-                  </div>
-                  <div class="item">
-                    <span
-                      style="display: inline-block;width: 30px;height: 15px;background-color: #d8d9b7;margin-right: 5px;"></span>
-                    <span>IV类</span>
-                  </div>
-                  <div class="item">
-                    <span
-                      style="display: inline-block;width: 30px;height: 15px;background-color: #d7c39f;margin-right: 5px;"></span>
-                    <span>|||类偏坏</span>
-                  </div>
-                  <div class="item">
-                    <span
-                      style="display: inline-block;width: 30px;height: 15px;background-color: #b29c86;margin-right: 5px;"></span>
-                    <span>||类</span>
-                  </div>
-                </div>
-              </div>
-              <div class="tab-main">
-                <div class="switch"><el-checkbox v-model="checked3">显示山体背景</el-checkbox></div>
-                <div class="tab-main1" v-if="checked3"></div>
-                <canvas ref="myCanvas3"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-      </el-dialog>
-    </div>
+    <ElectricHole ref="RefElectricHole"></ElectricHole>
   </div>
 </template>
 <script setup lang="ts">
@@ -536,12 +426,12 @@ import MvPop from '@/components/guankong/MvPop.vue'
 import Environment from '@/components/guankong/Environment.vue'
 import Machinery from '@/components/guankong/Machinery.vue'
 import People from '@/components/guankong/People.vue'
+import ElectricHole from '@/components/ElectricHole.vue'
 import { ElMessage, type TreeInstance } from 'element-plus'
 import { arrayToTree, sortByNumberFieldAdvanced } from '@/utils/arrayToTree'
 
 const storeWeather = useStoreWeather()
 const storeUe = ueStoreJson();
-
 
 const tuceng = ref([
   {
@@ -577,7 +467,6 @@ const tuceng = ref([
 ])
 //图层开关
 const tuCengSwitch = (item: any) => {
-  // console.log('val', item);
   //判断图层传递消息
   getUe({ type: 'tuceng', name: item.id, id: `${item.value}` })
 }
@@ -594,11 +483,6 @@ const navs = ref([
     active: false,
   },
   {
-    name: '仿真中心',
-    img: img2,
-    active: false
-  },
-  {
     name: '质量中心',
     img: img3,
     active: false
@@ -606,6 +490,11 @@ const navs = ref([
   {
     name: '安全中心',
     img: img4,
+    active: false
+  },
+  {
+    name: '仿真中心',
+    img: img2,
     active: false
   },
 ])
@@ -670,41 +559,46 @@ const getNav1 = (indexs: number) => {
   navs.value.map((item: any, index: number) => {
     if (indexs == index) {
       item.active = true
-      if (indexs < 3 && indexs > 0) {
-        getNav2(0, indexs)
-      } else {
-        luanshengBoxShow.value = false
-        fangzhenBoxShow.value = false
-        getUe({ type: 'luanshenggo' })
-        damActive.value = false
-        getUe({ type: 'fangzhengo' })
-        getUe({ type: 'shigongmoniEnd' })
-      }
-
-      if (indexs == 3) {
-        dataTree.value?.map((item: any) => {
-          // getUe({ type: 'zhiliangdata', id: item.id, status: 'false' })
-          getUe({ type: 'zhiliangdata', id: item.id, status: item.evaluationStatus == 'Assessed' ? 'true' : 'false' })
-        })
-        getUe({ type: 'zhiliang' })
-        zhiliangActive.value = true
-      } else {
-        getUe({ type: 'zhilianggo' })
-        zhiliangActive.value = false
-      }
-      if (indexs == 4) {
-        anquanActive.value = true
-        getUe({ type: 'anquanzhongxin' })
-      } else {
-        anquanActive.value = false
-        getUe({ type: 'anquanzhongxingo' })
-      }
       if (indexs == 0) {
         guankongActive.value = true
         getUe({ type: 'guankong' })
       } else {
         guankongActive.value = false
         getUe({ type: 'guankonggo' })
+      }
+      if (indexs == 1) {
+        getUe({ type: 'luansheng' })
+        getNav2(0, indexs)
+      } else {
+        luanshengBoxShow.value = false
+        getUe({ type: 'luanshenggo' })
+        damActive.value = false
+      }
+      if (indexs == 2) {
+        getUe({ type: 'zhiliang' })
+        dataTree.value?.map((item: any) => {
+          getUe({ type: 'zhiliangdata', id: item.id, status: item.evaluationStatus == 'Assessed' ? 'true' : 'false' })
+        })
+        zhiliangActive.value = true
+      } else {
+        getUe({ type: 'zhilianggo' })
+        zhiliangActive.value = false
+      }
+      if (indexs == 3) {
+        getUe({ type: 'anquanzhongxin' })
+        anquanActive.value = true
+      } else {
+        anquanActive.value = false
+        getUe({ type: 'anquanzhongxingo' })
+      }
+      if (indexs == 4) {
+        getUe({ type: 'fangzhen' })
+        getNav2(0, indexs)
+      } else {
+        fangzhenBoxShow.value = false
+        getUe({ type: 'fangzhengo' })
+        getUe({ type: 'shigongmoniEnd' })
+        getUe({ type: 'xunjianEnd' })
       }
     } else {
       item.active = false
@@ -717,23 +611,21 @@ const fangzhenBoxShow = ref<boolean>(false)
 const luanshengItem = ref({} as any)
 const fangzhenItem = ref({} as any)
 const getNav2 = (indexs: number, index: number) => {
-  navItems.value[index - 1].map((item: any, itemIndex: number) => {
-    if (indexs == itemIndex) {
-      item.active = true
-    } else {
-      item.active = false
-    }
-  })
   if (index == 1) {
-    //孪生中心
+    //进度中心
+    navItems.value[0].map((item: any, itemIndex: number) => {
+      if (indexs == itemIndex) {
+        item.active = true
+      } else {
+        item.active = false
+      }
+    })
     luanshengBoxShow.value = true
-    getLuansheng(navItems.value[index - 1][indexs])
-    // console.log('item', `luansheng${navItems.value[index][indexs].id}`);
-    getUe({ type: `luansheng${navItems.value[index - 1][indexs].id}` })
+    getLuansheng(navItems.value[0][indexs])
+    getUe({ type: `luansheng${navItems.value[0][indexs].id}` })
     getUe({ type: 'luansheng' })
     //点击混凝土重力拱坝时传递状态
     if (indexs == 2) {
-      // console.log(dataDamList.value);
       damActive.value = true
       getUe({ type: 'damStats', lists: dataDamList.value })
     } else {
@@ -744,16 +636,23 @@ const getNav2 = (indexs: number, index: number) => {
     luanshengBoxShow.value = false
     getUe({ type: 'luanshenggo' })
   }
-  if (index == 2) {
+  if (index == 4) {
     //仿真中心
+    navItems.value[1].map((item: any, itemIndex: number) => {
+      if (indexs == itemIndex) {
+        item.active = true
+      } else {
+        item.active = false
+      }
+    })
     fangzhenBoxShow.value = true
-    getFangzhen(navItems.value[index - 1][indexs])
+    getFangzhen(navItems.value[1][indexs])
     getUe({ type: 'fangzhen' })
-
   } else {
     fangzhenBoxShow.value = false
     getUe({ type: 'fangzhengo' })
     getUe({ type: 'shigongmoniEnd' })
+    getUe({ type: 'xunjianEnd' })
   }
 }
 // 获取孪生中心的信息
@@ -762,201 +661,52 @@ const getLuansheng = (item: any) => {
   if (luanshengItem.value.id != 3) {
     damTreeShow.value = false
   }
-  // 发请求，调接口获取数据，接口还没写
-
-}
-//跳转去bim链接弹窗
-const dialogBimVisible = ref(false)
-const getBimLink = () => {
-  dialogBimVisible.value = true
+  getJindu()//获取进度
 }
 //获取进度列表
 const getJindu = async () => {
   const res = await getProgress()
   console.log('进度列表', res);
 }
+//跳转去bim链接弹窗
+const dialogBimVisible = ref(false)
+const getBimLink = () => {
+  dialogBimVisible.value = true
+}
 //孪生中心详情弹窗展示
-const dialogBim = ref(false)//发电引水弹窗
+const RefElectricHole = ref()//发电引水弹窗
 const damTreeShow = ref(false)//大坝弹窗
 const getDialogDetails = (id: any) => {
   if (id == '4') {
-    dialogBim.value = true
-    handleClick(1)
+    // 发电引水隧洞弹窗
+    RefElectricHole.value.Dialog = true
   }
   if (id == '3') {
+    //拱坝进度弹窗
     damTreeShow.value = true
     // getUe({ type: 'url', url: 'https://seawall.zdwp.net/bim/#/progressSimulation?Azimuth=0&Ploar=-20&zoomStep=1&vaultID=98c318f9-c6a5-4d86-b690-6eab84f4f69e&featureID=8514a92a-7a27-4e3e-8bcc-41df29beef26' })
   }
 }
-// 发电引水隧洞弹窗
-const activeName = ref('0')
-const handleClick = (tab: any) => {
-  activeName.value = tab
-  if (tab == '2') {
-    getCanvas()
+//获取拱坝树进度
+const dataDamList = ref([] as any)
+const dataDamTree = ref<Tree[]>([
+  {
+    id: 1,
+    label: 'Level one 1',
+    children: [],
   }
-  if (tab == '1') {
-    setTimeout(() => {
-      getCanvas1()
-    }, 100);
-  }
+])
+const getDamTreeDatas = async () => {
+  const res1 = await getDamProgress()
+  const res2 = sortByNumberFieldAdvanced(res1.list, 'no')//把数组按照序号排序
+  const res3 = arrayToTree(res2, 'parentId')//把排好序的数组按照字段分成树结构
+  dataDamTree.value = res3
+  res2.map((item: any) => {
+    if (item.parentId) {
+      dataDamList.value.push({ name: item.jobName, stats: item?.actualPer || 0 })
+    }
+  })
 }
-const checked1 = ref(true)
-const checked2 = ref(true)
-const checked3 = ref(true)
-const checked4 = ref(true)
-//绘制图片和折线
-const myCanvas1 = ref(null) as any
-const myCanvas2 = ref(null) as any
-const myCanvas3 = ref(null) as any
-const myCanvas4 = ref(null) as any
-const points = [  // 折线坐标点数组（示例数据）
-  { x: 312, y: 120 },
-  { x: 355, y: 148 },
-  { x: 510, y: 130 },
-  { x: 540, y: 85 },
-]
-
-const getCanvas = async () => {
-  const canvas1 = myCanvas1.value
-  const canvas2 = myCanvas2.value
-  const canvas3 = myCanvas3.value
-  await nextTick()
-  if (!canvas1) return;
-  if (!canvas2) return;
-  if (!canvas3) return;
-  const ctx1 = canvas1.getContext('2d')
-  const ctx2 = canvas2.getContext('2d')
-  const ctx3 = canvas3.getContext('2d')
-
-  // 设置Canvas尺寸（需与图片匹配或自定义）
-  canvas1.width = 800
-  canvas1.height = 200
-  canvas2.width = 800
-  canvas2.height = 200
-  canvas3.width = 800
-  canvas3.height = 200
-
-  // 开始绘制折线
-  ctx1.beginPath()
-  ctx1.moveTo(points[0].x, points[0].y)
-  ctx2.beginPath()
-  ctx2.moveTo(points[0].x, points[0].y)
-  ctx3.beginPath()
-  ctx3.moveTo(points[0].x, points[0].y)
-
-  // 连接各个点
-  points.forEach(point => {
-    ctx1.lineTo(point.x, point.y)
-    ctx2.lineTo(point.x, point.y)
-    ctx3.lineTo(point.x, point.y)
-  })
-
-  // 设置线条样式
-  ctx1.strokeStyle = '#d8d9b0'
-  ctx1.lineWidth = 4
-  ctx1.lineJoin = 'round' // 折线连接处圆角
-  ctx2.strokeStyle = '#d8d9b0'
-  ctx2.lineWidth = 4
-  ctx2.lineJoin = 'round' // 折线连接处圆角
-  ctx3.strokeStyle = '#d8d9b0'
-  ctx3.lineWidth = 4
-  ctx3.lineJoin = 'round' // 折线连接处圆角
-
-  // 绘制路径
-  ctx1.stroke()
-  ctx2.stroke()
-  ctx3.stroke()
-
-
-  //开端线段
-  const points1 = [  // 开端
-    { x: 312, y: 120 },
-    { x: 320, y: 124 }
-  ]
-  // 开始绘制折线
-  ctx1.beginPath()
-  ctx1.moveTo(points1[0].x, points1[0].y)
-  ctx2.beginPath()
-  ctx2.moveTo(points1[0].x, points1[0].y)
-  ctx3.beginPath()
-  ctx3.moveTo(points1[0].x, points1[0].y)
-
-  // 连接各个点
-  points1.forEach(point => {
-    ctx1.lineTo(point.x, point.y)
-    ctx2.lineTo(point.x, point.y)
-    ctx3.lineTo(point.x, point.y)
-  })
-
-  // 设置线条样式
-  ctx1.strokeStyle = '#174a82'
-  ctx1.lineWidth = 4
-  ctx1.lineJoin = 'round' // 折线连接处圆角
-  ctx2.strokeStyle = '#174a82'
-  ctx2.lineWidth = 4
-  ctx2.lineJoin = 'round' // 折线连接处圆角
-  ctx3.strokeStyle = '#174a82'
-  ctx3.lineWidth = 4
-  ctx3.lineJoin = 'round' // 折线连接处圆角
-
-  // 绘制路径
-  ctx1.stroke()
-  ctx2.stroke()
-  ctx3.stroke()
-}
-const getCanvas1 = async () => {
-  const canvas4 = myCanvas4.value
-  await nextTick()
-  if (!canvas4) return;
-  const ctx4 = canvas4.getContext('2d')
-
-  // 设置Canvas尺寸（需与图片匹配或自定义）
-  canvas4.width = 800
-  canvas4.height = 200
-
-  // 开始绘制折线
-  ctx4.beginPath()
-  ctx4.moveTo(points[0].x, points[0].y)
-
-  // 连接各个点
-  points.forEach(point => {
-    ctx4.lineTo(point.x, point.y)
-  })
-
-  // 设置线条样式
-  ctx4.strokeStyle = '#3b9dff'
-  ctx4.lineWidth = 4
-  ctx4.lineJoin = 'round' // 折线连接处圆角
-
-  // 绘制路径
-  ctx4.stroke()
-
-
-  //开端线段
-  const points1 = [  // 开端
-    { x: 312, y: 120 },
-    { x: 320, y: 124 }
-  ]
-  // 开始绘制折线
-  ctx4.beginPath()
-  ctx4.moveTo(points1[0].x, points1[0].y)
-
-  // 连接各个点
-  points1.forEach(point => {
-    ctx4.lineTo(point.x, point.y)
-  })
-
-  // 设置线条样式
-  ctx4.strokeStyle = '#eea959'
-  ctx4.lineWidth = 4
-  ctx4.lineJoin = 'round' // 折线连接处圆角
-
-  // 绘制路径
-  ctx4.stroke()
-}
-
-
 
 
 // 获取仿真中心的信息
@@ -980,7 +730,8 @@ const getFangzhen = (item: any) => {
     // yingliBox.value = true
     // getYingLi('x')
   } else {
-    yingliBox.value = false
+    // yingliBox.value = false
+    getUe({ type: 'xunjianEnd' })
   }
   if (item.id == 3) {
     //施工仿真模拟
@@ -1109,11 +860,9 @@ const getYingLi = async (num: string) => {
 
 //质量中心
 const inputTree = ref()
-
 interface Tree {
   [key: string]: any
 }
-
 const treeRef = ref<TreeInstance>()
 //质量树搜索
 watch(inputTree, (val) => {
@@ -1145,7 +894,6 @@ const dataTree = ref<Tree[]>([
 const getTreeDatas = async () => {
   const res = await getZhiliangTree()
   dataTree.value = res
-  // console.log('dataTree', dataTree.value);
 }
 //树节点弹窗
 const treePopShow = ref(false)
@@ -1198,7 +946,6 @@ const treeDetil = ref({} as any)
 const getZhiliangTreeDeti = async (id: any) => {
   const res = await getZhiliangTreeDetil(id)
   treeDetil.value = res
-  //attachment
   if (res.attachment) {
     const file = await getZhiliangTreeDetilFile(res.attachment)
     treeDetil.value['file'] = file
@@ -1207,7 +954,6 @@ const getZhiliangTreeDeti = async (id: any) => {
     const img = await getZhiliangTreeDetilFile(res.video)
     treeDetil.value['img'] = img
   }
-  // console.log('res', treeDetil.value);
 }
 //下载附件
 const getDowlond = (urls: any) => {
@@ -1275,7 +1021,6 @@ const getWXDetail = async (id: any) => {
   const wx = await getDangerDetail(id)
   dialogRef.value.Dialog = true;//打开弹窗
   wxDetail.value = wx
-  // console.log('wx', wx);
 }
 
 
@@ -1339,30 +1084,9 @@ const getGuankongTab = async (index: any) => {
 onMounted(() => {
   getNav1(0)
   getTreeDatas()//获取树
-  getJindu()//获取进度
   getWeixian()//获取危险源列表
   getDamTreeDatas()//获取拱坝树
 })
-//获取拱坝树
-const dataDamList = ref([] as any)
-const dataDamTree = ref<Tree[]>([
-  {
-    id: 1,
-    label: 'Level one 1',
-    children: [],
-  }
-])
-const getDamTreeDatas = async () => {
-  const res1 = await getDamProgress()
-  const res2 = sortByNumberFieldAdvanced(res1.list, 'no')//把数组按照序号排序
-  const res3 = arrayToTree(res2, 'parentId')//把排好序的数组按照字段分成树结构
-  dataDamTree.value = res3
-  res2.map((item: any) => {
-    if (item.parentId) {
-      dataDamList.value.push({ name: item.jobName, stats: item?.actualPer || 0 })
-    }
-  })
-}
 
 // 暴露方法给父组件
 defineExpose({
