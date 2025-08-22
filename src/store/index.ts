@@ -39,3 +39,13 @@ export const useStoreWeather = defineStore('weather', () => {
 
   return { weather, setWeatherStore };
 });
+export const useStoreRouter = defineStore('routerUrl', () => {
+  const routerUrl = useStorage('routerUrl', '' as any, sessionStorage);
+
+  // 设置ueStore值
+  const setRouterUrlStore = (tokenParam: any) => {
+    routerUrl.value = tokenParam;
+  };
+
+  return { routerUrl, setRouterUrlStore };
+});

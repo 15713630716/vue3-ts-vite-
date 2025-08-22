@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router'
 import { axiosToken } from '../request/getToken'
-import { useStoreToken } from '@/store';
+import { useStoreToken, useStoreRouter } from '@/store';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -14,10 +14,16 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/login/index.vue'),
   },
   {
-    //首页
+    //首页已部署至北岙项目部
     path: '/index',
     name: 'index',
     component: () => import('@/views/home/index.vue'),
+  },
+  {
+    //首页未部署
+    path: '/index-dev',
+    name: 'index-dev',
+    component: () => import('@/view/home/index.vue'),
   },
   // {
   //   //前期
@@ -52,6 +58,13 @@ router.beforeEach(async (to: any, from, next) => {
   //如果路由跳转是相同的，就取消
   if (to.name === from.name && to.name != undefined) return;
 
+  const storeRouter = useStoreRouter();
+  if (to.name == 'index-dev') {
+    storeRouter.setRouterUrlStore('#/index-dev')
+  }
+  if (to.name == 'index') {
+    storeRouter.setRouterUrlStore('#/index')
+  }
   const tokenStore = useStoreToken();
   let token = tokenStore.token;
 

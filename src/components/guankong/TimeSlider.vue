@@ -24,7 +24,7 @@ watch(
     // console.log('mod', modelValue.value);
     const time = modelValue.value + Math.floor(dayjs(`${times.value} 00:00:00`).valueOf() / 1000)
     //7.1 12点到7.1 13点  总差值3705   setup:14.4
-    console.log('time', modelValue.value);
+    // console.log('time', modelValue.value);
     if (time > 1751342360) {
       const setup = Math.floor((time - 1751342360) / 14.4)
       if (setup > 257) {

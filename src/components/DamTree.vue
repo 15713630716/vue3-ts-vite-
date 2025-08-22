@@ -14,7 +14,7 @@
         <div class="content pointer-events-all">
           <el-input v-model="inputTree" :suffix-icon="Search" class="input-tree" placeholder="请输入序号" />
           <div class="tree-box">
-            <el-scrollbar height="720px">
+            <el-scrollbar height="720px" ref="scrollbarRef">
               <el-tree ref="treeRef" :highlight-current="true" :data="dataTree" :current-node-key="currentNodeKey"
                 node-key="id" default-expand-all :filter-node-method="filterNode" :props="defaultProps"
                 :check-strictly="true" @node-click="handleNodeClick">
@@ -83,7 +83,7 @@
 </template>
 <script setup lang="ts">
 import { type TreeInstance } from 'element-plus'
-import { ref, watch } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import { getUe } from '@/utils/getUe'
 
@@ -97,6 +97,8 @@ const props = defineProps({
     },
   },
 });
+
+const scrollbarRef = ref();
 
 const defaultProps = {
   disabled: 'disabled',  // 指定禁用字段
@@ -112,8 +114,15 @@ const dataTree = ref([
 
 watch(
   () => props.dataDamTree,
-  () => {
+  async () => {
     dataTree.value = props.dataDamTree;
+    await nextTick(); // 等待 DOM 更新
+    const targets = document.getElementsByClassName('huang')[0];
+    if (targets && scrollbarRef.value) {
+      // 获取目标元素的 offsetTop（相对于父容器）
+      const offsetTop = (targets.offsetTop - 200);
+      scrollbarRef.value.setScrollTop(offsetTop);
+    }
   },
   { immediate: true }
 );

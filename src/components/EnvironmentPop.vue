@@ -25,6 +25,15 @@
       </div>
     </el-dialog>
   </div>
+  <!-- <div class="alarm-box" v-if="alarmShow">
+    <div class="affter pointer-events-all" @click="alarmShow = false"></div>
+    <div class="item">
+      <div class="left"></div>
+      <div class="right">
+        报警信息：噪音80Db,超过预警值75Db,请及时处理！
+      </div>
+    </div>
+  </div> -->
 </template>
 <script setup lang="ts">
 import { ref, watch, onMounted, nextTick, onUnmounted } from 'vue';
@@ -35,6 +44,8 @@ import type { EChartsType } from 'echarts';
 import * as echarts from 'echarts'
 
 const storeUe = ueStoreJson();
+
+const alarmShow = ref(true)
 
 
 watch(
@@ -225,6 +236,53 @@ watch(
 );
 </script>
 <style lang="scss" scoped>
+.alarm-box {
+  position: absolute;
+  top: 120px;
+  left: 730px;
+  width: 460px;
+  min-height: 95px;
+  background-color: rgba(248, 122, 26, 0.4);
+  box-shadow: inset 0px 1px 53px 0px rgba(168, 4, 26, 0.7);
+  border-radius: 5px;
+
+  .affter {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    top: 3px;
+    right: 5px;
+    background: url('../assets/img/weilai/cha.png') no-repeat;
+    background-size: 100% 100%;
+    cursor: pointer;
+    z-index: 999;
+  }
+
+  .item {
+    width: 100%;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    margin-top: 15px;
+
+    .left {
+      width: 60px;
+      height: 60px;
+      background: url('../assets/img/jiansheqi/anquan/text-logo.png') no-repeat;
+      background-size: 100% 100%;
+      margin: 0px 15px 15px;
+    }
+
+    .right {
+      width: 340px;
+      height: 100%;
+      color: yellow;
+      font-size: 18px;
+      padding: 10px;
+    }
+  }
+
+}
 .video-box {
   position: absolute;
   top: 0;

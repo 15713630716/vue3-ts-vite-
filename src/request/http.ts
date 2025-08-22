@@ -1,7 +1,7 @@
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
 // import QS from 'qs';
-import { useStoreToken } from '@/store';
+import { useStoreToken, useStoreRouter } from '@/store';
 import { axiosToken } from '../request/getToken'
 import { getUe } from '@/utils/getUe';
 
@@ -59,7 +59,8 @@ axios.interceptors.response.use(
       storeToken.setToken('');
       axiosToken()
       // 直接刷新当前页面（可能会从浏览器缓存加载）
-      window.location.href = '#/index';
+      const storeRouter = useStoreRouter();
+      window.location.href = storeRouter.routerUrl;
       window.location.reload();
       getUe({ type: 'qiehuan_cz' })
       getUe({ type: 'zhilianggo' })
