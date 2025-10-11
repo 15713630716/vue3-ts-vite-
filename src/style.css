@@ -133,14 +133,21 @@ li {
   background: url('@/assets/guankong/line.png') no-repeat;
   background-size: 100% 100%;
 }
-.el-dropdown__popper.el-popper,
-.el-dropdown__popper.el-popper .el-popper__arrow:before {
-  box-shadow: inset 0px 0px 19px 0px rgba(88, 207, 255, 0.72);
-  border-radius: 3px;
+.el-dropdown__popper.el-popper {
   border: 1px solid #3CBAF7 !important;
+  background-color: rgba(63, 118, 170, 0.4) !important;
+}
+.el-dropdown__popper.el-popper .el-popper__arrow:before {
+  display: none;
 }
 
-/* .el-dropdown-menu {
-  background-color: rgba(14, 141, 208, 0) !important;
-  background: linear-gradient(55deg, rgba(63, 118, 170, 0) 0%, rgba(63, 118, 170, 0.4) 100%), rgba(15, 88, 111, 0.39);
-} */
+.el-dropdown-menu {
+  background-color: rgba(63, 118, 170, 0) !important;
+}
+
+.el-dropdown-menu .el-dropdown-menu__item {
+  color: #fff;
+  line-height: 20px;
+  padding: 4px 14px;
+  font-size: 14px;
+}

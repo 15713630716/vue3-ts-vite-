@@ -335,7 +335,7 @@ const getRoute = (num: number) => {
       }
 
       .right-box {
-        width: 300px;
+        width: 350px;
         margin-top: 15px;
         margin-right: 32px;
         display: flex;

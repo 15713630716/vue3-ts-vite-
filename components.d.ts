@@ -9,6 +9,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     '副本': typeof import('./src/components/Record - 副本.vue')['default']
+    AiImg: typeof import('./src/components/guankong/AiImg.vue')['default']
     AnquanPop: typeof import('./src/components/AnquanPop.vue')['default']
     DamTree: typeof import('./src/components/DamTree.vue')['default']
     ElCarousel: typeof import('element-plus/es')['ElCarousel']
@@ -25,6 +26,7 @@ declare module 'vue' {
     ElFormItem: typeof import('element-plus/es')['ElFormItem']
     ElIcon: typeof import('element-plus/es')['ElIcon']
     ElImage: typeof import('element-plus/es')['ElImage']
+    ElImageViewer: typeof import('element-plus/es')['ElImageViewer']
     ElInput: typeof import('element-plus/es')['ElInput']
     ElProgress: typeof import('element-plus/es')['ElProgress']
     ElRadioButton: typeof import('element-plus/es')['ElRadioButton']

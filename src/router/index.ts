@@ -4,26 +4,26 @@ import { useStoreToken, useStoreRouter } from '@/store';
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
-    redirect: '/login',
+    path: "/",
+    redirect: "/login",
   },
   {
     //登录
-    path: '/login',
-    name: 'login',
-    component: () => import('@/views/login/index.vue'),
+    path: "/login",
+    name: "login",
+    component: () => import("@/views/login/index.vue"),
   },
   {
     //首页已部署至北岙项目部
-    path: '/index',
-    name: 'index',
-    component: () => import('@/views/home/index.vue'),
+    path: "/index",
+    name: "index",
+    component: () => import("@/views/home/index.vue"),
   },
   {
     //首页未部署
-    path: '/index-dev',
-    name: 'index-dev',
-    component: () => import('@/view/home/index.vue'),
+    path: "/index-dev",
+    name: "index-dev",
+    component: () => import("@/views/home/index.vue"),
   },
   // {
   //   //前期
@@ -45,7 +45,7 @@ const routes: Array<RouteRecordRaw> = [
   //   path: '/ues',
   //   component: () => import('@/views/ue/ue.vue'),
   // },
-]
+];
 
 const router = createRouter({
   history: createWebHashHistory(),

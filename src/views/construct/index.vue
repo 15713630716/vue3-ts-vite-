@@ -124,6 +124,12 @@
         <div class="item" :class="tianqiShow == 4 ? 'wenkong-active' : ''" @click="getTianQi(4)"><img
             src="../../assets/weather/xue.png" alt="">雪天</div>
       </div>
+      <div class="uav-mv pointer-events-all" v-if="uavPopShow" @click="getAI()">
+        <!-- <div class="after" @click="uavPopShow = false"></div>
+        <video class="video" controls="false" autoplay muted playsinline
+          controlslist="nodownload nofullscreen noremoteplayback" disablePictureInPicture oncontextmenu="return false"
+          src="../../assets/uav.mp4"></video> -->
+      </div>
       <div class="yingli" v-if="yingliBox">
         <div class="yingli-top"></div>
         <div class="yingli-right">
@@ -312,9 +318,62 @@
             <MvPop v-if="indexTab == '1'"></MvPop>
             <Environment v-if="indexTab == '2'"></Environment>
             <People v-if="indexTab == 3"></People>
+            <div class="people-deatil" v-if="indexTab == 3 && peopleDetailPopShow">
+              <div class="header pointer-events-all">
+                人员详情
+                <div class="after" @click="peopleDetailPopShow = false"></div>
+              </div>
+              <div class="main-people">
+                <div class="perctue">
+                  <img src="../../assets/guankong/people.png" alt="">
+                </div>
+                <div class="content-pop">
+                  <div class="item">
+                    <div class="label">姓名</div>
+                    <div class="value">张三</div>
+                  </div>
+                  <div class="item">
+                    <div class="label">所属单位</div>
+                    <div class="value">某某建设公司</div>
+                  </div>
+                  <div class="item">
+                    <div class="label">岗位/工种</div>
+                    <div class="value">施工员</div>
+                  </div>
+                  <div class="item">
+                    <div class="label">联系方式</div>
+                    <div class="value">138********</div>
+                  </div>
+                  <div class="item">
+                    <div class="label">设备状态</div>
+                    <div class="value value5">在线</div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <Machinery v-if="indexTab == 4"></Machinery>
           </div>
         </div>
+      </div>
+      <div class="work-area-button pointer-events-all">
+        <el-dropdown>
+          <span class="el-dropdown-link">
+            工区选择
+            <el-icon class="el-icon--right">
+              <arrow-down />
+            </el-icon>
+          </span>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item @click="getUe({ type: 'workArea', id: 1 })">项目部</el-dropdown-item>
+              <el-dropdown-item @click="getUe({ type: 'workArea', id: 2 })">坝址区</el-dropdown-item>
+              <el-dropdown-item @click="getUe({ type: 'workArea', id: 3 })">导流洞入口</el-dropdown-item>
+              <el-dropdown-item @click="getUe({ type: 'workArea', id: 4 })">导流洞出口</el-dropdown-item>
+              <el-dropdown-item @click="getUe({ type: 'workArea', id: 5 })">料场</el-dropdown-item>
+              <el-dropdown-item @click="getUe({ type: 'workArea', id: 6 })">管理区</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </div>
     </div>
     <div class="tuceng pointer-events-all" v-if="guankongActive">
@@ -386,20 +445,16 @@
         </div>
       </div>
     </div>
-    <!-- <div class="bim-pop" v-if="dialogBa">
-      <div class="line">
-        <div class="header pointer-events-all">
-          混凝土重力拱坝进度详情
-          <div class="after" @click="dialogBa = false"></div>
-        </div>
-        <div class="content-pop pointer-events-all">
-          <iframe style="width: 100%;height: 95%;"
-            src="https://seawall.zdwp.net/bim/#/progressSimulation?Azimuth=0&Ploar=-20&zoomStep=1&vaultID=98c318f9-c6a5-4d86-b690-6eab84f4f69e&featureID=8514a92a-7a27-4e3e-8bcc-41df29beef26"
-            frameborder="0"></iframe>
-        </div>
-      </div>
-    </div> -->
     <ElectricHole ref="RefElectricHole"></ElectricHole>
+    <AiImg v-model:aiImgShow ="aiImgShow"></AiImg>
+    <div class="AI-progress" v-if="progressShow">
+      <el-progress
+      :percentage="percentageAi"
+      :stroke-width="40"
+      striped
+      striped-flow
+    />
+    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -424,6 +479,7 @@ import Overview from '@/components/guankong/Overview.vue'
 import DamTree from '@/components/DamTree.vue'
 import MvPop from '@/components/guankong/MvPop.vue'
 import Environment from '@/components/guankong/Environment.vue'
+import AiImg from '@/components/guankong/AiImg.vue'
 import Machinery from '@/components/guankong/Machinery.vue'
 import People from '@/components/guankong/People.vue'
 import ElectricHole from '@/components/ElectricHole.vue'
@@ -713,6 +769,7 @@ const getDamTreeDatas = async () => {
 const wenkongBox = ref<boolean>(false)
 const yingliBox = ref<boolean>(false)
 const tianqiBox = ref<boolean>(false)
+const uavPopShow = ref<boolean>(false)
 const getFangzhen = (item: any) => {
   fangzhenItem.value = item
   // 发请求，调接口获取数据，接口还没写
@@ -725,12 +782,14 @@ const getFangzhen = (item: any) => {
   }
   if (item.id == 2) {
     //无人机巡检
+    uavPopShow.value = true
     getUe({ type: 'xunjian' })
     //应力有限元
     // yingliBox.value = true
     // getYingLi('x')
   } else {
     // yingliBox.value = false
+    uavPopShow.value = false
     getUe({ type: 'xunjianEnd' })
   }
   if (item.id == 3) {
@@ -747,6 +806,28 @@ const getFangzhen = (item: any) => {
     tianqiBox.value = false
   }
 
+}
+//无人机ai
+const progressShow = ref(false)
+const aiImgShow = ref(false)
+const percentageAi = ref(0)
+const timer = ref(null as any)
+const timer1 = ref(null as any)
+const getAI = ()=>{
+  progressShow.value = true
+  timer.value = setInterval(() => {
+    if (percentageAi.value < 100) {
+      percentageAi.value++
+    }else{
+      timer1.value = setTimeout(() => {
+        clearInterval(timer.value)
+        progressShow.value = false
+        aiImgShow.value = true
+        percentageAi.value = 0
+        clearTimeout(timer1.value)
+      }, 2000);
+    }
+  }, 50);
 }
 //温控
 const wenkongShow = ref<boolean>()
@@ -901,6 +982,7 @@ const treePopName = ref('')
 const currentNodeKey = ref('')
 const handleNodeClick = (data: Tree) => {
   currentNodeKey.value = data.id
+  console.log(data);
   getUe({ type: 'zhiliang', id: data.id })
   treePopShow.value = false
   if (data.evaluationStatus != "Assessed") {
@@ -911,27 +993,6 @@ const handleNodeClick = (data: Tree) => {
     getZhiliangTreeDeti(data.id)
   }
 }
-// 接收信息触发点击树放弹窗
-watch(
-  () => storeUe.ueStore,
-  () => {
-    if (storeUe.ueStore) {
-      if (storeUe.ueStore.type == 'zhiliang') {
-        dataTree.value.map((item: any) => {
-          if (item.id == storeUe.ueStore.id) {
-            currentNodeKey.value = item.id
-            if (item.evaluationStatus != "Assessed") {
-              ElMessage.warning({ message: `${item.name} 未验评`, duration: 1500 });
-            } else {
-              treePopName.value = item.name
-              getZhiliangTreeDeti(item.id)
-            }
-          }
-        })
-      }
-    }
-  }
-);
 // 监听树弹窗关闭时把详细信息弹窗也关闭
 watch(
   () => zhiliangActive.value,
@@ -1065,21 +1126,79 @@ watch(
   }
 );
 const guankongRef = ref()
+const peopleDetailPopShow = ref(false)//人员定位详情弹窗
 const getGuankongTab = async (index: any) => {
   indexTab.value = index
   await nextTick()
   if (index == 2 || index == 1) {
     guankongRef.value.style.transform = `translate(0px,0px)`
   }
+  if (index == 0) {
+    getUe({ type: 'tuceng', name: 'Alltags', id: 'true' })
+  } else {
+    getUe({ type: 'tuceng', name: 'Alltags', id: 'false' })
+  }
+  if (index == 1) {
+    getUe({ mv: 'true' })
+  } else {
+    if (index == 0) {
+      getUe({ mv: 'true' })
+    } else {
+      getUe({ mv: 'false' })
+    }
+  }
+  if (index == 2) {
+    getUe({ environment: 'true' })
+  } else {
+    if (index == 0) {
+      getUe({ environment: 'true' })
+    } else {
+      getUe({ environment: 'false' })
+    }
+  }
   if (index == 3) {
     guankongRef.value.style.transform = `translate(-130px,0px)`
-    getUe({ type: 'tuceng', name: 'Alltags', id: 'false' })
-    getUe({ people: 'true' })
+    // getUe({ type: 'tuceng', name: 'Alltags', id: 'false' })
+    // console.log(Math.floor(Date.now() / 1000))
+    getUe({ people: 'true', time: Math.floor(Date.now() / 1000) })
   } else {
-    getUe({ type: 'tuceng', name: 'Alltags', id: 'true' })
+    // getUe({ type: 'tuceng', name: 'Alltags', id: 'true' })
     getUe({ people: 'false' })
   }
+  if (index == 4) {
+    getUe({ machinery: 'true' })
+  } else {
+    getUe({ machinery: 'false' })
+  }
+
 }
+
+// 接收ue传递消息
+watch(
+  () => storeUe.ueStore,
+  () => {
+    if (storeUe.ueStore) {
+      //接收质量信息触发点击质量树放弹窗
+      if (storeUe.ueStore.type == 'zhiliang') {
+        dataTree.value.map((item: any) => {
+          if (item.id == storeUe.ueStore.id) {
+            currentNodeKey.value = item.id
+            if (item.evaluationStatus != "Assessed") {
+              ElMessage.warning({ message: `${item.name} 未验评`, duration: 1500 });
+            } else {
+              treePopName.value = item.name
+              getZhiliangTreeDeti(item.id)
+            }
+          }
+        })
+      }
+      //接收人员定位标签消息，展示人员定位详情弹窗
+      if (storeUe.ueStore.type == 'peoplePositioning') {
+        peopleDetailPopShow.value = true
+      }
+    }
+  }
+);
 
 onMounted(() => {
   getNav1(0)
@@ -1100,6 +1219,13 @@ defineExpose({
   padding: 0 24px 0 16px;
   position: relative;
   overflow: hidden;
+  .AI-progress{
+    position: absolute;
+    width: 1300px;
+    height: 40px;
+    top: 40%;
+    left: 310px;
+  }
 
   .nav {
     width: 266px;
@@ -1441,6 +1567,65 @@ defineExpose({
       .wenkong-active {
         background: url('../../assets/img/jiansheqi/wenkong-active.png') no-repeat;
         background-size: 100% 100%;
+      }
+    }
+
+    .uav-mv {
+      position: absolute;
+      bottom: 19px;
+      right: 19px;
+      width: 500px;
+      height: 300px;
+      // background: linear-gradient(55deg, rgba(63, 118, 170, 0) 0%, rgba(63, 118, 170, 0.4) 100%), rgba(15, 88, 111, 0.39);
+      // border-radius: 5px;
+      // border: 1px solid rgba(110, 181, 242, 0.57);
+      //ai按钮
+      width: 100px;
+      height: 35px;
+      bottom: 340px;
+      right: 119px;
+      background: url('../../assets/guankong/AI.png') no-repeat;
+      background-size: 100% 100%;
+      border: none;
+      cursor: pointer;
+
+      .after {
+        position: absolute;
+        width: 28px;
+        height: 28px;
+        top: 5px;
+        right: 5px;
+        background: url('../../assets/img/weilai/cha.png') no-repeat;
+        background-size: 100% 100%;
+        cursor: pointer;
+        z-index: 999;
+      }
+
+      .video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+
+        /* 隐藏所有控制 UI */
+        -webkit-media-controls-enclosure {
+          display: none !important;
+        }
+
+        /* 隐藏进度条 */
+        &::-webkit-media-controls-panel,
+        &::-webkit-media-controls-play-button,
+        &::-webkit-media-controls-start-playback-button,
+        &::-webkit-media-controls-timeline,
+        &::-webkit-media-controls-current-time-display,
+        &::-webkit-media-controls-time-remaining-display,
+        &::-webkit-media-controls-mute-button,
+        &::-webkit-media-controls-volume-slider,
+        &::-webkit-media-controls-fullscreen-button,
+        &::-webkit-media-controls-toggle-closed-captions-button {
+          display: none !important;
+          opacity: 0 !important;
+          pointer-events: none !important;
+        }
       }
     }
 
@@ -2064,6 +2249,33 @@ defineExpose({
     border-radius: 14px;
     border: 1px solid rgba(110, 181, 242, 0.57);
 
+    .work-area-button {
+      position: absolute;
+      top: 0;
+      left: -150px;
+      width: 120px;
+      height: 30px;
+      color: #fff;
+      background: linear-gradient(55deg, rgba(63, 118, 170, 0) 0%, rgba(63, 118, 170, 0.4) 100%), rgba(15, 88, 111, 0.39);
+      box-shadow: inset 0px 0px 19px 0px rgba(88, 207, 255, 0.72);
+      border-radius: 3px;
+      border: 1px solid #3CBAF7;
+      cursor: pointer;
+      text-align: center;
+
+      .el-dropdown-link {
+        font-size: 16px;
+        color: #fff;
+        height: 30px;
+        line-height: 28px;
+        border: none !important;
+      }
+
+      .el-dropdown-link:focus {
+        outline: none;
+      }
+    }
+
     .guankong-line {
       width: 400px;
       height: 860px;
@@ -2117,6 +2329,94 @@ defineExpose({
           width: 100%;
           height: 100%;
           padding: 0 11px;
+          position: relative;
+
+          .people-deatil {
+            width: 300px;
+            min-height: 200px;
+            position: absolute;
+            top: 150px;
+            left: -740px;
+            background: url('../../assets/guankong/people-pop.png') no-repeat;
+            background-size: 100% 100%;
+            padding: 10px 12px;
+
+            .header {
+              width: 100%;
+              height: 30px;
+              line-height: 30px;
+              font-family: MicrosoftYaHeiSemibold;
+              font-size: 16px;
+              color: #FFFFFF;
+              background: linear-gradient(270deg, rgba(34, 102, 135, 0) 0%, #13A4EB 100%);
+              padding-left: 16px;
+              position: relative;
+
+              .after {
+                position: absolute;
+                width: 20px;
+                height: 20px;
+                top: 7px;
+                right: 0px;
+                background: url('../../assets/img/weilai/cha.png') no-repeat;
+                background-size: 100% 100%;
+                cursor: pointer;
+              }
+            }
+
+            .main-people {
+              width: 100%;
+              display: flex;
+              align-items: center;
+
+              .perctue {
+                width: 130px;
+                padding: 10px 10px 10px 0;
+
+                img {
+                  width: 100%;
+                }
+              }
+
+              .content-pop {
+                width: 220px;
+                min-height: 140px;
+                padding: 5px;
+
+                .item {
+                  width: 100%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: start;
+                  font-size: 12px;
+                  color: #FFFFFF;
+
+                  .label {
+                    width: 60px;
+                    margin-right: 10px;
+                    color: rgba(135, 213, 255, 1);
+                    line-height: 30px;
+                  }
+
+                  .value {
+                    text-align: left;
+                  }
+
+                  .value5 {
+                    font-size: 12px;
+                    width: auto;
+                    padding: 0px 13px;
+                    height: 20px;
+                    text-align: center;
+                    line-height: 20px;
+                    background-image: linear-gradient(0deg, rgba(0, 249, 146, 0.80) 1%, rgba(2, 210, 122, 0.07) 100%);
+                    border-radius: 4px;
+                  }
+                }
+              }
+            }
+
+          }
         }
       }
     }
