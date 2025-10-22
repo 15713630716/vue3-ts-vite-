@@ -20,12 +20,12 @@
                 :check-strictly="true" @node-click="handleNodeClick">
                 <template #default="{ node, data }">
                   <div class="custom-tree-node">
-                    <template v-if="data.parentId && data.no >= 9">
+                    <template v-if="data.parentId">
                       <i class="off" v-if="data.actualPer == 1"></i>
                       <i class="huang" v-else-if="data.actualPer && data.actualPer < 1"></i>
                       <i class="on" v-else></i>
                     </template>
-                    <i class="off" v-if="data.no < 9"></i>
+                    <!-- <i class="off" v-if="data.no < 9"></i> -->
                     <span class="node">{{ node.jobName }}</span>
                     <span class="data-title">{{ data.no }} </span>
                     <span class="data">{{ data.jobName }}</span>
@@ -38,9 +38,9 @@
       </div>
     </div>
     <div class="pop-total" v-if="popTotal">
-      <div class="end">已完成:15%</div>
-      <div class="ing">正在进行:10层k14-48仓</div>
-      <div class="height">当前高程:117-119(米)</div>
+      <div class="end">已完成:0.5%</div>
+      <div class="ing">正在进行:1层k16-57仓</div>
+      <div class="height">当前高程:0-4(米)</div>
       <!-- <div class="after pointer-events-all" @click="popTotal = false"></div> -->
     </div>
     <div class="tree-pop" v-if="treePopShow">

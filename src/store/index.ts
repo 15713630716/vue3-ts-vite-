@@ -49,3 +49,23 @@ export const useStoreRouter = defineStore('routerUrl', () => {
 
   return { routerUrl, setRouterUrlStore };
 });
+export const useStoreAlarm = defineStore("alarm", () => {
+  const alarm = useStorage("alarm", {} as any, sessionStorage);
+
+  // 设置ueStore值
+  const setAlarmStore = (alarmParam: any) => {
+    alarm.value = alarmParam;
+  };
+
+  return { alarm, setAlarmStore };
+});
+export const useStoreTuzhi = defineStore("tuzhis", () => {
+  const tuzhis = useStorage("tuzhis", "" as any, sessionStorage);
+
+  // 设置ueStore值
+  const setTuzhiStore = (alarmParam: any) => {
+    tuzhis.value = alarmParam;
+  };
+
+  return { tuzhis, setTuzhiStore };
+});

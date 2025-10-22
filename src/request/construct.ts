@@ -62,18 +62,36 @@ export function getDamProgress() {
   return post(`/zdwp-api/v3/schedule/plan/job/page`, {
     currentPage: 1,
     pageSize: 9999,
-    planId: "1942408257492533250",
+    planId: "1976909043691687937",
     planName: "拱坝浇筑进度测试",
     projectId: "1813759284281929730",
     sectionId: "1813759430390509569",
-    cancelPermission: true
+    cancelPermission: true,
   });
 }
 //获取环境监测信息
 export function getHuanJing(par: any) {
-  return get(`/zdwp-api/v3/shangsi/construction/construction-em-push-info/page?projectId=1813759284281929730&sectionId=1813759430390509569&currentPage=1&pageSize=99999999&deviceCode=25042921&_t=1750144765031`, par);
+  return get(
+    `/zdwp-api/v3/shangsi/construction/construction-em-push-info/page?projectId=1813759284281929730&sectionId=1813759430390509569&currentPage=1&pageSize=99999999&deviceCode=25042921&_t=1750144765031`,
+    par
+  );
 }
 //获取环境监测预警信息
 export function getHuanJingWarn() {
-  return get(`/zdwp-api/v3/construction/construction-em-device/page?projectId=1813759284281929730&sectionId=1813759430390509569&currentPage=1&pageSize=20&hasLastPushData=true&_t=1750211373726`);
+  return get(
+    `/zdwp-api/v3/construction/construction-em-device/page?projectId=1813759284281929730&sectionId=1813759430390509569&currentPage=1&pageSize=20&hasLastPushData=true&_t=1750211373726`
+  );
+}
+//获取温控监测
+export function getWenkong() {
+  return get(
+    `/zdwp-api/v3/construction/construction-temp-device/page?projectId=1813759284281929730&hasLastPushData=true&_t=1750211373726`
+  );
+}
+//获取温控监测记录
+export function getWenkongList(par: any) {
+  return get(
+    `/zdwp-api/v3/construction/construction-temp-data/list?projectId=1813759284281929730&currentPage=1&pageSize=9999`,
+    par
+  );
 }

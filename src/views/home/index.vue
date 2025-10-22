@@ -59,6 +59,7 @@
     </div>
     <VideoPop :mvs="mvs"></VideoPop>
     <EnvironmentPop></EnvironmentPop>
+    <AlarmView></AlarmView>
   </div>
 </template>
 <script setup lang="ts">
@@ -70,6 +71,7 @@ import JianShe from '../construct/index.vue'
 import WeiLai from '../future/index.vue'
 import VideoPop from '@/components/VideoPop.vue';
 import EnvironmentPop from '@/components/EnvironmentPop.vue';
+import AlarmView from '@/components/wenkong/AlarmView.vue';
 import { getUe } from '@/utils/getUe';
 import { getMv } from '@/request/home'
 import axios from 'axios';
@@ -276,8 +278,8 @@ const getRoute = (num: number) => {
   .home {
     width: 100%;
     height: 100%;
-    // background: radial-gradient(circle at center, #fff 0%, #595d5f 100%);
-    // background: url('@/assets/img/home/mengban.png') no-repeat;
+    background: radial-gradient(circle at center, #fff 0%, #595d5f 100%);
+    background: url('@/assets/img/home/mengban.png') no-repeat;
     background-size: 100% 100%;
 
     .headers {

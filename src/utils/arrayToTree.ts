@@ -63,3 +63,17 @@ export function sortByNumberFieldAdvanced(array: any, field: any, order = 'asc')
 
   return newArray.sort(compare);
 }
+
+export function parseDamSection(str: any) {
+  // 使用正则匹配
+  const match = str.match(/^(\d+)-(\d+)-(\d+)\(([^)]+)\)$/);
+  if (!match) {
+    return null;
+  }
+  return {
+    ba: parseInt(match[1], 10),
+    cang: parseInt(match[2], 10),
+    dian: parseInt(match[3], 10),
+    type: match[4],
+  };
+}
