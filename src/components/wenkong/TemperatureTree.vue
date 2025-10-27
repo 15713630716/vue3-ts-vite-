@@ -65,6 +65,26 @@ import { getWenkong, getWenkongList } from "@/request/construct";
 import { useStoreTuzhi } from "@/store";
 import { parseDamSection } from "@/utils/arrayToTree";
 
+// const props = defineProps({
+//   dataWenkongTree: {
+//     type: Array,
+//     default: function () {
+//       return [];
+//     },
+//   },
+// });
+// const dataTree = ref([]);
+// watch(
+//   () => props.dataWenkongTree,
+//   (val) => {
+//     if (val) {
+//       // dataTree.value = props.dataWenkongTree
+//       console.log('data',dataTree.value);
+//     }
+//   },
+//   { immediate: true }
+// );
+
 const storeTuzhi = useStoreTuzhi();
 
 const keyword = ref("");
@@ -170,7 +190,7 @@ const echartDatas = ref([]);
 // 获取折线图数据
 const getEchartDatas = async (deviceCode) => {
   let time = [
-    dayjs().subtract(7, "days").format("YYYY-MM-DD 00:00:00"),
+    dayjs().subtract(1000, "days").format("YYYY-MM-DD 00:00:00"),
     dayjs().format("YYYY-MM-DD HH:mm:ss"),
   ];
   const params = {

@@ -192,32 +192,30 @@ const changeTreeShow = (value) => {
 
 const processEchartData = (index) => {
   //提取折线图时间
-  echatTime.value = props.echartDatas.map((item) =>
-    item.heartbeatDate.replace(/^(\d{2})(\d{2})-(\d{2})-(\d{2}).*$/, "$2/$3/$4")
-  );
+  echatTime.value = props.echartDatas.filter(item => item.dataMap[props.measuredValues?.centerKey])
+  .map(item => item.heartbeatDate);
   if (index == 1) {
     //上游点
-    lineData1.value[0].data = props.echartDatas.map(
-      (item) => item.dataMap[props.measuredValues?.upstreamKey]
-    );
+    lineData1.value[0].data = props.echartDatas
+    .filter(item => item.dataMap[props.measuredValues?.upstreamKey])
+  .map(item => item.dataMap[props.measuredValues?.upstreamKey]);
   }
   if (index == 2) {
     //中心点
-    lineData1.value[0].data = props.echartDatas.map(
-      (item) => item.dataMap[props.measuredValues?.centerKey]
-    );
+    lineData1.value[0].data = props.echartDatas.filter(item => item.dataMap[props.measuredValues?.centerKey])
+  .map(item => item.dataMap[props.measuredValues?.centerKey]);
   }
   if (index == 3) {
     //表面点
-    lineData1.value[0].data = props.echartDatas.map(
-      (item) => item.dataMap[props.measuredValues?.surfaceKey]
-    );
+    lineData1.value[0].data = props.echartDatas
+    .filter(item => item.dataMap[props.measuredValues?.surfaceKey])
+  .map(item => item.dataMap[props.measuredValues?.surfaceKey]);
   }
   if (index == 4) {
     //下游侧
-    lineData1.value[0].data = props.echartDatas.map(
-      (item) => item.dataMap[props.measuredValues?.downstreamKey]
-    );
+    lineData1.value[0].data = props.echartDatas
+    .filter(item => item.dataMap[props.measuredValues?.downstreamKey])
+  .map(item => item.dataMap[props.measuredValues?.downstreamKey]);
   }
 };
 
@@ -359,6 +357,10 @@ const updateChart1 = () => {
           },
         },
         axisLabel: {
+          formatter: function(value, index) {
+            // 自定义显示格式
+            return value.replace(/^(\d{2})(\d{2})-(\d{2})-(\d{2}).*$/, "$2/$3/$4")
+          },
           color: "#D4EDFC",
         },
       },

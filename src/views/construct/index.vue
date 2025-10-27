@@ -175,11 +175,12 @@
       <DamTree
         v-if="luanshengItem.id == 3 && damTreeShow"
         :dataDamTree="dataDamTree"
+        :treeActiveName="treeActiveName"
       ></DamTree>
     </div>
     <div class="fangzhen-box" v-if="fangzhenBoxShow">
       <div class="wenkong pointer-events-all" v-if="wenkongBox">
-        <TemperatureTree></TemperatureTree>
+        <TemperatureTree :dataWenkongTree="dataWenkongTree"></TemperatureTree>
         <div class="temperatureTree-tuzhi">
           <ImageView :src="tuzhi"></ImageView>
         </div>
@@ -687,6 +688,7 @@ import {
   getDangerDetail,
   getDangerPer,
   getDamProgress,
+  getWenkongTree
 } from "@/request/construct";
 import AnquanPop from "@/components/AnquanPop.vue";
 import { getUe } from "@/utils/getUe";
@@ -1038,6 +1040,7 @@ const dataDamTree = ref<Tree[]>([
     children: [],
   },
 ]);
+const treeActiveName = ref('暂无')//正在浇筑的
 const getDamTreeDatas = async () => {
   const res1 = await getDamProgress();
   const res2 = sortByNumberFieldAdvanced(res1.list, "no"); //把数组按照序号排序
@@ -1049,6 +1052,9 @@ const getDamTreeDatas = async () => {
         name: item.jobName,
         stats: item?.actualPer || 0,
       });
+      if (item?.actualPer && item?.actualPer < 1) {
+        treeActiveName.value = item.jobName || '暂无'
+      }
     }
   });
 };
@@ -1100,6 +1106,26 @@ const getFangzhen = (item: any) => {
     tianqiBox.value = false;
   }
 };
+
+//获取温控树
+const dataWenkongTree = ref<Tree[]>([
+  {
+    id: 1,
+    label: "Level one 1",
+    children: [],
+  },
+]);
+const getWenkongTreeDatas = async () => {
+  const res1 = await getWenkongTree();
+  dataWenkongTree.value = [{
+    jobName: "拱坝温控监测",
+    parentId: "1",
+    children:res1
+  }
+  ]
+};
+
+
 //无人机ai
 const progressShow = ref(false);
 const aiImgShow = ref(false);
@@ -1495,6 +1521,7 @@ onMounted(() => {
   getTreeDatas(); //获取树
   getWeixian(); //获取危险源列表
   getDamTreeDatas(); //获取拱坝树
+  getWenkongTreeDatas(); //获取温控树
 });
 
 // 暴露方法给父组件

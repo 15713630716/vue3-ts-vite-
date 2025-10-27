@@ -39,7 +39,7 @@
     </div>
     <div class="pop-total" v-if="popTotal">
       <div class="end">已完成:0.5%</div>
-      <div class="ing">正在进行:1层k16-57仓</div>
+      <div class="ing">正在进行:{{treeActiveName == '暂无' ? treeActiveName : `${treeActiveName}仓`}}</div>
       <div class="height">当前高程:0-4(米)</div>
       <!-- <div class="after pointer-events-all" @click="popTotal = false"></div> -->
     </div>
@@ -95,6 +95,10 @@ const props = defineProps({
     default: function () {
       return [];
     },
+  },
+  treeActiveName: {
+    type: String,
+    default: '',
   },
 });
 

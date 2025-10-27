@@ -278,8 +278,8 @@ const getRoute = (num: number) => {
   .home {
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle at center, #fff 0%, #595d5f 100%);
-    background: url('@/assets/img/home/mengban.png') no-repeat;
+    // background: radial-gradient(circle at center, #fff 0%, #595d5f 100%);
+    // background: url('@/assets/img/home/mengban.png') no-repeat;
     background-size: 100% 100%;
 
     .headers {

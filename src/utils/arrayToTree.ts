@@ -66,7 +66,8 @@ export function sortByNumberFieldAdvanced(array: any, field: any, order = 'asc')
 
 export function parseDamSection(str: any) {
   // 使用正则匹配
-  const match = str.match(/^(\d+)-(\d+)-(\d+)\(([^)]+)\)$/);
+  // const match = str.match(/^(\d+)-(\d+)-(\d+)\(([^)]+)\)$/);
+  const match = str.match(/^(\d+)-(\d+)-(\d+)[(（]([^)）]+)[)）]$/);
   if (!match) {
     return null;
   }

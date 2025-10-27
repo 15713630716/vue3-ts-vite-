@@ -88,6 +88,12 @@ export function getWenkong() {
     `/zdwp-api/v3/construction/construction-temp-device/page?projectId=1813759284281929730&hasLastPushData=true&_t=1750211373726`
   );
 }
+//获取温控监测树
+export function getWenkongTree() {
+  return get(
+    `/zdwp-api/v3/schedule/schedule-plan-job-temp-device-relation/jobTreeWithDevice/1976909043691687937`
+  );
+}
 //获取温控监测记录
 export function getWenkongList(par: any) {
   return get(
