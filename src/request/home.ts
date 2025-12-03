@@ -12,6 +12,14 @@ export function getChanzhi() {
 export function getHetonge() {
   return get('/zdwp-api/v3/screenFinance/contractPayStatisticsV2?projectId=1813759284281929730&sectionId=1813759430390509569&_t=1745374566024');
 }
+// 合同支付中间统计项
+export function getSectionStatistics() {
+  return get('/zdwp-api/v3/funds/contractPay/sectionStatistics?projectId=1813759284281929730&sectionId=1813759430390509569&_t=1745374566024');
+}
+// 已支付金额统计，弹框用
+export function getFundsPageStatistics() {
+  return get('/zdwp-api/v3/funds/contractPay/pageStatistics?projectId=1813759284281929730&sectionId=1813759430390509569&_t=1745374566024');
+}
 // 进度控制，完成情况
 export function getProgress(par: any) {
   return post('/zdwp-api/v3/schedule/plan/job/page', par);

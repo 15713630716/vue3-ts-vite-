@@ -29,7 +29,7 @@
           <div class="title">
             {{ item.deviceName }}
           </div>
-          <img v-if="item.deviceStatus === 2" style="width: 56px; height: 24px"
+          <img v-if="item.deviceStatus === 0" style="width: 56px; height: 24px"
             src="https://dy-staticfiles.oss-cn-hangzhou.aliyuncs.com/zhjg/project_seawall_3.0/xxdt/big/%E5%9C%A8%E7%BA%BF.png"
             alt="" />
           <img v-else style="width: 56px; height: 24px"
@@ -69,7 +69,8 @@ const environmentTypes = [
 
 const getLists = async () => {
   const res = await getHuanJingWarn()
-  lists.value = res.list
+  lists.value = [res.list[0]]
+  console.log('lists',lists.value);
   statisticsData.value.total = res.list.length
   statisticsData.value.exitTotal = res.list.filter((item: any) => item.deviceStatus !== 2).length
   // console.log(res);

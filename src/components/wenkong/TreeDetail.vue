@@ -247,8 +247,8 @@ const lineData1 = ref([
   },
 ]);
 const echatTime = ref([]);
-const warnMaxValue = ref(50);
-const warnMinValue = ref(5);
+const warnMaxValue = ref(60);
+const warnMinValue = ref(-10);
 const warnMaxValueArr = ref([]);
 const warnMinValueArr = ref([]);
 const alarmShow = ref(""); //预警弹窗
@@ -274,7 +274,7 @@ const setWarn = () => {
         alarm: false,
       });
       item.data.map((items) => {
-        if (items > warnMaxValue.value) {
+        if ( items > warnMaxValue.value && items < 150) {
           alarmShow.value = "过高";
           storeAlarm.setAlarmStore({
             alarmShow: "过高",
@@ -284,10 +284,10 @@ const setWarn = () => {
           // 直接刷新当前页面（可能会从浏览器缓存加载）
           window.location.href = storeRouter.routerUrl;
           console.log("href", window.location.href);
-          window.location.reload();
+          // window.location.reload();
           getUe({ type: "qiehuan_cz" });
         }
-        if (items < warnMinValue.value) {
+        if (items < warnMinValue.value && items > -50) {
           alarmShow.value = "过低";
           storeAlarm.setAlarmStore({
             alarmShow: "过低",
@@ -297,7 +297,7 @@ const setWarn = () => {
           // 直接刷新当前页面（可能会从浏览器缓存加载）
           window.location.href = storeRouter.routerUrl;
           console.log("href", window.location.href);
-          window.location.reload();
+          // window.location.reload();
           getUe({ type: "qiehuan_cz" });
         }
       });

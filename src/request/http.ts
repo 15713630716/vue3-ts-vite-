@@ -9,7 +9,7 @@ import { getUe } from '@/utils/getUe';
 const ERR_OK = 200;
 const storeToken = useStoreToken();
 axiosRetry(axios, { retry: 5 } as any);
-axios.defaults.timeout = 10000;
+axios.defaults.timeout = 50000;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 //配置接口地址
 axios.defaults.baseURL = import.meta.env.VITE_APP_API;

@@ -982,13 +982,29 @@ const getLuansheng = (item: any) => {
 //获取进度列表
 const jinduTree = ref([] as any);
 const getJindu = async () => {
-  const res = await getProgress();
-  // console.log("进度列表", res);
+  const res = await getProgress({
+    jobLevel: 1,
+    currentPage: 1,
+    pageSize: 9999,
+    sectionId: "1813759430390509569",
+    planId: "1925112781736554498",
+    projectId: "1813759284281929730"
+  });
+  const calcList = (res.list || []).filter((i: any) => i.parentId === '' || !i.parentId)
+  let calcActualPer = 0
+  let calcPlanPer = 0
+    ; (calcList || []).forEach((item: any) => {
+      const actualPer = Number(item.actualPer || 0) * 100 > 100 ? Number(item.actualPer || 0) / 100 : Number(item.actualPer || 0)
+      const planPer = Number(item.planPer || 0)
+      calcActualPer += actualPer * (item.weight || 0)
+      calcPlanPer += planPer * (item.weight || 0)
+    })
+  console.log("进度列表", res);
   jinduTree.value = [
     {
-      future: "83",
+      future: (98 - Number((calcActualPer * 100).toFixed(0))),
       now: "2",
-      past: "15",
+      past: (calcActualPer * 100).toFixed(0),
     },
     {
       future: "90",

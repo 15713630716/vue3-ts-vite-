@@ -4,8 +4,8 @@
       <div class="content">
         <div class="time">
           <div style="width: 150px;">
-            <el-date-picker v-model="times" value-format="YYYY-MM-DD" type="daterange" range-separator="至"
-              start-placeholder="开始时间" end-placeholder="结束时间" />
+            <el-date-picker v-model="times" value-format="YYYY-MM-DD HH:mm:ss" type="daterange" range-separator="至"
+              start-placeholder="开始时间" end-placeholder="结束时间" @change="getDetails" />
           </div>
           <el-radio-group v-model="showChartType" class="ml-4" @change="initChart()">
             <el-radio-button label="噪音" value="noise" />
@@ -90,7 +90,7 @@ const UNIT_MAP = {
 } as any
 
 const dialogTableVisible = ref(false)
-const times = ref([null, null] as any)
+const times = ref([dayjs().subtract(7, 'days').format('YYYY-MM-DD 00:00:00'), dayjs().format('YYYY-MM-DD HH:mm:ss')] as any)
 const chartRef = ref(null)
 const showChartType = ref('noise')
 const currentRow = ref({} as any)
@@ -132,7 +132,7 @@ const initChart = () => {
     },
     xAxis: {
       type: 'category',
-      data: tableData.value.map((item: any) => item.dataTime),
+      data: tableData.value.map((item: any) => item.dataTime).reverse(),
       axisLabel: {
         color: '#ffffff', // 设置 X 轴标签字体颜色（红色）
         fontSize: 12,     // 可选：设置字体大小
@@ -157,9 +157,32 @@ const initChart = () => {
         }
       }
     },
+    dataZoom: [
+    {
+      show: true,
+      start: 0,
+      end: 50,
+      moveHandleSize: 0,
+      fillerColor: 'rgba(101,159,255,0.56)',
+      backgroundColor: 'transparent',
+      borderColor: '#5984FF',
+      borderRadius: 0,
+      dataBackground: {
+        lineStyle: {
+          width: 0
+        }
+      },
+      handleIcon: 'path://m400,312c-6.62983,0 -12,-5.37017 -12,-12c0,-6.62983 5.37017,-12 12,-12c6.62983,0 12,5.37017 12,12c0,6.62983 -5.37017,12 -12,12z',
+      showDetail: false,
+      height: 10,
+      width: '91%',
+      left: '6%',
+      bottom: '0%'
+    }
+  ],
     series: [
       {
-        data: tableData.value.map((item: any) => item[showChartType.value]),
+        data: tableData.value.map((item: any) => item[showChartType.value]).reverse(),
         type: 'line',
         lineStyle: {
           color: '#0be2e2', // 折线颜色（红色）
@@ -210,30 +233,22 @@ onUnmounted(() => {
   ro.disconnect()
 })
 onMounted(async () => {
-  getTestTime()
+  getDetails()
   const res = await getHuanJingWarn()
   currentRow.value = res.list[0]
 })
 
-// 默认 当日
-const getTestTime = () => {
-  const formatStr = 'YYYY-MM-DD'
-  const now = dayjs(new Date()).format(formatStr)
-  times.value = [dayjs(new Date()).format('YYYY-MM-DD'), now]
-}
-watch(
-  () => times.value,
-  async () => {
-    if (times.value) {
-      const res = await getHuanJing({ dataStartTime: times.value[0] + ' 00:00:00', dataEndTime: times.value[1] + ' 23:59:59' })
-      // console.log('res', res);
-      tableData.value = res.list
+const getDetails = async() => {
+  const params = {
+    dataTimeStart: times.value[0],
+    dataTimeEnd: times.value[1]
+  }
+  const res = await getHuanJing(params)
+  tableData.value = res.list
       nextTick(() => {
         initChart()
       })
-    }
-  }
-);
+}
 </script>
 <style lang="scss" scoped>
 .alarm-box {
