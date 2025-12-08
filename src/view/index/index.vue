@@ -171,8 +171,8 @@
           <div class="item" v-for="item in zhiliang" :key="item.type">
             <div class="header-zl">{{ item.type }}</div>
             <div class="label">合格率</div>
-            <div class="lv">{{ item.qualifiedRate }} <i>%</i> </div>
-            <div class="value">({{ item.qualifiedNum }}/{{ item.evaluatedNum }})</div>
+            <div class="lv">{{ item.excellentRate }} <i>%</i> </div>
+            <div class="value">({{ item.excellentNum }}/{{ item.evaluatedNum }})</div>
           </div>
         </div>
       </div>
@@ -210,7 +210,7 @@
 <script setup lang="ts">
 import { reactive, onMounted, ref,watch } from 'vue'
 import Video from '@/components/Video.vue'
-import { getInvest, getChanzhi, getHetonge, getProgress, getZhiLiang, getAnQuan } from '@/request/home'
+import { getInvest, getChanzhi, getHetonge,getSectionStatistics,getFundsPageStatistics, getProgress, getZhiLiang, getAnQuan } from '@/request/home'
 
 const prop = defineProps({
   mvs: {
@@ -258,8 +258,10 @@ const getTouZi = async () => {
   touziData.completeChanzhi = chanzhi.actualOutputTotal?.toFixed(2)
   touziData.rateChanzhi = (touziData.completeChanzhi * 100 / touziData.planChanzhi * 1)?.toFixed(0)
   const hetonge = await getHetonge()
-  touziData.planHetonge = hetonge.totalContract?.toFixed(2)
-  touziData.completeHetonge = hetonge.totalPay?.toFixed(2)
+  const contractPayBottomData = await getSectionStatistics()
+  const totalpay = await getFundsPageStatistics()
+  touziData.planHetonge = Number(Number(hetonge?.totalContract) + Number(contractPayBottomData.contractTotal)).toFixed(2)
+  touziData.completeHetonge = Number(Number(totalpay?.payMoneyTotal) + Number(hetonge?.totalPay / 10000) + Number(hetonge?.wagesPay / 10000)).toFixed(2)
   touziData.rateHetonge = (touziData.completeHetonge * 100 / touziData.planHetonge * 1)?.toFixed(0)
 }
 
@@ -274,7 +276,7 @@ const getProgressData = async () => {
     currentPage: 1,
     pageSize: 9999,
     sectionId: "1813759430390509569",
-    planId: "1831145611508363265",
+    planId: "1925112781736554498",
     projectId: "1813759284281929730"
   })
   const calcList = (res.list || []).filter((i: any) => i.parentId === '' || !i.parentId)

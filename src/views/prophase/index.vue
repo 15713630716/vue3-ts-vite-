@@ -28,6 +28,8 @@
         </div>
       </div>
     </div> -->
+    <iframe
+ src="https://rspt.zdwp.net:9990/#/sceneDetail?linkToken=ZjhkNDJiYjgtMjIzMC00MzNmLTk5ZjUtZDNlOWY0MzAxN2M5LGZiYjk0OTQ3LWU0NzYtNGMxNy1iZmU3LWRkYzE5MDIwMGNkMyxjODBjOGYzMi01YWY1LTQwNzMtODliOC01MTkwMmU2ODU4ZTM=" frameborder="0"></iframe>
   </div>
 </template>
 <script setup lang="ts">
@@ -35,6 +37,27 @@ import { reactive, ref } from 'vue'
 import img1 from '@/assets/img/qianqi/dixing.png'
 import img2 from '@/assets/img/qianqi/dizhi.png'
 import { getUe } from '@/utils/getUe';
+import { onMounted, onUnmounted } from 'vue';
+
+// 监听消息函数
+const handleMessage = (event: MessageEvent) => {
+  if (event.data.type == "PLATFORM_ANNOTATION_CLICK") {
+    console.log('收到消息:', event.data);
+    getNav1(0)
+  }
+
+};
+
+// 启动监听
+onMounted(() => {
+  window.addEventListener('message', handleMessage);
+  console.log('✅ 消息监听已启动');
+});
+
+// 清理监听
+onUnmounted(() => {
+  window.removeEventListener('message', handleMessage);
+});
 
 
 const tuceng = reactive({
@@ -137,6 +160,11 @@ const getNav2 = (indexs: number, index: number) => {
   padding: 0 24px 0 16px;
   position: relative;
   overflow: hidden;
+  iframe{
+    width: 1000px;
+    height: 600px;
+    pointer-events: all;
+  }
 
   .nav {
     width: 266px;

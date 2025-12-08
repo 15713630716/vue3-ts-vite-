@@ -25,11 +25,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "index-dev",
     component: () => import("@/views/home/index.vue"),
   },
-  // {
-  //   //前期
-  //   path: '/prophase',
-  //   component: () => import('@/views/prophase/index.vue'),
-  // },
+  {
+    //前期
+    path: "/prophase",
+    component: () => import("@/views/prophase/index.vue"),
+  },
   // {
   //   //建设
   //   path: '/construct',
