@@ -160,3 +160,15 @@ li {
     transform: rotate(360deg);
   }
 }
+
+.el-table--border .el-table__inner-wrapper:after,
+        .el-table--border:after,
+        .el-table--border:before,
+        .el-table__inner-wrapper:before {
+          display: none;
+          border: none;
+        }
+.el-table__border-bottom-patch, .el-table__border-left-patch {
+  display: none;
+          border: none;
+}

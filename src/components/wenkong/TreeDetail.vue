@@ -197,24 +197,40 @@ const processEchartData = (index) => {
   if (index == 1) {
     //上游点
     lineData1.value[0].data = props.echartDatas
-    .filter(item => item.dataMap[props.measuredValues?.upstreamKey])
+    .filter(item => {
+    const value = item.dataMap[props.measuredValues?.upstreamKey];
+    // 检查值是否存在，并且不超过200
+    return value != null && value <= 100 && value >= -20;
+  })
   .map(item => item.dataMap[props.measuredValues?.upstreamKey]);
   }
   if (index == 2) {
     //中心点
-    lineData1.value[0].data = props.echartDatas.filter(item => item.dataMap[props.measuredValues?.centerKey])
+    lineData1.value[0].data = props.echartDatas.filter(item => {
+    const value = item.dataMap[props.measuredValues?.centerKey];
+    // 检查值是否存在，并且不超过200
+    return value != null && value <= 100 && value >= -20;
+  })
   .map(item => item.dataMap[props.measuredValues?.centerKey]);
   }
   if (index == 3) {
     //表面点
     lineData1.value[0].data = props.echartDatas
-    .filter(item => item.dataMap[props.measuredValues?.surfaceKey])
+    .filter(item => {
+    const value = item.dataMap[props.measuredValues?.surfaceKey];
+    // 检查值是否存在，并且不超过200
+    return value != null && value <= 100 && value >= -20;
+  })
   .map(item => item.dataMap[props.measuredValues?.surfaceKey]);
   }
   if (index == 4) {
     //下游侧
     lineData1.value[0].data = props.echartDatas
-    .filter(item => item.dataMap[props.measuredValues?.downstreamKey])
+    .filter(item => {
+    const value = item.dataMap[props.measuredValues?.downstreamKey];
+    // 检查值是否存在，并且不超过200
+    return value != null && value <= 100 && value >= -20;
+  })
   .map(item => item.dataMap[props.measuredValues?.downstreamKey]);
   }
 };
@@ -284,7 +300,7 @@ const setWarn = () => {
           // 直接刷新当前页面（可能会从浏览器缓存加载）
           window.location.href = storeRouter.routerUrl;
           console.log("href", window.location.href);
-          // window.location.reload();
+          window.location.reload();
           getUe({ type: "qiehuan_cz" });
         }
         if (items < warnMinValue.value && items > -50) {
@@ -297,7 +313,7 @@ const setWarn = () => {
           // 直接刷新当前页面（可能会从浏览器缓存加载）
           window.location.href = storeRouter.routerUrl;
           console.log("href", window.location.href);
-          // window.location.reload();
+          window.location.reload();
           getUe({ type: "qiehuan_cz" });
         }
       });

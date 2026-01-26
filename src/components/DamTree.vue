@@ -38,9 +38,9 @@
       </div>
     </div>
     <div class="pop-total" v-if="popTotal">
-      <div class="end">已完成:0.5%</div>
+      <div class="end">已完成: {{ finishedData }} %</div>
       <div class="ing">正在进行:{{treeActiveName == '暂无' ? treeActiveName : `${treeActiveName}仓`}}</div>
-      <div class="height">当前高程:0-4(米)</div>
+      <div class="height">当前高程: {{ gaocheng }} (米)</div>
       <!-- <div class="after pointer-events-all" @click="popTotal = false"></div> -->
     </div>
     <div class="tree-pop" v-if="treePopShow">
@@ -86,6 +86,7 @@ import { type TreeInstance } from 'element-plus'
 import { nextTick, ref, watch } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import { getUe } from '@/utils/getUe'
+import { countByFieldGao,getContentInBrackets } from '@/utils/arrayToTree'
 
 const popTotal = ref(true)
 
@@ -97,6 +98,10 @@ const props = defineProps({
     },
   },
   treeActiveName: {
+    type: String,
+    default: '',
+  },
+  finishedData: {
     type: String,
     default: '',
   },
@@ -115,11 +120,13 @@ const dataTree = ref([
     children: [],
   }
 ] as any)
-
+const gaocheng = ref()
 watch(
   () => props.dataDamTree,
   async () => {
     dataTree.value = props.dataDamTree;
+    gaocheng.value = getContentInBrackets(countByFieldGao(dataTree.value,'actualPer')?.jobName)
+    // console.log(gaocheng.value);
     await nextTick(); // 等待 DOM 更新
     const targets = document.getElementsByClassName('huang')[0];
     if (targets && scrollbarRef.value) {

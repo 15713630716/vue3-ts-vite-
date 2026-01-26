@@ -28,13 +28,39 @@
         </div>
       </div>
     </div> -->
+    <iframe
+    ref="outerIframeRef"
+ src="https://rspt.zdwp.net:9990/#/sceneDetail?linkToken=ZjhkNDJiYjgtMjIzMC00MzNmLTk5ZjUtZDNlOWY0MzAxN2M5LGZiYjk0OTQ3LWU0NzYtNGMxNy1iZmU3LWRkYzE5MDIwMGNkMyxjODBjOGYzMi01YWY1LTQwNzMtODliOC01MTkwMmU2ODU4ZTM=" frameborder="0"></iframe>
   </div>
 </template>
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import img1 from '@/assets/img/qianqi/dixing.png'
 import img2 from '@/assets/img/qianqi/dizhi.png'
-import { getUe } from '@/utils/getUe';
+// import { getUe } from '@/utils/getUe';
+import { onMounted, onUnmounted } from 'vue';
+
+// 监听消息函数
+const handleMessage = (event: MessageEvent) => {
+  if (event.data.type == "PLATFORM_ANNOTATION_CLICK") {
+    console.log('收到消息:', event.data);
+    getNav1(0)
+  }
+
+};
+window.addEventListener('message', (event: MessageEvent) => {
+  console.log('内部收到消息:', event.data);
+});
+// 启动监听
+onMounted(() => {
+  window.addEventListener('message', handleMessage);
+  console.log('✅ 消息监听已启动');
+});
+
+// 清理监听
+onUnmounted(() => {
+  window.removeEventListener('message', handleMessage);
+});
 
 
 const tuceng = reactive({
@@ -91,8 +117,27 @@ const getNav1 = (indexs: number) => {
       item.active = false
     })
   })
-  getUe({ type: 'hongXian', value: false })
+  if (indexs == 1) {
+    sendInitMessage()
+  }
+  // getUe({ type: 'hongXian', value: false })
 }
+// 发送初始化消息
+const outerIframeRef = ref()
+const sendInitMessage = () => {
+      const outerWindow = outerIframeRef.value.contentWindow
+      
+      const initMessage = {
+        type: 'INIT_MESSAGE_SYSTEM',
+        from: 'PARENT_PAGE',
+        version: '1.0.0',
+      }
+      
+      // 发送消息
+      outerWindow.postMessage(initMessage, '*')
+      console.log('initMessage',initMessage);
+}
+
 const getNav2 = (indexs: number, index: number) => {
   navItems.value[index].map((item: any, itemIndex: number) => {
     if (indexs == itemIndex) {
@@ -105,16 +150,16 @@ const getNav2 = (indexs: number, index: number) => {
     //地形勘察
     if (indexs == 0) {
       //库区红线
-      getUe({ type: 'hongXian', value: navItems.value[index][indexs].active })
+      // getUe({ type: 'hongXian', value: navItems.value[index][indexs].active })
     } else {
-      getUe({ type: 'hongXian', value: false })
+      // getUe({ type: 'hongXian', value: false })
     }
     if (indexs == 1) {
       //高程分析
       // console.log('高程分析');
     }
   } else {
-    getUe({ type: 'hongXian', value: false })
+    // getUe({ type: 'hongXian', value: false })
     navItems.value[0].map((item: any) => {
       item.active = false
     })
@@ -137,8 +182,18 @@ const getNav2 = (indexs: number, index: number) => {
   padding: 0 24px 0 16px;
   position: relative;
   overflow: hidden;
+  iframe{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: all;
+  }
 
   .nav {
+    position: relative;
+    z-index: 99999;
     width: 266px;
     margin-top: 85px;
     padding-left: 28px;

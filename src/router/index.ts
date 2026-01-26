@@ -17,7 +17,7 @@ const routes: Array<RouteRecordRaw> = [
     //首页已部署至北岙项目部
     path: "/index",
     name: "index",
-    component: () => import("@/views/home/index.vue"),
+    component: () => import("@/view/home/index.vue"),
   },
   {
     //首页未部署
@@ -28,7 +28,12 @@ const routes: Array<RouteRecordRaw> = [
   {
     //前期
     path: "/prophase",
-    component: () => import("@/views/prophase/index.vue"),
+    component: () => import("@/views/prophase/index_f.vue"),
+  },
+  {
+    //建管登录页
+    path: "/login-new",
+    component: () => import("@/views/logins/index.vue"),
   },
   // {
   //   //建设

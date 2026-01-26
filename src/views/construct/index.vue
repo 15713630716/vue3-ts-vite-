@@ -176,13 +176,21 @@
         v-if="luanshengItem.id == 3 && damTreeShow"
         :dataDamTree="dataDamTree"
         :treeActiveName="treeActiveName"
+        :finishedData="finishedData"
+
       ></DamTree>
     </div>
     <div class="fangzhen-box" v-if="fangzhenBoxShow">
       <div class="wenkong pointer-events-all" v-if="wenkongBox">
-        <TemperatureTree :dataWenkongTree="dataWenkongTree"></TemperatureTree>
+        <TemperatureBox v-model:value="tucengQu"></TemperatureBox>
+        <!-- <TemperatureTree :dataWenkongTree="dataWenkongTree"></TemperatureTree>
         <div class="temperatureTree-tuzhi">
           <ImageView :src="tuzhi"></ImageView>
+        </div> -->
+        <div class="tuceng-button pointer-events-all">
+          <div class="item" :class="item.value == true ? `active${index}` : ''" v-for="(item,index) in tucengQu" :key="item.id" @click="tuCengButton(item)">
+            {{ item.name }}
+          </div>
         </div>
       </div>
       <div class="tian-qi pointer-events-all" v-if="tianqiBox">
@@ -220,6 +228,9 @@
         <video class="video" controls="false" autoplay muted playsinline
           controlslist="nodownload nofullscreen noremoteplayback" disablePictureInPicture oncontextmenu="return false"
           src="../../assets/uav.mp4"></video> -->
+      </div>
+      <div class="moni pointer-events-all" v-if="moniShow">
+        <MoNi></MoNi>
       </div>
       <div class="yingli" v-if="yingliBox">
         <div class="yingli-top"></div>
@@ -688,12 +699,17 @@ import {
   getDangerDetail,
   getDangerPer,
   getDamProgress,
-  getWenkongTree
+  getWenkongTree,
 } from "@/request/construct";
 import AnquanPop from "@/components/AnquanPop.vue";
 import { getUe } from "@/utils/getUe";
 import * as echarts from "echarts";
-import { ueStoreJson, useStoreWeather,useStoreAlarm,useStoreTuzhi } from "@/store";
+import {
+  ueStoreJson,
+  useStoreWeather,
+  useStoreAlarm,
+  useStoreTuzhi,
+} from "@/store";
 import Overview from "@/components/guankong/Overview.vue";
 import DamTree from "@/components/DamTree.vue";
 import MvPop from "@/components/guankong/MvPop.vue";
@@ -703,40 +719,44 @@ import Machinery from "@/components/guankong/Machinery.vue";
 import People from "@/components/guankong/People.vue";
 import ElectricHole from "@/components/ElectricHole.vue";
 import { ElMessage, type TreeInstance } from "element-plus";
-import { arrayToTree, sortByNumberFieldAdvanced } from "@/utils/arrayToTree";
+import { arrayToTree, sortByNumberFieldAdvanced,countByField,countByFieldXiao } from "@/utils/arrayToTree";
 import TemperatureTree from "@/components/wenkong/TemperatureTree.vue";
+import TemperatureBox from "@/components/wenkong2/TemperatureBox.vue";
 import ImageView from "@/components/wenkong/ImageView.vue";
+import MoNi from "@/components/MoNi.vue";
 
 const storeWeather = useStoreWeather();
 const storeUe = ueStoreJson();
 const storeAlarm = useStoreAlarm();
 const storeTuzhi = useStoreTuzhi();
 
-const tuzhi = ref(tuzhi6)
-watch(() => storeTuzhi.tuzhis,
- (val) => {
-  if (val == 'tuzhi1') {
-    tuzhi.value = tuzhi1
+const tuzhi = ref(tuzhi6);
+watch(
+  () => storeTuzhi.tuzhis,
+  (val) => {
+    if (val == "tuzhi1") {
+      tuzhi.value = tuzhi1;
+    }
+    if (val == "tuzhi2") {
+      tuzhi.value = tuzhi2;
+    }
+    if (val == "tuzhi3") {
+      tuzhi.value = tuzhi3;
+    }
+    if (val == "tuzhi4") {
+      tuzhi.value = tuzhi4;
+    }
+    if (val == "tuzhi5") {
+      tuzhi.value = tuzhi5;
+    }
+    if (val == "tuzhi6") {
+      tuzhi.value = tuzhi6;
+    }
+    if (val == "") {
+      tuzhi.value = tuzhi6;
+    }
   }
-  if (val == 'tuzhi2') {
-    tuzhi.value = tuzhi2
-  }
-  if (val == 'tuzhi3') {
-    tuzhi.value = tuzhi3
-  }
-  if (val == 'tuzhi4') {
-    tuzhi.value = tuzhi4
-  }
-  if (val == 'tuzhi5') {
-    tuzhi.value = tuzhi5
-  }
-  if (val == 'tuzhi6') {
-    tuzhi.value = tuzhi6
-  }
-  if (val == '') {
-    tuzhi.value = tuzhi6
-  }
-})
+);
 
 const tuceng = ref([
   {
@@ -770,10 +790,36 @@ const tuceng = ref([
     id: "cldw",
   },
 ]);
+const tucengQu = ref([
+  {
+    name: "强约束区",
+    value: false,
+    id: "qiang",
+  },
+  {
+    name: "弱约束区",
+    value: false,
+    id: "ruo",
+  },
+  {
+    name: "非约束区",
+    value: false,
+    id: "fei",
+  },
+]);
 //图层开关
 const tuCengSwitch = (item: any) => {
   //判断图层传递消息
   getUe({ type: "tuceng", name: item.id, id: `${item.value}` });
+};
+//约束区开关
+const tuCengButton = (item: any) => {
+  tucengQu.value.map((items:any) =>{
+    if (items.id == item.id) {
+      items.value = !items.value
+      getUe({ type: "tuceng", name: item.id, id: `${items.value}` });
+    }
+  })
 };
 
 const navs = ref([
@@ -988,21 +1034,26 @@ const getJindu = async () => {
     pageSize: 9999,
     sectionId: "1813759430390509569",
     planId: "1925112781736554498",
-    projectId: "1813759284281929730"
+    projectId: "1813759284281929730",
   });
-  const calcList = (res.list || []).filter((i: any) => i.parentId === '' || !i.parentId)
-  let calcActualPer = 0
-  let calcPlanPer = 0
-    ; (calcList || []).forEach((item: any) => {
-      const actualPer = Number(item.actualPer || 0) * 100 > 100 ? Number(item.actualPer || 0) / 100 : Number(item.actualPer || 0)
-      const planPer = Number(item.planPer || 0)
-      calcActualPer += actualPer * (item.weight || 0)
-      calcPlanPer += planPer * (item.weight || 0)
-    })
+  const calcList = (res.list || []).filter(
+    (i: any) => i.parentId === "" || !i.parentId
+  );
+  let calcActualPer = 0;
+  let calcPlanPer = 0;
+  (calcList || []).forEach((item: any) => {
+    const actualPer =
+      Number(item.actualPer || 0) * 100 > 100
+        ? Number(item.actualPer || 0) / 100
+        : Number(item.actualPer || 0);
+    const planPer = Number(item.planPer || 0);
+    calcActualPer += actualPer * (item.weight || 0);
+    calcPlanPer += planPer * (item.weight || 0);
+  });
   console.log("进度列表", res);
   jinduTree.value = [
     {
-      future: (98 - Number((calcActualPer * 100).toFixed(0))),
+      future: 98 - Number((calcActualPer * 100).toFixed(0)),
       now: "2",
       past: (calcActualPer * 100).toFixed(0),
     },
@@ -1012,9 +1063,9 @@ const getJindu = async () => {
       past: "5",
     },
     {
-      future: "95",
-      now: "2",
-      past: "3",
+      future: 100 - finishedData.value - ingData.value,
+      now: ingData.value,
+      past: finishedData.value,
     },
     {
       future: "50",
@@ -1056,12 +1107,16 @@ const dataDamTree = ref<Tree[]>([
     children: [],
   },
 ]);
-const treeActiveName = ref('暂无')//正在浇筑的
+const treeActiveName = ref("暂无"); //正在浇筑的
+const finishedData = ref(); //已经完成浇筑的
+const ingData = ref(); //正在浇筑的
 const getDamTreeDatas = async () => {
   const res1 = await getDamProgress();
   const res2 = sortByNumberFieldAdvanced(res1.list, "no"); //把数组按照序号排序
   const res3 = arrayToTree(res2, "parentId"); //把排好序的数组按照字段分成树结构
   dataDamTree.value = res3;
+  finishedData.value = (countByField(dataDamTree.value,'actualPer')/734*100).toFixed(1)
+  ingData.value = (countByFieldXiao(dataDamTree.value,'actualPer')/734*100).toFixed(1)
   res2.map((item: any) => {
     if (item.parentId) {
       dataDamList.value.push({
@@ -1069,7 +1124,7 @@ const getDamTreeDatas = async () => {
         stats: item?.actualPer || 0,
       });
       if (item?.actualPer && item?.actualPer < 1) {
-        treeActiveName.value = item.jobName || '暂无'
+        treeActiveName.value = item.jobName || "暂无";
       }
     }
   });
@@ -1080,12 +1135,14 @@ const wenkongBox = ref<boolean>(false);
 const yingliBox = ref<boolean>(false);
 const tianqiBox = ref<boolean>(false);
 const uavPopShow = ref<boolean>(false);
+const moniShow = ref<boolean>(false);
 const getFangzhen = (item: any) => {
   fangzhenItem.value = item;
   // 发请求，调接口获取数据，接口还没写
   if (item.id == 1) {
     //温控有限元
     wenkongBox.value = true;
+    getUe({ type: "wenkong" });
     if (storeAlarm.alarm.code) {
       getUe({
         type: "wenkongdian",
@@ -1095,6 +1152,7 @@ const getFangzhen = (item: any) => {
     }
   } else {
     wenkongBox.value = false;
+    getUe({ type: "wenkongEnd" });
   }
   if (item.id == 2) {
     //无人机巡检
@@ -1110,8 +1168,10 @@ const getFangzhen = (item: any) => {
   }
   if (item.id == 3) {
     //施工仿真模拟
+    moniShow.value = true
     getUe({ type: "shigongmoni" });
   } else {
+    moniShow.value = false
     getUe({ type: "shigongmoniEnd" });
   }
   if (item.id == 4) {
@@ -1133,14 +1193,14 @@ const dataWenkongTree = ref<Tree[]>([
 ]);
 const getWenkongTreeDatas = async () => {
   const res1 = await getWenkongTree();
-  dataWenkongTree.value = [{
-    jobName: "拱坝温控监测",
-    parentId: "1",
-    children:res1
-  }
-  ]
+  dataWenkongTree.value = [
+    {
+      jobName: "拱坝温控监测",
+      parentId: "1",
+      children: res1,
+    },
+  ];
 };
-
 
 //无人机ai
 const progressShow = ref(false);
@@ -1867,6 +1927,7 @@ defineExpose({
 
     .wenkong {
       width: 350px;
+      width: 410px;
       height: 100%;
       right: 10px;
       position: absolute;
@@ -1887,6 +1948,43 @@ defineExpose({
         border: 1px solid rgba(110, 181, 242, 0.57);
         border-radius: 5px;
       }
+      .tuceng-button {
+        width: 116px;
+        background: rgba(9, 88, 148, 0.28);
+        border-radius: 3px;
+        border: 1px solid rgba(79, 162, 206, 0.41);
+        position: absolute;
+        bottom: 0px;
+        left: -1480px;
+
+        .item {
+          width: 100%;
+          font-family: MicrosoftYaHei;
+          font-size: 16px;
+          color: #ffffff;
+          line-height: 35px;
+          text-align: center;
+          width: 100%;
+          border-bottom: 1px solid rgba(79, 162, 206, 0.21);
+          cursor: pointer;
+        }
+        .active0{
+          background-color: #FF5555;
+        }
+        .active1{
+          background-color: #FFD60F;
+        }
+        .active2{
+          background-color: #0CFF28;
+        }
+      }
+    }
+    .moni{
+      width: 300px;
+      height: 100%;
+      right: 15px;
+      position: absolute;
+      top: 0px;
     }
 
     .tian-qi {

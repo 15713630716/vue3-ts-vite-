@@ -75,7 +75,7 @@ import AlarmView from '@/components/wenkong/AlarmView.vue';
 import { getUe } from '@/utils/getUe';
 import { getMv } from '@/request/home'
 import axios from 'axios';
-import { useStoreWeather } from '@/store';
+import { useStoreWeather,useStoreRouter } from '@/store';
 
 const storeWeather = useStoreWeather()
 
@@ -186,7 +186,8 @@ const getClick = async (num: number) => {
   if (num == 3) {
     if (iframeDomCZ.value.type == 'qiehuan_cz') {
       // 直接刷新当前页面（可能会从浏览器缓存加载）
-      window.location.href = '#/index';
+      const storeRouter = useStoreRouter();
+      window.location.href = storeRouter.routerUrl;
       window.location.reload();
     }
     //恢复当前场景初始视角
