@@ -101,7 +101,7 @@
             <div class="item">
               <div class="lable">已埋设温度计</div>
               <div class="value" style="color: #53ee8a">
-                {{ obtTotals?.pouredNum * 4 }}
+                {{ obtTotals?.sensorNum }}
               </div>
             </div>
           </div>

@@ -59,7 +59,7 @@
                   color="#07BEFF"
                   :width="90"
                   type="circle"
-                  :percentage="jinduTree[luanshengItem.id - 1].future"
+                  :percentage="jinduTree[luanshengItem.id - 1]?.future"
                 >
                   <template #default="{ percentage }">
                     <div
@@ -93,7 +93,7 @@
                   color="#E9CA7A"
                   :width="90"
                   type="circle"
-                  :percentage="jinduTree[luanshengItem.id - 1].now"
+                  :percentage="jinduTree[luanshengItem.id - 1]?.now"
                 >
                   <template #default="{ percentage }">
                     <div
@@ -127,7 +127,7 @@
                   color="#1DDEA8"
                   :width="90"
                   type="circle"
-                  :percentage="jinduTree[luanshengItem.id - 1].past"
+                  :percentage="jinduTree[luanshengItem.id - 1]?.past"
                 >
                   <template #default="{ percentage }">
                     <div
@@ -672,18 +672,18 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, watch, nextTick } from "vue";
+import { onMounted, ref, watch, nextTick, onUnmounted } from "vue";
 import img1 from "@/assets/img/jiansheqi/nav1.png";
 import img2 from "@/assets/img/jiansheqi/nav2.png";
 import img3 from "@/assets/img/jiansheqi/nav3.png";
 import img4 from "@/assets/img/jiansheqi/nav4.png";
 import img5 from "@/assets/guankong/guankongzhongxin.png";
-import tuzhi1 from "@/assets/wenkong/tuzhi1.jpg";
-import tuzhi2 from "@/assets/wenkong/tuzhi2.jpg";
-import tuzhi3 from "@/assets/wenkong/tuzhi3.jpg";
-import tuzhi4 from "@/assets/wenkong/tuzhi4.jpg";
-import tuzhi5 from "@/assets/wenkong/tuzhi5.jpg";
-import tuzhi6 from "@/assets/wenkong/tuzhi6.jpg";
+// import tuzhi1 from "@/assets/wenkong/tuzhi1.jpg";
+// import tuzhi2 from "@/assets/wenkong/tuzhi2.jpg";
+// import tuzhi3 from "@/assets/wenkong/tuzhi3.jpg";
+// import tuzhi4 from "@/assets/wenkong/tuzhi4.jpg";
+// import tuzhi5 from "@/assets/wenkong/tuzhi5.jpg";
+// import tuzhi6 from "@/assets/wenkong/tuzhi6.jpg";
 import daoliudong from "@/assets/luansheng/daoliudong.png";
 import gongba from "@/assets/luansheng/gongba.png";
 import guanlifang from "@/assets/luansheng/guanlifang.png";
@@ -699,7 +699,7 @@ import {
   getDangerDetail,
   getDangerPer,
   getDamProgress,
-  getWenkongTree,
+  // getWenkongTree,
 } from "@/request/construct";
 import AnquanPop from "@/components/AnquanPop.vue";
 import { getUe } from "@/utils/getUe";
@@ -708,7 +708,7 @@ import {
   ueStoreJson,
   useStoreWeather,
   useStoreAlarm,
-  useStoreTuzhi,
+  // useStoreTuzhi,
 } from "@/store";
 import Overview from "@/components/guankong/Overview.vue";
 import DamTree from "@/components/DamTree.vue";
@@ -720,43 +720,43 @@ import People from "@/components/guankong/People.vue";
 import ElectricHole from "@/components/ElectricHole.vue";
 import { ElMessage, type TreeInstance } from "element-plus";
 import { arrayToTree, sortByNumberFieldAdvanced,countByField,countByFieldXiao } from "@/utils/arrayToTree";
-import TemperatureTree from "@/components/wenkong/TemperatureTree.vue";
+// import TemperatureTree from "@/components/wenkong/TemperatureTree.vue";
 import TemperatureBox from "@/components/wenkong2/TemperatureBox.vue";
-import ImageView from "@/components/wenkong/ImageView.vue";
+// import ImageView from "@/components/wenkong/ImageView.vue";
 import MoNi from "@/components/MoNi.vue";
 
 const storeWeather = useStoreWeather();
 const storeUe = ueStoreJson();
 const storeAlarm = useStoreAlarm();
-const storeTuzhi = useStoreTuzhi();
+// const storeTuzhi = useStoreTuzhi();
 
-const tuzhi = ref(tuzhi6);
-watch(
-  () => storeTuzhi.tuzhis,
-  (val) => {
-    if (val == "tuzhi1") {
-      tuzhi.value = tuzhi1;
-    }
-    if (val == "tuzhi2") {
-      tuzhi.value = tuzhi2;
-    }
-    if (val == "tuzhi3") {
-      tuzhi.value = tuzhi3;
-    }
-    if (val == "tuzhi4") {
-      tuzhi.value = tuzhi4;
-    }
-    if (val == "tuzhi5") {
-      tuzhi.value = tuzhi5;
-    }
-    if (val == "tuzhi6") {
-      tuzhi.value = tuzhi6;
-    }
-    if (val == "") {
-      tuzhi.value = tuzhi6;
-    }
-  }
-);
+// const tuzhi = ref(tuzhi6);
+// watch(
+//   () => storeTuzhi.tuzhis,
+//   (val) => {
+//     if (val == "tuzhi1") {
+//       tuzhi.value = tuzhi1;
+//     }
+//     if (val == "tuzhi2") {
+//       tuzhi.value = tuzhi2;
+//     }
+//     if (val == "tuzhi3") {
+//       tuzhi.value = tuzhi3;
+//     }
+//     if (val == "tuzhi4") {
+//       tuzhi.value = tuzhi4;
+//     }
+//     if (val == "tuzhi5") {
+//       tuzhi.value = tuzhi5;
+//     }
+//     if (val == "tuzhi6") {
+//       tuzhi.value = tuzhi6;
+//     }
+//     if (val == "") {
+//       tuzhi.value = tuzhi6;
+//     }
+//   }
+// );
 
 const tuceng = ref([
   {
@@ -1028,14 +1028,15 @@ const getLuansheng = (item: any) => {
 //获取进度列表
 const jinduTree = ref([] as any);
 const getJindu = async () => {
-  const res = await getProgress({
-    jobLevel: 1,
-    currentPage: 1,
-    pageSize: 9999,
-    sectionId: "1813759430390509569",
-    planId: "1925112781736554498",
-    projectId: "1813759284281929730",
-  });
+  const res = await getProgress();
+  // const res = await getProgress({
+  //   jobLevel: 1,
+  //   currentPage: 1,
+  //   pageSize: 9999,
+  //   sectionId: "1813759430390509569",
+  //   planId: "1925112781736554498",
+  //   projectId: "1813759284281929730",
+  // });
   const calcList = (res.list || []).filter(
     (i: any) => i.parentId === "" || !i.parentId
   );
@@ -1050,7 +1051,7 @@ const getJindu = async () => {
     calcActualPer += actualPer * (item.weight || 0);
     calcPlanPer += planPer * (item.weight || 0);
   });
-  console.log("进度列表", res);
+  // console.log("进度列表", res);
   jinduTree.value = [
     {
       future: 98 - Number((calcActualPer * 100).toFixed(0)),
@@ -1184,46 +1185,56 @@ const getFangzhen = (item: any) => {
 };
 
 //获取温控树
-const dataWenkongTree = ref<Tree[]>([
-  {
-    id: 1,
-    label: "Level one 1",
-    children: [],
-  },
-]);
-const getWenkongTreeDatas = async () => {
-  const res1 = await getWenkongTree();
-  dataWenkongTree.value = [
-    {
-      jobName: "拱坝温控监测",
-      parentId: "1",
-      children: res1,
-    },
-  ];
-};
+// const dataWenkongTree = ref<Tree[]>([
+//   {
+//     id: 1,
+//     label: "Level one 1",
+//     children: [],
+//   },
+// ]);
+// const getWenkongTreeDatas = async () => {
+//   const res1 = await getWenkongTree();
+//   dataWenkongTree.value = [
+//     {
+//       jobName: "拱坝温控监测",
+//       parentId: "1",
+//       children: res1,
+//     },
+//   ];
+// };
 
 //无人机ai
 const progressShow = ref(false);
 const aiImgShow = ref(false);
 const percentageAi = ref(0);
 const timer = ref(null as any);
-const timer1 = ref(null as any);
 const getAI = () => {
+  if (timer.value) {
+    clearInterval(timer.value);
+    timer.value = null;
+  }
   progressShow.value = true;
+  aiImgShow.value = false;
+  percentageAi.value = 0;
   timer.value = setInterval(() => {
     if (percentageAi.value < 100) {
       percentageAi.value++;
     } else {
-      timer1.value = setTimeout(() => {
-        clearInterval(timer.value);
-        progressShow.value = false;
-        aiImgShow.value = true;
-        percentageAi.value = 0;
-        clearTimeout(timer1.value);
-      }, 2000);
+      progressShow.value = false;
+      aiImgShow.value = true;
+      percentageAi.value = 0;
+      clearInterval(timer.value);
+      timer.value = null;
     }
   }, 50);
 };
+// 组件卸载时清理
+onUnmounted(() => {
+  if (timer.value) {
+    clearInterval(timer.value);
+    timer.value = null;
+  }
+});
 
 //天气
 const tianqiShow = ref<number>(0);
@@ -1597,7 +1608,7 @@ onMounted(() => {
   getTreeDatas(); //获取树
   getWeixian(); //获取危险源列表
   getDamTreeDatas(); //获取拱坝树
-  getWenkongTreeDatas(); //获取温控树
+  // getWenkongTreeDatas(); //获取温控树
 });
 
 // 暴露方法给父组件

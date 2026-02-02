@@ -172,3 +172,13 @@ li {
   display: none;
           border: none;
 }
+.el-image-viewer__img {
+  /* 图片适应容器 */
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  
+  /* 或者设置固定大小 */
+    width: 80% !important;
+  height: 80% !important;
+}
