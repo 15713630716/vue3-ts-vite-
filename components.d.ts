@@ -8,7 +8,6 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    '副本': typeof import('./src/components/Record - 副本.vue')['default']
     AiImg: typeof import('./src/components/guankong/AiImg.vue')['default']
     AlarmView: typeof import('./src/components/wenkong/AlarmView.vue')['default']
     AnliPop: typeof import('./src/components/wenkong2/AnliPop.vue')['default']

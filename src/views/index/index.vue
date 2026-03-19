@@ -277,7 +277,8 @@ const getProgressData = async () => {
     pageSize: 9999,
     sectionId: "1813759430390509569",
     planId: "1925112781736554498",
-    projectId: "1813759284281929730"
+    projectId: "1813759284281929730",
+    cancelPermission:true
   })
   const calcList = (res.list || []).filter((i: any) => i.parentId === '' || !i.parentId)
   let calcActualPer = 0
