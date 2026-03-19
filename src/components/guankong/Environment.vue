@@ -29,7 +29,7 @@
           <div class="title">
             {{ item.deviceName }}
           </div>
-          <img v-if="item.deviceStatus === 0" style="width: 56px; height: 24px"
+          <img v-if="item.deviceStatus === 2" style="width: 56px; height: 24px"
             src="https://dy-staticfiles.oss-cn-hangzhou.aliyuncs.com/zhjg/project_seawall_3.0/xxdt/big/%E5%9C%A8%E7%BA%BF.png"
             alt="" />
           <img v-else style="width: 56px; height: 24px"

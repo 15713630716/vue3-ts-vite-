@@ -284,12 +284,12 @@ const getProgressData = async () => {
   let calcPlanPer = 0
     ; (calcList || []).forEach((item: any) => {
       const actualPer = Number(item.actualPer || 0) * 100 > 100 ? Number(item.actualPer || 0) / 100 : Number(item.actualPer || 0)
-      const planPer = Number(item.planPer || 0)
+      const planPer = Number(item.planPer || 0) * 100 > 100 ? Number(item.planPer || 0) / 100 : Number(item.planPer || 0)
       calcActualPer += actualPer * (item.weight || 0)
       calcPlanPer += planPer * (item.weight || 0)
     })
   jinduData.actualPer = (calcActualPer * 100).toFixed(1)
-  jinduData.planPer = Number((calcPlanPer).toFixed(1))
+  jinduData.planPer = Number((calcPlanPer*100).toFixed(1))
 }
 
 //mv
